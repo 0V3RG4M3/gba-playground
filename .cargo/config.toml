@@ -6,5 +6,5 @@ build-std = ["core"]
 build-std-features = ["compiler-builtins-weak-intrinsics"]
 
 [target.thumbv4t-none-eabi]
-runner = "mgba-qt"
+runner = "mgba"
 rustflags = ["-Clink-arg=-Tlinker_scripts/mono_boot.ld"]
