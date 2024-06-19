@@ -1,0 +1,29 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install rust-src
+        run: rustup component add rust-src
+      - name: Build
+        run: cargo build --release --out-dir=out -Z unstable-options
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gba-playground
+          path: out
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Format
+        run: cargo fmt --check
