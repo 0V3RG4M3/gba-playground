@@ -23,7 +23,6 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
 extern "C" fn main() -> ! {
     mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
     mmio::IE.write(IrqBits::VBLANK);
-    mmio::IME.write(true);
 
     mmio::BG_PALETTE.index(1).write(Color::BLACK);
     mmio::BG_PALETTE.index(2).write(Color::WHITE);
