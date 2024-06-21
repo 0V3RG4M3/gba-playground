@@ -3,5 +3,5 @@ name = "gba-playground"
 version = "0.0.0"
 edition = "2021"
 
-[dependencies]
+[target.thumbv4t-none-eabi.dependencies]
 gba = "0.11.6"
