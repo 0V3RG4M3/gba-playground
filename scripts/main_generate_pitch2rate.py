@@ -12,7 +12,7 @@ def main():
         rates.append(ratei)
 
     rates = [str(r) for r in rates]
-    print(f"const NOTE2RATE_MAP: [u16; {len(rates)}] = [{', '.join(rates)}];")
+    print(f"const PITCH2RATE_MAP: [u16; {len(rates)}] = [{', '.join(rates)}];")
 
 
 if __name__ == '__main__':

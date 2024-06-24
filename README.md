@@ -1,5 +1,16 @@
 # GBA Playground
 
+## Pre-Building
+
+#### Install python venv (from `scripts` folder):
+```bash
+poetry install --no-root
+```
+
+#### Generate tune.rs file (from `scripts` folder):
+```bash
+poetry run main_generate_tune_rs.py
+```
 ## Building
 
 ```bash
@@ -12,7 +23,7 @@ cargo build --release
 Requirements:
  - mGBA: Install mGBA with your package manager or download it from https://mgba.io/downloads.html
 
-```
+``` bash
 cargo run
 ```
 ## Running tests
