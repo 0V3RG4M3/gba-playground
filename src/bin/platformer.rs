@@ -21,6 +21,17 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
+fn log(message_level: MgbaMessageLevel, message: impl core::fmt::Debug) {
+    if let Ok(mut logger) = MgbaBufferedLogger::try_new(message_level) {
+        // Concatenate all parameters into a single string
+        writeln!(logger, "{:?}", message).ok();
+    }
+}
+
+fn logd(message: impl core::fmt::Debug) {
+    log(MgbaMessageLevel::Debug, message)
+}
+    
 #[no_mangle]
 extern "C" fn main() -> ! {
     mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
