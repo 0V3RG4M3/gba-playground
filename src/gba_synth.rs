@@ -8,44 +8,38 @@ use crate::tune;
 
 pub fn init_synth() {
     // turn sound on
-    // REG_SNDSTAT= SSTAT_ENABLE;
-    // REG_SNDSTAT --> SOUNDCNT_X --> SOUND_ENABLED
     mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
 
-    // snd1 on left/right ; both full volume
-    // REG_SNDDMGCNT = SDMG_BUILD_LR(SDMG_SQR1, 7);
-    //      REG_SNDDMGCNT --> SOUNDCNT_L  --> LEFT_RIGHT_VOLUME
     mmio::LEFT_RIGHT_VOLUME.write(
         LeftRightVolume::new()
+            .with_right_volume(15)
+            .with_left_volume(15)
             .with_tone1_left(true)
-            .with_left_volume(2)
+            .with_tone2_left(true)
             .with_tone1_right(true)
-            .with_right_volume(2),
+            .with_tone2_right(true),
     );
 
-    // DMG ratio to 100%
-    // REG_SNDDSCNT= SDS_DMG100;
-    //      REG_SNDDSCNT --> SOUNDCNT_H --> SoundMix
-    //      SDS_DMG100 --> 0b10
-    mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_100));
+    mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_25));
 
     // disable the sweep of tone 1 (to disable, set sweep time to 0)
-    // REG_SND1SWEEP= SSW_OFF;
-    //      REG_SND1SWEEP --> SOUND1CNT_L --> TONE1_SWEEP
     mmio::TONE1_SWEEP.write(SweepControl::new().with_sweep_time(0));
 
-    // envelope: vol=12, decay, max step time (7) ; 50% duty
-    // REG_SND1CNT= SSQR_ENV_BUILD(12, 0, 7) | SSQR_DUTY1_2;
-    //      REG_SND1CNT --> SOUND1CNT_H --> TONE1_PATTERN
-    mmio::TONE1_PATTERN.write(
-        TonePattern::new()
-            .with_volume(15) // Volume value in [0, 15]
-            .with_duty(2) // Duty cycle    0: 12.5%, 1: 25%, 2: 50%, 3: 75%
-            .with_length(63) // L in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
-            .with_step_increasing(false)
-            .with_step_time(7), // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
-    );
+    const GLOCKENSPIEL: TonePattern = TonePattern::new()
+        .with_volume(15) // Volume value in [0, 15]
+        .with_duty(2) // Duty cycle    0: 12.5%, 1: 25%, 2: 50%, 3: 75%
+        .with_length(0) // L in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
+        .with_step_increasing(false)
+        .with_step_time(7); // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+
+    // const GLOCKENSPIEL_DAMPED: TonePattern = GLOCKENSPIEL
+    //     .with_step_time(2); // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+
+    mmio::TONE1_PATTERN.write(GLOCKENSPIEL);
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(0));
+
+    mmio::TONE2_PATTERN.write(GLOCKENSPIEL);
+    mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(0));
 }
 
 const PITCH2RATE_MAP: [u16; 92] = [
@@ -69,6 +63,14 @@ pub fn play_tone1(pitch: u16, velocity: u16) {
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
 }
 
+pub fn play_tone2(pitch: u16, velocity: u16) {
+    let volume = velocity >> 3;
+    let rate = PITCH2RATE_MAP[(pitch - 36) as usize];
+
+    mmio::TONE2_PATTERN.write(mmio::TONE2_PATTERN.read().with_volume(volume));
+    mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
+}
+
 pub fn get_tune_step_count() -> u16 {
     return tune::TUNE_STEP_COUNT;
 }
@@ -80,6 +82,6 @@ pub fn play_tune(step_id: u16) {
     }
     let note2 = tune::TUNE_TRACK2[step_id as usize];
     if note2.0 > 0 {
-        play_tone1(note2.0, note2.1);
+        play_tone2(note2.0, note2.1);
     }
 }
