@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
 
+use gba_playground::tune;
+
 use core::cmp;
 use core::fmt::Write;
 
@@ -97,6 +99,17 @@ fn play_tone1(pitch: u16, velocity: u16) {
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
 }
 
+fn play_tune(frame_id: u16) {
+    let note1 = tune::TUNE_TRACK1[frame_id as usize];
+    if note1.0 > 0 {
+        play_tone1(note1.0, note1.1);
+    }
+    let note2 = tune::TUNE_TRACK2[frame_id as usize];
+    if note2.0 > 0 {
+        play_tone1(note2.0, note2.1);
+    }
+}
+
 #[no_mangle]
 extern "C" fn main() -> ! {
     mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
@@ -133,8 +146,10 @@ extern "C" fn main() -> ! {
     let mut pitch = 60;
     let mut vel = 64;
     let mut key_was_pressed: KeyInput = KeyInput::new();
+    let mut frame_id = 0;
     loop {
         bios::VBlankIntrWait();
+        play_tune(frame_id);
 
         let mut obj_attr = ObjAttr::new();
         obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);
@@ -192,5 +207,6 @@ extern "C" fn main() -> ! {
         py = cmp::min(cmp::max(8, py + vy), 128);
 
         key_was_pressed = key_input;
+        frame_id = (frame_id + 1) % tune::TUNE_STEP_COUNT;
     }
 }
