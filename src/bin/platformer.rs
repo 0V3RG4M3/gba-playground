@@ -1,8 +1,6 @@
 #![no_std]
 #![no_main]
 
-use gba_playground::tune;
-
 use core::cmp;
 use core::fmt::Write;
 
@@ -17,23 +15,15 @@ use gba::sound::{
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, TextEntry};
 
+use gba_playground::log4gba;
+use gba_playground::tune;
+
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     if let Ok(mut logger) = MgbaBufferedLogger::try_new(MgbaMessageLevel::Fatal) {
         writeln!(logger, "{info}").ok();
     }
     loop {}
-}
-
-fn log(message_level: MgbaMessageLevel, message: impl core::fmt::Debug) {
-    if let Ok(mut logger) = MgbaBufferedLogger::try_new(message_level) {
-        // Concatenate all parameters into a single string
-        writeln!(logger, "{:?}", message).ok();
-    }
-}
-
-fn logd(message: impl core::fmt::Debug) {
-    log(MgbaMessageLevel::Debug, message)
 }
 
 fn init_synth() {
@@ -88,12 +78,12 @@ const PITCH2RATE_MAP: [u16; 92] = [
 ];
 
 fn play_tone1(pitch: u16, velocity: u16) {
-    logd(pitch);
-    logd(velocity);
+    log4gba::debug(pitch);
+    log4gba::debug(velocity);
 
     let volume = velocity >> 3;
     let rate = PITCH2RATE_MAP[(pitch - 36) as usize];
-    logd(rate);
+    log4gba::debug(rate);
 
     mmio::TONE1_PATTERN.write(mmio::TONE1_PATTERN.read().with_volume(volume));
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
