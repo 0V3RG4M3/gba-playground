@@ -28,12 +28,13 @@ def parse_file(midi_path):
     return track
 
 
-def write_tune_rs_file(filename, track1, track2):
+def write_tune_rs_file(filename, track1, track2, drums):
     txt = f"""// This file has been automatically generated
     
 pub const TUNE_STEP_COUNT: u16 = {STEP_COUNT};
 pub const TUNE_TRACK1: [(u16, u16); TUNE_STEP_COUNT as usize] = {track1};
 pub const TUNE_TRACK2: [(u16, u16); TUNE_STEP_COUNT as usize] = {track2};
+pub const TUNE_DRUMS: [(u16, u16); TUNE_STEP_COUNT as usize] = {drums};
 """
 
     print(txt)
@@ -46,10 +47,11 @@ def format_rust_file(filename):
 
 
 def main():
-    track1 = parse_file('../src/assets/tune/tune_bass.mid')
-    track2 = parse_file('../src/assets/tune/tune_lead.mid')
+    track1 = parse_file('../src/assets/tune/tune_lead.mid')
+    track2 = parse_file('../src/assets/tune/tune_bass.mid')
+    drums = parse_file('../src/assets/tune/tune_bass.mid')
 
-    write_tune_rs_file('../src/tune.rs', track1, track2)
+    write_tune_rs_file('../src/tune.rs', track1, track2, drums)
 
     format_rust_file('../src/tune.rs')
 
