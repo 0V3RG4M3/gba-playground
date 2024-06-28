@@ -32,9 +32,9 @@ def write_tune_rs_file(filename, track1, track2, drums):
     txt = f"""// This file has been automatically generated
     
 pub const TUNE_STEP_COUNT: u16 = {STEP_COUNT};
-pub const TUNE_TRACK1: [(u16, u16); TUNE_STEP_COUNT as usize] = {track1};
-pub const TUNE_TRACK2: [(u16, u16); TUNE_STEP_COUNT as usize] = {track2};
-pub const TUNE_DRUMS: [(u16, u16); TUNE_STEP_COUNT as usize] = {drums};
+pub const TUNE_TRACK1: [(u8, u8); TUNE_STEP_COUNT as usize] = {track1};
+pub const TUNE_TRACK2: [(u8, u8); TUNE_STEP_COUNT as usize] = {track2};
+pub const TUNE_DRUMS: [(u8, u8); TUNE_STEP_COUNT as usize] = {drums};
 """
 
     print(txt)

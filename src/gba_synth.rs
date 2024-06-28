@@ -35,17 +35,17 @@ pub fn init_synth() {
     mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(0));
 }
 
-pub fn play_tone1(pitch: u16, velocity: u16) {
-    let volume = velocity >> 3;
-    let rate = static_sounds_lib::PITCH2RATE_MAP[(pitch) as usize];
+pub fn play_tone1(pitch: u8, velocity: u8) {
+    let volume = (velocity >> 3) as u16;
+    let rate = static_sounds_lib::PITCH2RATE_MAP[pitch as usize];
 
     mmio::TONE1_PATTERN.write(static_sounds_lib::GLOCKENSPIEL_DAMPED.with_volume(volume));
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
 }
 
-pub fn play_tone2(pitch: u16, velocity: u16) {
-    let volume = velocity >> 3;
-    let rate = static_sounds_lib::PITCH2RATE_MAP[(pitch) as usize];
+pub fn play_tone2(pitch: u8, velocity: u8) {
+    let volume = (velocity >> 3) as u16;
+    let rate = static_sounds_lib::PITCH2RATE_MAP[pitch as usize];
 
     mmio::TONE2_PATTERN.write(static_sounds_lib::GLOCKENSPIEL_DAMPED.with_volume(volume));
     mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
@@ -60,8 +60,6 @@ pub fn play_noise(
     step_time_3: u16,
     velocity: u16,
 ) {
-    // let formatted_string: String = format!("play_noise({}, {}, {}, {}, {}, {}, 127)", shift_5, div_code_3, counter7, stop_when_expired, length_6, step_time_3);
-
     let volume = velocity >> 3;
 
     mmio::NOISE_LEN_ENV.write(
@@ -83,11 +81,11 @@ pub fn play_noise(
     );
 }
 
-pub fn play_noise_drum(pitch: u16, velocity: u16) {
-    let volume = velocity >> 3;
+pub fn play_noise_drum(pitch: u8, velocity: u8) {
+    let volume = (velocity >> 3) as u16;
 
     let (noise_freq, noise_len_env): (NoiseFrequency, NoiseLenEnvelope) =
-        static_sounds_lib::pitch2drum_map(pitch);
+        static_sounds_lib::pitch2drum_map(pitch as u16);
 
     mmio::NOISE_FREQ.write(noise_freq);
     mmio::NOISE_LEN_ENV.write(noise_len_env.with_volume(volume));
@@ -98,15 +96,15 @@ pub fn get_tune_step_count() -> u16 {
 }
 
 pub fn play_tune(step_id: u16) {
-    let (pitch, velocity): (u16, u16) = tune::TUNE_TRACK1[step_id as usize];
+    let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK1[step_id as usize];
     if pitch > 0 {
         play_tone1(pitch, velocity);
     }
-    let (pitch, velocity): (u16, u16) = tune::TUNE_TRACK2[step_id as usize];
+    let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK2[step_id as usize];
     if pitch > 0 {
         play_tone2(pitch, velocity);
     }
-    let (pitch, velocity): (u16, u16) = tune::TUNE_DRUMS[step_id as usize];
+    let (pitch, velocity): (u8, u8) = tune::TUNE_DRUMS[step_id as usize];
     if pitch > 0 {
         play_noise_drum(pitch, velocity);
     }

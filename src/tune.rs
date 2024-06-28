@@ -1,7 +1,7 @@
 // This file has been automatically generated
 
 pub const TUNE_STEP_COUNT: u16 = 1024;
-pub const TUNE_TRACK1: [(u16, u16); TUNE_STEP_COUNT as usize] = [
+pub const TUNE_TRACK1: [(u8, u8); TUNE_STEP_COUNT as usize] = [
     (86, 127),
     (0, 0),
     (0, 0),
@@ -1027,7 +1027,7 @@ pub const TUNE_TRACK1: [(u16, u16); TUNE_STEP_COUNT as usize] = [
     (0, 0),
     (0, 0),
 ];
-pub const TUNE_TRACK2: [(u16, u16); TUNE_STEP_COUNT as usize] = [
+pub const TUNE_TRACK2: [(u8, u8); TUNE_STEP_COUNT as usize] = [
     (62, 127),
     (0, 0),
     (0, 0),
@@ -2053,7 +2053,7 @@ pub const TUNE_TRACK2: [(u16, u16); TUNE_STEP_COUNT as usize] = [
     (0, 0),
     (0, 0),
 ];
-pub const TUNE_DRUMS: [(u16, u16); TUNE_STEP_COUNT as usize] = [
+pub const TUNE_DRUMS: [(u8, u8); TUNE_STEP_COUNT as usize] = [
     (36, 80),
     (0, 0),
     (0, 0),
