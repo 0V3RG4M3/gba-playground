@@ -91,7 +91,11 @@ extern "C" fn main() -> ! {
         CAM_Y.write(cam_y);
 
         let horizon = if cam_pitch_cos == 0 {
-            if cam_pitch_sin > 0 { 0 } else { 160 }
+            if cam_pitch_sin > 0 {
+                0
+            } else {
+                160
+            }
         } else {
             (80 - ((768 * cam_pitch_sin - cam_y) * 256) / (768 * cam_pitch_cos)).clamp(0, 160)
         };
