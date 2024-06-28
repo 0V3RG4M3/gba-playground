@@ -3,28 +3,28 @@ use gba::sound::{NoiseFrequency, NoiseLenEnvelope, TonePattern};
 // -----------------------------------------------
 // -------------- DRUMS --------------------------
 // -----------------------------------------------
-pub const KICK1_NF: NoiseFrequency = NoiseFrequency::new()
-.with_r(5)  //Divisor code, 0:8, 1:16, 2:32, 3:48 etc... 7:112
-    .with_s(6)  // in [0, 15], Clock shift, 14 or 15 results in the LFSR receiving no clocks.
-    .with_counter7(true)  // Width mode of LFSR
-    .with_stop_when_expired(true)
-    .with_enabled(true);
-
-pub const KICK1_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new()
-    .with_length(11)  // in [0, 63]
-    .with_step_time(1);  // in [0, 7]
-
 pub const KICK2_NF: NoiseFrequency = NoiseFrequency::new()
-    .with_r(9)
-    .with_s(1)
-    .with_counter7(false)
+    .with_r(5) //Divisor code, 0:8, 1:16, 2:32, 3:48 etc... 7:112
+    .with_s(6) // in [0, 15], Clock shift, 14 or 15 results in the LFSR receiving no clocks.
+    .with_counter7(true) // Width mode of LFSR
     .with_stop_when_expired(true)
     .with_enabled(true);
 
-pub const KICK2_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new().with_length(26).with_step_time(1);
+pub const KICK2_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new()
+    .with_length(11) // in [0, 63]
+    .with_step_time(1); // in [0, 7]
+
+pub const KICK1_NF: NoiseFrequency = NoiseFrequency::new()
+    .with_r(4)
+    .with_s(7)
+    .with_counter7(true)
+    .with_stop_when_expired(true)
+    .with_enabled(true);
+
+pub const KICK1_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new().with_length(47).with_step_time(0);
 
 pub const SNARE1_NF: NoiseFrequency = NoiseFrequency::new()
-    .with_r(7)
+    .with_r(9)
     .with_s(1)
     .with_counter7(false)
     .with_stop_when_expired(true)
@@ -40,6 +40,15 @@ pub const SNARE2_NF: NoiseFrequency = NoiseFrequency::new()
     .with_enabled(true);
 
 pub const SNARE2_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new().with_length(26).with_step_time(1);
+
+pub const CLAP_NF: NoiseFrequency = NoiseFrequency::new()
+    .with_r(7)
+    .with_s(1)
+    .with_counter7(false)
+    .with_stop_when_expired(true)
+    .with_enabled(true);
+
+pub const CLAP_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new().with_length(26).with_step_time(1);
 
 pub const HIHAT_NF: NoiseFrequency = NoiseFrequency::new()
     .with_r(2)
@@ -60,15 +69,6 @@ pub const OPEN_HIHAT_NF: NoiseFrequency = NoiseFrequency::new()
 pub const OPEN_HIHAT_NLE: NoiseLenEnvelope =
     NoiseLenEnvelope::new().with_length(51).with_step_time(1);
 
-pub const CLAP_NF: NoiseFrequency = NoiseFrequency::new()
-    .with_r(4)
-    .with_s(7)
-    .with_counter7(true)
-    .with_stop_when_expired(true)
-    .with_enabled(true);
-
-pub const CLAP_NLE: NoiseLenEnvelope = NoiseLenEnvelope::new().with_length(47).with_step_time(0);
-
 pub fn pitch2drum_map(pitch: u16) -> (NoiseFrequency, NoiseLenEnvelope) {
     match pitch {
         // Match a single value
@@ -79,7 +79,7 @@ pub fn pitch2drum_map(pitch: u16) -> (NoiseFrequency, NoiseLenEnvelope) {
         41 => (KICK2_NF, KICK2_NLE),
         42 => (HIHAT_NF, HIHAT_NLE),
         46 => (OPEN_HIHAT_NF, OPEN_HIHAT_NLE),
-        _ => (KICK1_NF, KICK1_NLE),
+        _ => (NoiseFrequency::new(), NoiseLenEnvelope::new()),
     }
 }
 
@@ -117,7 +117,7 @@ pub const GLOCKENSPIEL: TonePattern = TonePattern::new()
     .with_step_increasing(false)
     .with_step_time(7); // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
 
-pub const GLOCKENSPIEL_DAMPED: TonePattern = GLOCKENSPIEL.with_step_time(2); // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+pub const GLOCKENSPIEL_DAMPED: TonePattern = GLOCKENSPIEL.with_step_time(1); // envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
 
 // convert midi pitch in[0, 127] to rates used in gba tone1 and tone2. lowest available pitch is 36
 pub const PITCH2RATE_MAP: [u16; 128] = [
@@ -129,7 +129,6 @@ pub const PITCH2RATE_MAP: [u16; 128] = [
     1998, 2001, 2004, 2006, 2009, 2011, 2013, 2015, 2017, 2018, 2020, 2022, 2023, 2025, 2026, 2027,
     2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2036, 2037, 2038,
 ];
-
 
 /*
 SFX: Castle crush

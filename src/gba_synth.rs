@@ -23,7 +23,7 @@ pub fn init_synth() {
             .with_noise_right(true),
     );
 
-    mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_100));
+    mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_50));
 
     // disable the sweep of tone 1 (to disable, set sweep time to 0)
     mmio::TONE1_SWEEP.write(SweepControl::new().with_sweep_time(0));
@@ -33,14 +33,13 @@ pub fn init_synth() {
 
     mmio::TONE2_PATTERN.write(static_sounds_lib::GLOCKENSPIEL);
     mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(0));
-
 }
 
 pub fn play_tone1(pitch: u16, velocity: u16) {
     let volume = velocity >> 3;
     let rate = static_sounds_lib::PITCH2RATE_MAP[(pitch) as usize];
 
-    mmio::TONE1_PATTERN.write(static_sounds_lib::GLOCKENSPIEL.with_volume(volume));
+    mmio::TONE1_PATTERN.write(static_sounds_lib::GLOCKENSPIEL_DAMPED.with_volume(volume));
     mmio::TONE1_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
 }
 
@@ -48,7 +47,7 @@ pub fn play_tone2(pitch: u16, velocity: u16) {
     let volume = velocity >> 3;
     let rate = static_sounds_lib::PITCH2RATE_MAP[(pitch) as usize];
 
-    mmio::TONE2_PATTERN.write(mmio::TONE2_PATTERN.read().with_volume(volume));
+    mmio::TONE2_PATTERN.write(static_sounds_lib::GLOCKENSPIEL_DAMPED.with_volume(volume));
     mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(rate).with_enabled(true));
 }
 
