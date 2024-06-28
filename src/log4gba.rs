@@ -8,7 +8,6 @@ pub fn log(message_level: MgbaMessageLevel, message: impl core::fmt::Debug) {
     }
 }
 
-
 pub fn fatal(message: impl core::fmt::Debug) {
     log(MgbaMessageLevel::Fatal, message)
 }

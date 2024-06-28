@@ -55,8 +55,10 @@ extern "C" fn main() -> ! {
 
     gba_synth::init_synth();
 
-    let mut pitch = 60;
-    let mut vel = 64;
+    // let mut pitch = 60;
+    // let mut vel = 64;
+    let mut div_code: u16 = 0;
+    let mut shift: u16 = 0;
     let mut key_was_pressed: KeyInput = KeyInput::new();
     let mut frame_id = 0;
     loop {
@@ -75,37 +77,43 @@ extern "C" fn main() -> ! {
 
         let mut vx = 0;
         if key_input.left() {
-            vx -= 2;
-
             // on press
             if !key_was_pressed.left() {
-                pitch -= 1;
-                gba_synth::play_tone1(pitch, vel);
+                vx -= 8;
+                // pitch -= 1;
+                // gba_synth::play_tone1(pitch, vel);
+                div_code = (div_code + 8 - 1) % 8;
+                // gba_synth::play_noise(div_code, shift, 63)
             }
         }
 
         if key_input.right() {
-            vx += 2;
-
             // on press
             if !key_was_pressed.right() {
-                pitch += 1;
-                gba_synth::play_tone1(pitch, vel);
+                vx += 8;
+                // pitch += 1;
+                // gba_synth::play_tone1(pitch, vel);
+                div_code = (div_code + 1) % 8;
+                // gba_synth::play_noise(div_code, shift, 63)
             }
         }
 
         if key_input.up() {
             // on press
             if !key_was_pressed.up() {
-                vel += 8;
-                gba_synth::play_tone1(pitch, vel);
+                // vel += 8;
+                // gba_synth::play_tone1(pitch, vel);
+                shift = (shift + 1) % 16;
+                // gba_synth::play_noise(div_code, shift, 63)
             }
         }
         if key_input.down() {
             // on press
             if !key_was_pressed.down() {
-                vel -= 8;
-                gba_synth::play_tone1(pitch, vel);
+                // vel -= 8;
+                // gba_synth::play_tone1(pitch, vel);
+                shift = (shift + 16 - 1) % 16;
+                // gba_synth::play_noise(div_code, shift, 63)
             }
         }
 

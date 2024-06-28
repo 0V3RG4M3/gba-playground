@@ -49,7 +49,7 @@ def format_rust_file(filename):
 def main():
     track1 = parse_file('../src/assets/tune/tune_lead.mid')
     track2 = parse_file('../src/assets/tune/tune_bass.mid')
-    drums = parse_file('../src/assets/tune/tune_bass.mid')
+    drums = parse_file('../src/assets/tune/tune_drum.mid')
 
     write_tune_rs_file('../src/tune.rs', track1, track2, drums)
 
