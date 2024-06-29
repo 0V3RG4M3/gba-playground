@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 miditoolkit = "^1.0.1"
+opencv-python = "^4.10.0.84"
 
 
 [build-system]
