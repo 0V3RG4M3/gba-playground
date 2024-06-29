@@ -1,10 +1,10 @@
-use core::ops::{Add, AddAssign, Div, Mul, Shl, Shr, Sub, SubAssign};
+use core::ops::{Add, AddAssign, Div, Mul, Neg, Shl, Shr, Sub, SubAssign};
 
 use gba::gba_cell::GbaCellSafe;
 
-pub trait Int: Shl<i8, Output = Self> + Shr<i8, Output = Self> + Sized {}
+pub trait Int: Shl<u8, Output = Self> + Shr<u8, Output = Self> + Sized {}
 
-impl<I: Shl<i8, Output = Self> + Shr<i8, Output = Self> + Sized> Int for I {}
+impl<I: Shl<u8, Output = Self> + Shr<u8, Output = Self> + Sized> Int for I {}
 
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -22,27 +22,31 @@ impl<I: Int, const B: u8> Fixed<I, B> {
     }
 
     pub fn from_int(int: I) -> Fixed<I, B> {
-        Fixed { raw: int << (B as i8) }
+        Fixed { raw: int << B }
     }
 
     pub fn into_int(self) -> I {
-        self.raw >> (B as i8)
+        self.raw >> B
     }
 
     pub fn from<const BS: u8>(source: Fixed<I, BS>) -> Fixed<I, B> {
-        Fixed { raw: source.raw >> (BS as i8 - B as i8) }
+        if BS >= B {
+            Fixed { raw: source.raw >> (BS - B) }
+        } else {
+            Fixed { raw: source.raw << (B - BS) }
+        }
     }
 }
 
 impl<I: Int + Mul<Output = I>, const B: u8> Fixed<I, B> {
     pub fn mul<const BR: u8, const BO: u8>(self, other: Fixed<I, BR>) -> Fixed<I, BO> {
-        Fixed { raw: (self.raw * other.raw) >> (B as i8 + BR as i8 - BO as i8) }
+        Fixed { raw: (self.raw * other.raw) >> (B + BR - BO) }
     }
 }
 
 impl<I: Int + Div<Output = I>, const B: u8> Fixed<I, B> {
     pub fn div<const BR: u8, const BO: u8>(self, other: Fixed<I, BR>) -> Fixed<I, BO> {
-        Fixed { raw: (self.raw / other.raw) >> (B as i8 - BR as i8 - BO as i8) }
+        Fixed { raw: (self.raw / other.raw) >> (B - BR - BO) }
     }
 }
 
@@ -65,8 +69,16 @@ impl<I: Int + Sub<Output = I>, const B: u8> Sub for Fixed<I, B> {
 impl<I: Int + Mul<Output = I>, const B: u8> Mul<I> for Fixed<I, B> {
     type Output = Fixed<I, B>;
 
-    fn mul(self, int: I) -> Self::Output {
+    fn mul(self, int: I) -> Fixed<I, B> {
         Fixed { raw: self.raw * int }
+    }
+}
+
+impl<I: Int + Neg<Output = I>, const B: u8> Neg for Fixed<I, B> {
+    type Output = Fixed<I, B>;
+
+    fn neg(self) -> Fixed<I, B> {
+        Fixed { raw: -self.raw }
     }
 }
 
