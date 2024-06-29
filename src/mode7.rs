@@ -111,6 +111,32 @@ pub struct Sprite {
 }
 
 pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
+    let size = sprite.obj.1.size();
+    let mut x_shift = size;
+    let mut y_shift = size;
+    match sprite.obj.0.shape() {
+        ObjShape::Square => (),
+        ObjShape::Horizontal => {
+            if size < 2 {
+                x_shift += 1;
+            }
+            if size != 0 {
+                y_shift -= 1;
+            }
+        }
+        ObjShape::Vertical => {
+            if size != 0 {
+                x_shift -= 1;
+            }
+            if size < 2 {
+                y_shift += 1;
+            }
+        }
+    };
+    let size_x = 8 << x_shift;
+    let size_y = 8 << y_shift;
+
+    sprite.pos.y = Fixed::from_int(size_y >> 2);
     let pos = Vec3::<i32, 8> {
         x: sprite.pos.x - camera.pos.x,
         y: sprite.pos.y - camera.pos.y,
@@ -119,13 +145,6 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
 
     let pos =
         Vec3::<i32, 8> { x: pos.dot(camera.u()), y: -pos.dot(camera.v()), z: -pos.dot(camera.w()) };
-
-    let size = 8 << sprite.obj.1.size();
-    let (size_x, size_y) = match sprite.obj.0.shape() {
-        ObjShape::Square => (size, size),
-        ObjShape::Horizontal => (2 * size, size),
-        ObjShape::Vertical => (size, 2 * size),
-    };
 
     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
 
