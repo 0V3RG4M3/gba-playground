@@ -85,9 +85,9 @@ def img15_to_ind(img15, palette):
     return index_img
 
 
-def generate_indimgby4_as_rust_array(name, index_img_by4, block_register, block_width, block_height, block_register_index):
+def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index):
     """
-    :param name: the name that will appear in the rust commented line
+    :param filename: this filename is only used to define the name of the constant in the rust code
     :param index_img_by4:  image of indexes merged 4by4 (4 x u8 = u32)
     :param block_register: the name of the register (typically "OBJ_TILES" or "CHARBLOCK0_8BPP")
     :param block_width: width of the block (typically 8)
@@ -98,14 +98,22 @@ def generate_indimgby4_as_rust_array(name, index_img_by4, block_register, block_
         - the new block_register_index that you must pass to this function next time you use it
     """
     # fix Windows path
-    name = name.replace('\\', '/')
+
+    name = os.path.split(filename)[-1]
+    assert name.endswith(".png")
+    name = name[:-4]  # remove extension
+    name = name.upper().replace("-", "_")  # format for const name in rust
+
+    filename = filename.replace('\\', '/')
 
     h, w = index_img_by4.shape
     lines = f"\n\n"
     final_height = h * w * 4 // (block_height * block_width)
-
     final_width = block_height * block_width // 4
-    lines += f"    // {name} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
+
+    lines += f"    // {filename} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
+    lines += f"    const {name}_INDEX: usize = {block_register_index};\n"
+    lines += f"    const {name}_SIZE: usize = {final_height};\n"
     for i in range(0, h, block_height):
         for j in range(0, w, block_width//4):
 
@@ -126,7 +134,7 @@ def test_generate_indimgby4_as_rust_array():
     bh = 4
 
     result_lines, result_ind = generate_indimgby4_as_rust_array(
-        name="Test//test.png",
+        filename="Test//test.png",
         index_img_by4=ind_img_by4,
         block_register="MY_TEST_REGISTER",
         block_width=bw,
@@ -136,6 +144,8 @@ def test_generate_indimgby4_as_rust_array():
     expected_lines = """
 
     // Test//test.png (8x16 pixels) -> (4x8 u32)
+    const TEST_INDEX: usize = 10;
+    const TEST_SIZE: usize = 4;
     mmio::MY_TEST_REGISTER.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(12).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
