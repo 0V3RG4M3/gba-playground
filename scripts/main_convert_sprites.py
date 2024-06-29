@@ -129,8 +129,8 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
                 i = i0 + i1
                 hex_values = []
                 print(i, j)
-                for y in range(4):
-                    for x in range(2):
+                for y in range(block_height_u8):
+                    for x in range(block_width_u32):
                         hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
 
                 lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
