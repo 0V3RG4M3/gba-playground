@@ -88,15 +88,30 @@ impl Scene for GameScene {
             camera.pos.z -= camera.yaw_sin() * (key_input.left() as i32);
             camera.pos.z += camera.yaw_sin() * (key_input.right() as i32);
 
-            let has_equipped_item = self.items.iter().any(|item| item.state == ItemState::Equipped);
-            if !has_equipped_item {
-                for item in &mut self.items {
-                    let mut pos = item.sprite.pos - camera.pos;
-                    pos.y = Fixed::from_int(0);
-                    let sq_dist = pos.dot(pos);
-                    if sq_dist.into_int() < 16 * 16 {
-                        item.state = ItemState::Equipped;
-                        break;
+            let equipped_item_index = self
+                .items
+                .iter()
+                .enumerate()
+                .find(|(_, item)| item.state == ItemState::Equipped)
+                .map(|(i, _)| i);
+            if let Some(equipped_item_index) = equipped_item_index {
+                if key_input.b() && !key_input.a() {
+                    let item = &mut self.items[equipped_item_index];
+                    let pos = &mut item.sprite.pos;
+                    pos.x = camera.pos.x + camera.yaw_sin() * 32;
+                    pos.z = camera.pos.z - camera.yaw_cos() * 32;
+                    item.state = ItemState::Available;
+                }
+            } else {
+                if key_input.a() && !key_input.b() {
+                    for item in &mut self.items {
+                        let mut pos = item.sprite.pos - camera.pos;
+                        pos.y = Fixed::from_int(0);
+                        let sq_dist = pos.dot(pos);
+                        if sq_dist.into_int() < 32 * 32 {
+                            item.state = ItemState::Equipped;
+                            break;
+                        }
                     }
                 }
             }
