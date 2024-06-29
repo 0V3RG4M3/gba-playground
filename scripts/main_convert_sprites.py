@@ -36,6 +36,16 @@ def generate_rust_palette(palette):
     return lines
 
 
+def test_generate_rust_palette():
+    palette = [32 ** 0, 32 ** 1, 32 ** 2]
+    expected = """    mmio::OBJ_PALETTE.index(1).write(Color(0b0_00000_00000_00001));
+    mmio::OBJ_PALETTE.index(2).write(Color(0b0_00000_00001_00000));
+    mmio::OBJ_PALETTE.index(3).write(Color(0b0_00001_00000_00000));
+"""
+    result = generate_rust_palette(palette)
+    assert result == expected
+
+
 def find_all_pngs(folder):
     png_file_list = []
     for parent_path, folders, files in os.walk(folder):
@@ -77,14 +87,17 @@ def generate_indimgby4_as_rust_array(name, ind_img_by4, ind):
     :return:the rust lines AND the new index that must be passed to this function next time you use it
     """
 
-    # fix windows path
+    block_width = 8
+    block_height = 4
+
+    # fix Windows path
     name = name.replace('\\', '/')
 
     h, w = ind_img_by4.shape
     lines = f"\n\n"
-    lines += f"    // {name} ({h}x{w})\n"
-    for i in range(0, h, 4):
-        for j in range(0, w, 8):
+    lines += f"    // {name} ({h}x{w} pixels) -> ({h // block_height}x{w // block_width} u32)\n"
+    for i in range(0, h, block_height):
+        for j in range(0, w, block_width):
 
             hex_values = []
             for y in range(4):
@@ -96,21 +109,38 @@ def generate_indimgby4_as_rust_array(name, ind_img_by4, ind):
     return lines, ind
 
 
-def main():
-    graphics_folder = os.path.normpath("../src/assets/graphics/")
-    png_files = find_all_pngs(graphics_folder)
+def test_generate_indimgby4_as_rust_array():
+    ind_img_by4 = np.zeros((8, 8), dtype=np.uint32)
+    ind = 10
+    result_lines, result_ind = generate_indimgby4_as_rust_array("Test//test.png", ind_img_by4, ind)
+    expected_lines = """
+
+    // Test//test.png (8x8 pixels) -> (2x1 u32)
+    mmio::OBJ_TILES.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    mmio::OBJ_TILES.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+"""
+    expected_ind = ind + ind_img_by4.size // (8 * 4)
+    assert expected_lines == result_lines
+    assert expected_ind == result_ind
+    print(result_lines)
+    print(result_ind)
+
+
+def main(folder_path, palette_register, block_register, block_width, block_height):
+    foldername = os.path.split(folder_path)[-1]
+    png_files = find_all_pngs(folder_path)
 
     # ignore images in test folder
     png_files = [file for file in png_files if "test" not in file]
 
-    dst_rust_file = os.path.normpath("../src/sprites.rs")
+    dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
 
     palette = create_palette(png_files)
 
     rust_lines = "use gba::mmio;\n"
     rust_lines += "use gba::video::Color;\n"
     rust_lines += "\n"
-    rust_lines += "pub fn load_sprites(){\n"
+    rust_lines += "pub fn load(){\n"
 
     rust_lines += generate_rust_palette(palette)
 
@@ -121,6 +151,7 @@ def main():
         index_img = img15_to_ind(img15, palette)
         h, w = index_img.shape
 
+        # concat 4x u8 pixels in 1x u32
         index_img_0 = index_img[:, 0::4].astype(np.uint32)
         index_img_1 = index_img[:, 1::4].astype(np.uint32)
         index_img_2 = index_img[:, 2::4].astype(np.uint32)
@@ -140,8 +171,28 @@ def main():
     with open(dst_rust_file, "w") as fio:
         fio.write(rust_lines)
 
-    utils.format_rust_file(dst_rust_file)
+    # utils.format_rust_file(dst_rust_file)
+
+
+def main_test():
+    test_generate_rust_palette()
+    test_generate_indimgby4_as_rust_array()
 
 
 if __name__ == '__main__':
-    main()
+    main_test()
+    main(
+        folder_path=os.path.normpath("../src/assets/graphics/sprites"),
+        palette_register="OBJ_PALETTE",
+        block_register="OBJ_TILES",
+        block_width=8,
+        block_height=4,
+    )
+
+    # main(
+    #     folder_path=os.path.normpath("../src/assets/graphics/backgrounds"),
+    #     palette_register="BG_PALETTE",
+    #     block_register="CHARBLOCK0_8BPP",
+    #     block_width=8,
+    #     block_height=8,
+    # )
