@@ -27,22 +27,29 @@ def extract_colors_palette_15(img):
     return palette
 
 
-def generate_rust_palette(palette):
+def generate_rust_palette(palette, palette_register):
+    """
+
+    :param palette: list of colors encoded on 15 bits
+    :param palette_register: typically "OBJ_TILES" or "CHARBLOCK0_8BPP"
+    :return:
+    """
     lines = ""
     for i, color in enumerate(palette):
         bin_color = f"{color:015b}"
         bin_color = f"0b0_{bin_color[:5]}_{bin_color[5:10]}_{bin_color[10:15]}"
-        lines += f"    mmio::OBJ_PALETTE.index({i + 1}).write(Color({bin_color}));\n"
+        lines += f"    mmio::{palette_register}.index({i + 1}).write(Color({bin_color}));\n"
     return lines
 
 
 def test_generate_rust_palette():
     palette = [32 ** 0, 32 ** 1, 32 ** 2]
-    expected = """    mmio::OBJ_PALETTE.index(1).write(Color(0b0_00000_00000_00001));
-    mmio::OBJ_PALETTE.index(2).write(Color(0b0_00000_00001_00000));
-    mmio::OBJ_PALETTE.index(3).write(Color(0b0_00001_00000_00000));
+    palette_register = "TEST_REGISTER"
+    expected = """    mmio::TEST_REGISTER.index(1).write(Color(0b0_00000_00000_00001));
+    mmio::TEST_REGISTER.index(2).write(Color(0b0_00000_00001_00000));
+    mmio::TEST_REGISTER.index(3).write(Color(0b0_00001_00000_00000));
 """
-    result = generate_rust_palette(palette)
+    result = generate_rust_palette(palette, palette_register)
     assert result == expected
 
 
@@ -78,48 +85,58 @@ def img15_to_ind(img15, palette):
     return index_img
 
 
-def generate_indimgby4_as_rust_array(name, ind_img_by4, ind):
+def generate_indimgby4_as_rust_array(name, index_img_by4, block_register, block_width, block_height, block_register_index):
     """
-
     :param name: the name that will appear in the rust commented line
-    :param ind_img_by4: image of indexes merged 4by4 (4 x u8 = u32)
-    :param ind: the starting index for this image.
-    :return:the rust lines AND the new index that must be passed to this function next time you use it
+    :param index_img_by4:  image of indexes merged 4by4 (4 x u8 = u32)
+    :param block_register: the name of the register (typically "OBJ_TILES" or "CHARBLOCK0_8BPP")
+    :param block_width: width of the block (typically 8)
+    :param block_height: height of the block (typically 4 or 8)
+    :param block_register_index: the starting index for this image.
+    :return: tuple:
+        - the rust lines
+        - the new block_register_index that you must pass to this function next time you use it
     """
-
-    block_width = 8
-    block_height = 4
-
     # fix Windows path
     name = name.replace('\\', '/')
 
-    h, w = ind_img_by4.shape
+    h, w = index_img_by4.shape
     lines = f"\n\n"
-    lines += f"    // {name} ({h}x{w} pixels) -> ({h // block_height}x{w // block_width} u32)\n"
+    final_height = h * w * 4 // (block_height * block_width)
+    final_width = block_height * block_width // 4
+    lines += f"    // {name} ({h}x{w*4} pixels) -> ({final_height}x{final_width} u32)\n"
     for i in range(0, h, block_height):
         for j in range(0, w, block_width):
 
             hex_values = []
             for y in range(4):
                 for x in range(2):
-                    hex_values.append(f"0x{ind_img_by4[y, x]:08x}")
 
-            lines += f"    mmio::OBJ_TILES.index({ind}).write([{', '.join(hex_values)}]);\n"
-            ind += 1
-    return lines, ind
+            lines += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
+            block_register_index += 1
+    return lines, block_register_index
 
 
 def test_generate_indimgby4_as_rust_array():
-    ind_img_by4 = np.zeros((8, 8), dtype=np.uint32)
+    ind_img_by4 = np.zeros((8, 2), dtype=np.uint32)
     ind = 10
-    result_lines, result_ind = generate_indimgby4_as_rust_array("Test//test.png", ind_img_by4, ind)
+    # result_lines, result_ind = generate_indimgby4_as_rust_array("Test//test.png", ind_img_by4, block_register="MY_TEST_REGISTER", ind)
+
+    result_lines, result_ind = generate_indimgby4_as_rust_array(
+        name="Test//test.png",
+        index_img_by4=ind_img_by4,
+        block_register="MY_TEST_REGISTER",
+        block_width=8,
+        block_height=4,
+        block_register_index=ind,
+    )
     expected_lines = """
 
-    // Test//test.png (8x8 pixels) -> (2x1 u32)
-    mmio::OBJ_TILES.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
-    mmio::OBJ_TILES.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    // Test//test.png (8x8 pixels) -> (2x8 u32)
+    mmio::MY_TEST_REGISTER.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    mmio::MY_TEST_REGISTER.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
 """
-    expected_ind = ind + ind_img_by4.size // (8 * 4)
+    expected_ind = ind + ind_img_by4.size // 8
     assert expected_lines == result_lines
     assert expected_ind == result_ind
     print(result_lines)
@@ -142,9 +159,9 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
     rust_lines += "\n"
     rust_lines += "pub fn load(){\n"
 
-    rust_lines += generate_rust_palette(palette)
+    rust_lines += generate_rust_palette(palette, palette_register)
 
-    OBJ_TILES_index = 0
+    block_register_index = 0
     for filename in png_files:
         img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
         img15 = color15(img)
@@ -160,7 +177,7 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
         assert h, w // 4 == index_img_by4.shape
 
-        lines, OBJ_TILES_index = generate_indimgby4_as_rust_array(filename, index_img_by4, OBJ_TILES_index)
+        lines, block_register_index = generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index)
 
         rust_lines += lines
 
