@@ -8,6 +8,7 @@ use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoM
 
 use crate::fixed::Fixed;
 use crate::game::item::ItemState;
+use crate::game::leader::Leader;
 use crate::game::level::Level;
 use crate::game::levels;
 use crate::mode7::{self, Camera};
@@ -20,6 +21,8 @@ impl GameScene {
     fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) -> ! {
         let mut items = level.available_items;
         let _recipe_items = level.recipe_items;
+
+        let mut leader = Leader::new(96, 32);
 
         let mut camera = Camera::new();
         camera.set_pitch_angle(16);
@@ -90,6 +93,14 @@ impl GameScene {
                 }
                 mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
             }
+
+            let sprite = &mut leader.sprite;
+            mode7::prepare_sprite(&camera, sprite);
+            let affine_index = sprite.obj.1.affine_index() as usize;
+            let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+            mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
+            mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
+            mmio::OBJ_ATTR_ALL.index(31).write(sprite.obj);
 
             mode7::process_line(0);
 
