@@ -7,7 +7,7 @@ use gba::video::obj::{ObjAttr0, ObjDisplayStyle, ObjShape};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 use crate::fixed::Fixed;
-use crate::game::item::Item;
+use crate::game::item::{Item, ItemState};
 use crate::mode7::{self, Camera};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
@@ -88,18 +88,37 @@ impl Scene for GameScene {
             camera.pos.z -= camera.yaw_sin() * (key_input.left() as i32);
             camera.pos.z += camera.yaw_sin() * (key_input.right() as i32);
 
+            let has_equipped_item = self.items.iter().any(|item| item.state == ItemState::Equipped);
+            if !has_equipped_item {
+                for item in &mut self.items {
+                    let mut pos = item.sprite.pos - camera.pos;
+                    pos.y = Fixed::from_int(0);
+                    let sq_dist = pos.dot(pos);
+                    if sq_dist.into_int() < 16 * 16 {
+                        item.state = ItemState::Equipped;
+                        break;
+                    }
+                }
+            }
+
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
             mode7::prepare_frame(&camera);
 
             for (i, item) in self.items.iter_mut().enumerate() {
                 let sprite = &mut item.sprite;
-                mode7::prepare_sprite(&camera, sprite);
+                if item.state == ItemState::Available {
+                    mode7::prepare_sprite(&camera, sprite);
+                    let affine_index = sprite.obj.1.affine_index() as usize;
+                    let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+                    mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
+                    mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
+                } else {
+                    sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::Normal);
+                    sprite.obj.1 = sprite.obj.1.with_x(0);
+                    sprite.obj.0 = sprite.obj.0.with_y(0);
+                }
                 mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
-                let affine_index = sprite.obj.1.affine_index() as usize;
-                let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
-                mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
-                mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
             }
 
             mode7::process_line(0);

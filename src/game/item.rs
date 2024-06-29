@@ -6,6 +6,7 @@ use crate::vec3::Vec3;
 
 pub struct Item {
     pub sprite: Sprite,
+    pub state: ItemState,
 }
 
 impl Item {
@@ -20,6 +21,13 @@ impl Item {
                 pos,
                 scale: Fixed::from_int(1),
             },
+            state: ItemState::Available,
         }
     }
+}
+
+#[derive(PartialEq)]
+pub enum ItemState {
+    Available,
+    Equipped,
 }
