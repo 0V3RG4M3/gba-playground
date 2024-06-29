@@ -12,11 +12,10 @@ def u5(img_u8):
 def color15(img):
     img5 = u5(img)
 
-    h, w = img5.shape[:2]
-    res = img[:, :, 0] + (img[:, :, 1] << 5) + (img[:, :, 2] << 10)
+    res = img5[:, :, 0].astype(int) + (img5[:, :, 1].astype(int) << 5) + (img5[:, :, 2].astype(int) << 10)
     res = res.astype(int)
-    if img.shape[2] == 4:
-        res[img[:, :, 3] == 0] = -1
+    if img5.shape[2] == 4:
+        res[img5[:, :, 3] == 0] = -1
     return res
 
 
