@@ -18,7 +18,7 @@ impl Leader {
             sprite: Sprite {
                 obj: ObjAttr {
                     0: ObjAttr0::new().with_bpp8(true).with_shape(ObjShape::Vertical),
-                    1: ObjAttr1::new().with_affine_index(31),
+                    1: ObjAttr1::new().with_affine_index(31).with_size(2),
                     2: ObjAttr2::new(),
                 },
                 pos,
