@@ -12,7 +12,7 @@ def u5(img_u8):
 def color15(img):
     img5 = u5(img)
 
-    res = img5[:, :, 0].astype(int) + (img5[:, :, 1].astype(int) << 5) + (img5[:, :, 2].astype(int) << 10)
+    res = img5[:, :, 2].astype(int) + (img5[:, :, 1].astype(int) << 5) + (img5[:, :, 0].astype(int) << 10)
     res = res.astype(int)
     if img5.shape[2] == 4:
         res[img5[:, :, 3] == 0] = -1
@@ -170,7 +170,7 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
     png_files = find_all_pngs(folder_path)
 
     # ignore images in test folder
-    png_files = [file for file in png_files if "test" not in file]
+    # png_files = [file for file in png_files if "test" not in file]
 
     dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
 
