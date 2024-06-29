@@ -53,7 +53,7 @@ impl Scene for GameScene {
             va.write(ObjAttr0::new().with_style(ObjDisplayStyle::NotDisplayed));
         }
 
-        sprites::load_sprites();
+        sprites::load();
 
         let mut tile = [0; 16];
         for (i, value) in tile.iter_mut().enumerate() {
@@ -143,7 +143,8 @@ impl Scene for GameScene {
             let display_control = DisplayControl::new()
                 .with_video_mode(VideoMode::_2)
                 .with_show_bg2(true)
-                .with_show_obj(true);
+                .with_show_obj(true)
+                .with_obj_vram_1d(true);
             mmio::DISPCNT.write(display_control);
         }
     }
