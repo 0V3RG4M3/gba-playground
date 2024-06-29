@@ -118,16 +118,18 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
     lines_const += f"pub const SIZE_{name}: usize = {final_height};\n"
 
-    for i in range(0, h, block_height):
-        for j in range(0, w, block_width//4):
+    for i0 in range(0, h, 8):
+        for j in range(0, w, block_width // 4):
+            for i1 in range(0, 8, block_height):
+                i = i0 + i1
+                hex_values = []
+                print(i, j)
+                for y in range(4):
+                    for x in range(2):
+                        hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
 
-            hex_values = []
-            for y in range(4):
-                for x in range(2):
-                    hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
-
-            lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
-            block_register_index += 1
+                lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
+                block_register_index += 1
     return lines_func, lines_const, block_register_index
 
 
