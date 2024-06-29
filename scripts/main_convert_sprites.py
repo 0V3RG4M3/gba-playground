@@ -107,13 +107,17 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     filename = filename.replace('\\', '/')
 
     h, w = index_img_by4.shape
-    lines = f"\n\n"
+    lines_func = f"\n\n"
     final_height = h * w * 4 // (block_height * block_width)
     final_width = block_height * block_width // 4
+    comment_line = f"// {filename} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
+    lines_func += f"    {comment_line}"
 
-    lines += f"    // {filename} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
-    lines += f"    const {name}_INDEX: usize = {block_register_index};\n"
-    lines += f"    const {name}_SIZE: usize = {final_height};\n"
+    lines_const = f"\n"
+    lines_const += f"{comment_line}"
+    lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
+    lines_const += f"pub const SIZE_{name}: usize = {final_height};\n"
+
     for i in range(0, h, block_height):
         for j in range(0, w, block_width//4):
 
@@ -122,9 +126,9 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
                 for x in range(2):
                     hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
 
-            lines += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
+            lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
             block_register_index += 1
-    return lines, block_register_index
+    return lines_func, lines_const, block_register_index
 
 
 def test_generate_indimgby4_as_rust_array():
@@ -133,7 +137,7 @@ def test_generate_indimgby4_as_rust_array():
     bw = 8
     bh = 4
 
-    result_lines, result_ind = generate_indimgby4_as_rust_array(
+    result_lines_func, result_lines_const, result_ind = generate_indimgby4_as_rust_array(
         filename="Test//test.png",
         index_img_by4=ind_img_by4,
         block_register="MY_TEST_REGISTER",
@@ -141,18 +145,23 @@ def test_generate_indimgby4_as_rust_array():
         block_height=bh,
         block_register_index=ind,
     )
-    expected_lines = """
+    expected_lines_func = """
 
     // Test//test.png (8x16 pixels) -> (4x8 u32)
-    const TEST_INDEX: usize = 10;
-    const TEST_SIZE: usize = 4;
     mmio::MY_TEST_REGISTER.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(12).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(13).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
 """
+
+    expected_lines_const = """
+// Test//test.png (8x16 pixels) -> (4x8 u32)
+pub const INDEX_TEST: usize = 10;
+pub const SIZE_TEST: usize = 4;
+"""
     expected_ind = ind + (ind_img_by4.size * 4) // (bw * bh)
-    assert expected_lines == result_lines
+    assert expected_lines_func == result_lines_func
+    assert expected_lines_const == result_lines_const
     assert expected_ind == result_ind
 
 
@@ -174,6 +183,8 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
     rust_lines += generate_rust_palette(palette, palette_register)
 
+    rust_lines_const = ""
+
     block_register_index = 0
     for filename in png_files:
         img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
@@ -190,18 +201,20 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
         assert h, w // 4 == index_img_by4.shape
 
-        lines, block_register_index = generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index)
+        lines_func, lines_const, block_register_index = generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index)
 
-        rust_lines += lines
-
+        rust_lines += lines_func
+        rust_lines_const += lines_const
     rust_lines += "}\n"
+
+    rust_lines += rust_lines_const
 
     print("#", dst_rust_file)
     print(rust_lines)
     with open(dst_rust_file, "w") as fio:
         fio.write(rust_lines)
 
-    # utils.format_rust_file(dst_rust_file)
+    utils.format_rust_file(dst_rust_file)
 
 
 def main_test():
