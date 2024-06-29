@@ -2221,6 +2221,72 @@ pub fn load() {
         0x00000001, 0x00000000, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0x00000000,
     ]);
+
+    // ../src/assets/graphics/sprites/13_crab.png (16x32 pixels) -> (16x8 u32)
+    mmio::OBJ_TILES.index(544).write([
+        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x01010000, 0x00000000, 0x00000100,
+        0x00000001,
+    ]);
+    mmio::OBJ_TILES.index(545).write([
+        0x00000001, 0x01010100, 0x01000000, 0x0c010001, 0x00010000, 0x0c0c0100, 0x00000100,
+        0x0c010001,
+    ]);
+    mmio::OBJ_TILES.index(546).write([
+        0x00000000, 0x00000000, 0x01000000, 0x000c0100, 0x01000100, 0x0c0c0c01, 0x0c010c01,
+        0x0c0c0c0c,
+    ]);
+    mmio::OBJ_TILES.index(547).write([
+        0x010c0c0c, 0x0c01010c, 0x0c010c0c, 0x0c0c0c0c, 0x0c0c0c0c, 0x0c0c0c0c, 0x0c0c0c0c,
+        0x0c191919,
+    ]);
+    mmio::OBJ_TILES.index(548).write([
+        0x01000001, 0x00000000, 0x0c010001, 0x00010001, 0x0c0c0c0c, 0x00010c0c, 0x0c0c0c0c,
+        0x0c0c0c0c,
+    ]);
+    mmio::OBJ_TILES.index(549).write([
+        0x010c0c0c, 0x0c010c01, 0x0c0c0c0c, 0x0c0c010c, 0x0c0c0c0c, 0x0c0c0c0c, 0x19190c0c,
+        0x0c0c0c19,
+    ]);
+    mmio::OBJ_TILES.index(550).write([
+        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000001, 0x00010000, 0x00000001,
+        0x01000100,
+    ]);
+    mmio::OBJ_TILES.index(551).write([
+        0x01010c0c, 0x00000001, 0x010c0c0c, 0x00010100, 0x0c0c0c0c, 0x01000001, 0x010c0c0c,
+        0x00000000,
+    ]);
+    mmio::OBJ_TILES.index(552).write([
+        0x01000001, 0x0c010000, 0x00010000, 0x01000000, 0x00000100, 0x01000000, 0x00000000,
+        0x00000000,
+    ]);
+    mmio::OBJ_TILES.index(553).write([
+        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000,
+    ]);
+    mmio::OBJ_TILES.index(554).write([
+        0x0c0c0c0c, 0x0c190119, 0x0c0c0c0c, 0x0c191919, 0x0c010101, 0x0c0c0c0c, 0x00000001,
+        0x01010000,
+    ]);
+    mmio::OBJ_TILES.index(555).write([
+        0x00000101, 0x00000000, 0x01010100, 0x00000101, 0x01010000, 0x00000000, 0x01000000,
+        0x00000101,
+    ]);
+    mmio::OBJ_TILES.index(556).write([
+        0x01190c0c, 0x0c0c0c19, 0x19190c0c, 0x0c0c0c19, 0x0c0c1515, 0x01010c0c, 0x01010101,
+        0x00000000,
+    ]);
+    mmio::OBJ_TILES.index(557).write([
+        0x00000000, 0x00000000, 0x01000000, 0x01010101, 0x00000000, 0x01010000, 0x01000000,
+        0x00000101,
+    ]);
+    mmio::OBJ_TILES.index(558).write([
+        0x01010c0c, 0x00010101, 0x0101010c, 0x01010000, 0x00000101, 0x01000000, 0x00000100,
+        0x00000000,
+    ]);
+    mmio::OBJ_TILES.index(559).write([
+        0x00000101, 0x00000000, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000,
+    ]);
 }
 
 // ../src/assets/graphics/sprites/00_snail-back.png (32x16 pixels) -> (16x8 u32)
@@ -2258,3 +2324,7 @@ pub const SIZE_11_ICESCREAM_CONE: usize = 16;
 // ../src/assets/graphics/sprites/12_icescream_cone.png (32x16 pixels) -> (16x8 u32)
 pub const INDEX_12_ICESCREAM_CONE: usize = 528;
 pub const SIZE_12_ICESCREAM_CONE: usize = 16;
+
+// ../src/assets/graphics/sprites/13_crab.png (16x32 pixels) -> (16x8 u32)
+pub const INDEX_13_CRAB: usize = 544;
+pub const SIZE_13_CRAB: usize = 16;
