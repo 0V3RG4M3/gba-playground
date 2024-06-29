@@ -10,7 +10,6 @@ use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::mmio;
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
-use gba_playground::fixed::Fixed;
 use gba_playground::mode7::{self, Camera};
 
 #[panic_handler]
@@ -42,6 +41,7 @@ extern "C" fn main() -> ! {
     mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
     let mut camera = Camera::new();
+    camera.set_pitch_angle(16);
 
     loop {
         bios::VBlankIntrWait();
@@ -49,25 +49,19 @@ extern "C" fn main() -> ! {
         let key_input = mmio::KEYINPUT.read();
 
         let mut cam_yaw_angle = camera.yaw_angle();
-        cam_yaw_angle -= key_input.left() as u8;
-        cam_yaw_angle += key_input.right() as u8;
+        cam_yaw_angle -= key_input.l() as u8;
+        cam_yaw_angle += key_input.r() as u8;
         camera.set_yaw_angle(cam_yaw_angle);
 
-        let mut cam_pitch_angle = camera.pitch_angle();
-        cam_pitch_angle -= key_input.up() as u8;
-        cam_pitch_angle += key_input.down() as u8;
-        cam_pitch_angle = 128 + (cam_pitch_angle + 128).clamp(64, 192);
-        camera.set_pitch_angle(cam_pitch_angle);
+        camera.x += camera.yaw_sin() * (key_input.up() as i32);
+        camera.x -= camera.yaw_sin() * (key_input.down() as i32);
+        camera.x -= camera.yaw_cos() * (key_input.left() as i32);
+        camera.x += camera.yaw_cos() * (key_input.right() as i32);
 
-        camera.x += camera.yaw_sin() * (key_input.a() as i32);
-        camera.x -= camera.yaw_sin() * (key_input.b() as i32);
-
-        camera.z -= camera.yaw_cos() * (key_input.a() as i32);
-        camera.z += camera.yaw_cos() * (key_input.b() as i32);
-
-        camera.y -= Fixed::from_raw((key_input.l() as i32) << 20);
-        camera.y += Fixed::from_raw((key_input.r() as i32) << 20);
-        camera.y = Fixed::from_raw(camera.y.into_raw().max(1 << 20));
+        camera.z -= camera.yaw_cos() * (key_input.up() as i32);
+        camera.z += camera.yaw_cos() * (key_input.down() as i32);
+        camera.z -= camera.yaw_sin() * (key_input.left() as i32);
+        camera.z += camera.yaw_sin() * (key_input.right() as i32);
 
         mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
