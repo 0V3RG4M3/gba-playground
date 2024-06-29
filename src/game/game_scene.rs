@@ -3,12 +3,13 @@ use gba::bios;
 use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
-use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle};
+use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle, ObjShape};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 use crate::fixed::Fixed;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
+use crate::sprites;
 use crate::vec3::Vec3;
 
 pub struct GameScene {}
@@ -28,7 +29,6 @@ impl Scene for GameScene {
         mmio::BG_PALETTE.index(1).write(Color::from_rgb(12, 17, 31));
         mmio::BG_PALETTE.index(2).write(Color::from_rgb(31, 22, 0));
         mmio::BG_PALETTE.index(3).write(Color::from_rgb(27, 4, 15));
-        mmio::OBJ_PALETTE.index(1).write(Color::MAGENTA);
 
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
         mmio::OBJ_TILES.index(1).write([0x01010101; 8]);
@@ -36,6 +36,8 @@ impl Scene for GameScene {
             let va = mmio::OBJ_ATTR0.index(i);
             va.write(ObjAttr0::new().with_style(ObjDisplayStyle::NotDisplayed));
         }
+
+        sprites::load_sprites();
 
         let mut tile = [0; 16];
         for (i, value) in tile.iter_mut().enumerate() {
@@ -53,7 +55,7 @@ impl Scene for GameScene {
         let pos =
             Vec3::<i32, 8> { x: Fixed::from_int(8), y: Fixed::from_int(2), z: Fixed::from_int(8) };
         let mut obj_attr = ObjAttr::new();
-        obj_attr.0 = ObjAttr0::new().with_bpp8(true);
+        obj_attr.0 = ObjAttr0::new().with_bpp8(true).with_shape(ObjShape::Horizontal);
         obj_attr.1 = ObjAttr1::new();
         obj_attr.2 = ObjAttr2::new();
         let mut sprite = Sprite { obj: obj_attr, pos: pos, scale: Fixed::from_int(1) };
