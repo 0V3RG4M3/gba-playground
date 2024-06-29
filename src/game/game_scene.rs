@@ -3,22 +3,38 @@ use gba::bios;
 use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
-use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle, ObjShape};
+use gba::video::obj::{ObjAttr0, ObjDisplayStyle, ObjShape};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 use crate::fixed::Fixed;
-use crate::mode7::{self, Camera, Sprite};
+use crate::game::item::Item;
+use crate::mode7::{self, Camera};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
 use crate::vec3::Vec3;
 
-pub struct GameScene {}
+pub struct GameScene {
+    items: [Item; 2],
+}
 
 impl Scene for GameScene {
     type C = ();
 
     fn new(_: &mut ()) -> GameScene {
-        GameScene {}
+        GameScene {
+            items: [
+                Item::new(
+                    ObjShape::Horizontal,
+                    0,
+                    Vec3 { x: Fixed::from_int(8), y: Fixed::from_int(2), z: Fixed::from_int(8) },
+                ),
+                Item::new(
+                    ObjShape::Horizontal,
+                    1,
+                    Vec3 { x: Fixed::from_int(64), y: Fixed::from_int(2), z: Fixed::from_int(8) },
+                ),
+            ],
+        }
     }
 
     fn run(&mut self, _: &mut ()) -> SceneRunner<()> {
@@ -32,7 +48,7 @@ impl Scene for GameScene {
 
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
         mmio::OBJ_TILES.index(1).write([0x01010101; 8]);
-        for i in 1..128 {
+        for i in 0..128 {
             let va = mmio::OBJ_ATTR0.index(i);
             va.write(ObjAttr0::new().with_style(ObjDisplayStyle::NotDisplayed));
         }
@@ -51,14 +67,6 @@ impl Scene for GameScene {
 
         let mut camera = Camera::new();
         camera.set_pitch_angle(16);
-
-        let pos =
-            Vec3::<i32, 8> { x: Fixed::from_int(8), y: Fixed::from_int(2), z: Fixed::from_int(8) };
-        let mut obj_attr = ObjAttr::new();
-        obj_attr.0 = ObjAttr0::new().with_bpp8(true).with_shape(ObjShape::Horizontal);
-        obj_attr.1 = ObjAttr1::new();
-        obj_attr.2 = ObjAttr2::new();
-        let mut sprite = Sprite { obj: obj_attr, pos: pos, scale: Fixed::from_int(1) };
 
         loop {
             bios::VBlankIntrWait();
@@ -84,11 +92,15 @@ impl Scene for GameScene {
 
             mode7::prepare_frame(&camera);
 
-            mode7::prepare_sprite(&camera, &mut sprite);
-            mmio::OBJ_ATTR_ALL.index(0).write(sprite.obj);
-            let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
-            mmio::AFFINE_PARAM_A.index(0).write(scale);
-            mmio::AFFINE_PARAM_D.index(0).write(scale);
+            for (i, item) in self.items.iter_mut().enumerate() {
+                let sprite = &mut item.sprite;
+                mode7::prepare_sprite(&camera, sprite);
+                mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
+                let affine_index = sprite.obj.1.affine_index() as usize;
+                let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+                mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
+                mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
+            }
 
             mode7::process_line(0);
 
