@@ -103,15 +103,16 @@ def generate_indimgby4_as_rust_array(name, index_img_by4, block_register, block_
     h, w = index_img_by4.shape
     lines = f"\n\n"
     final_height = h * w * 4 // (block_height * block_width)
+
     final_width = block_height * block_width // 4
-    lines += f"    // {name} ({h}x{w*4} pixels) -> ({final_height}x{final_width} u32)\n"
+    lines += f"    // {name} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
     for i in range(0, h, block_height):
-        for j in range(0, w, block_width):
+        for j in range(0, w, block_width//4):
 
             hex_values = []
             for y in range(4):
                 for x in range(2):
-                    hex_values.append(f"0x{index_img_by4[i+y, j+x]:08x}")
+                    hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
 
             lines += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
             block_register_index += 1
@@ -119,29 +120,30 @@ def generate_indimgby4_as_rust_array(name, index_img_by4, block_register, block_
 
 
 def test_generate_indimgby4_as_rust_array():
-    ind_img_by4 = np.zeros((8, 2), dtype=np.uint32)
+    ind_img_by4 = np.zeros((8, 16 // 4), dtype=np.uint32)
     ind = 10
-    # result_lines, result_ind = generate_indimgby4_as_rust_array("Test//test.png", ind_img_by4, block_register="MY_TEST_REGISTER", ind)
+    bw = 8
+    bh = 4
 
     result_lines, result_ind = generate_indimgby4_as_rust_array(
         name="Test//test.png",
         index_img_by4=ind_img_by4,
         block_register="MY_TEST_REGISTER",
-        block_width=8,
-        block_height=4,
+        block_width=bw,
+        block_height=bh,
         block_register_index=ind,
     )
     expected_lines = """
 
-    // Test//test.png (8x8 pixels) -> (2x8 u32)
+    // Test//test.png (8x16 pixels) -> (4x8 u32)
     mmio::MY_TEST_REGISTER.index(10).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
     mmio::MY_TEST_REGISTER.index(11).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    mmio::MY_TEST_REGISTER.index(12).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    mmio::MY_TEST_REGISTER.index(13).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
 """
-    expected_ind = ind + ind_img_by4.size // 8
+    expected_ind = ind + (ind_img_by4.size * 4) // (bw * bh)
     assert expected_lines == result_lines
     assert expected_ind == result_ind
-    print(result_lines)
-    print(result_ind)
 
 
 def main(folder_path, palette_register, block_register, block_width, block_height):
