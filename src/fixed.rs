@@ -74,6 +74,14 @@ impl<I: Int + Mul<Output = I>, const B: u8> Mul<I> for Fixed<I, B> {
     }
 }
 
+impl<I: Int + Div<Output = I>, const B: u8> Div<I> for Fixed<I, B> {
+    type Output = Fixed<I, B>;
+
+    fn div(self, int: I) -> Fixed<I, B> {
+        Fixed { raw: self.raw / int }
+    }
+}
+
 impl<I: Int + Neg<Output = I>, const B: u8> Neg for Fixed<I, B> {
     type Output = Fixed<I, B>;
 

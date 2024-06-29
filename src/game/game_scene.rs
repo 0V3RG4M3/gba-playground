@@ -20,7 +20,7 @@ pub struct GameScene {}
 impl GameScene {
     fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) -> ! {
         let mut items = level.available_items;
-        let _recipe_items = level.recipe_items;
+        let recipe_items = level.recipe_items;
 
         let mut leader = Leader::new(96, 32);
 
@@ -50,7 +50,7 @@ impl GameScene {
             let equipped_item_index = items
                 .iter()
                 .enumerate()
-                .find(|(_, item)| item.state == ItemState::Equipped)
+                .find(|(_, item)| item.state == ItemState::EquippedByPlayer)
                 .map(|(i, _)| i);
             if let Some(equipped_item_index) = equipped_item_index {
                 if key_input.b() && !key_input.a() {
@@ -63,16 +63,21 @@ impl GameScene {
             } else {
                 if key_input.a() && !key_input.b() {
                     for item in &mut items {
+                        if item.state != ItemState::Available {
+                            continue;
+                        }
                         let mut pos = item.sprite.pos - camera.pos;
                         pos.y = Fixed::from_int(0);
                         let sq_dist = pos.dot(pos);
                         if sq_dist.into_int() < 32 * 32 {
-                            item.state = ItemState::Equipped;
+                            item.state = ItemState::EquippedByPlayer;
                             break;
                         }
                     }
                 }
             }
+
+            let _ = leader.process(&mut items, &recipe_items);
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -86,10 +91,12 @@ impl GameScene {
                     let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
                     mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
                     mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
-                } else {
+                } else if item.state == ItemState::EquippedByPlayer {
                     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::Normal);
                     sprite.obj.1 = sprite.obj.1.with_x(0);
                     sprite.obj.0 = sprite.obj.0.with_y(0);
+                } else {
+                    sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
                 }
                 mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
             }
