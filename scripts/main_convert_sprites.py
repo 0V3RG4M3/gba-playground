@@ -85,13 +85,13 @@ def img15_to_ind(img15, palette):
     return index_img
 
 
-def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index):
+def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width_u8, block_height_u8, block_register_index):
     """
     :param filename: this filename is only used to define the name of the constant in the rust code
     :param index_img_by4:  image of indexes merged 4by4 (4 x u8 = u32)
     :param block_register: the name of the register (typically "OBJ_TILES" or "CHARBLOCK0_8BPP")
-    :param block_width: width of the block (typically 8)
-    :param block_height: height of the block (typically 4 or 8)
+    :param block_width_u8: width of the block (typically 8)
+    :param block_height_u8: height of the block (typically 4 or 8)
     :param block_register_index: the starting index for this image.
     :return: tuple:
         - the rust lines
@@ -106,26 +106,31 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
 
     filename = filename.replace('\\', '/')
 
-    h, w = index_img_by4.shape
+    im_height_u8, im_width_u32 = index_img_by4.shape
+    im_width_u8 = 4*im_width_u32  # pixels are grouped by 4
+    block_width_u32 = block_width_u8 // 4
+
     lines_func = f"\n\n"
-    final_height = h * w * 4 // (block_height * block_width)
-    final_width = block_height * block_width // 4
-    comment_line = f"// {filename} ({h}x{w * 4} pixels) -> ({final_height}x{final_width} u32)\n"
+    line_count = im_height_u8 * im_width_u8 // (block_height_u8 * block_width_u8)
+    line_length = block_height_u8 * block_width_u32
+    comment_line = f"// {filename} ({im_height_u8}x{im_width_u8} pixels) -> ({line_count}x{line_length} u32)\n"
     lines_func += f"    {comment_line}"
 
     lines_const = f"\n"
     lines_const += f"{comment_line}"
     lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
-    lines_const += f"pub const SIZE_{name}: usize = {final_height};\n"
+    lines_const += f"pub const SIZE_{name}: usize = {line_count};\n"
 
-    for i0 in range(0, h, 8):
-        for j in range(0, w, block_width // 4):
-            for i1 in range(0, 8, block_height):
+    assert (block_register_index + line_count) < 1024, f"Registers can hold max 1024 elements, got {block_register_index + line_count}"
+
+    for i0 in range(0, im_height_u8, 8):
+        for j in range(0, im_width_u32, block_width_u32):
+            for i1 in range(0, 8, block_height_u8):
                 i = i0 + i1
                 hex_values = []
                 print(i, j)
-                for y in range(4):
-                    for x in range(2):
+                for y in range(block_height_u8):
+                    for x in range(block_width_u32):
                         hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
 
                 lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
@@ -133,7 +138,7 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     return lines_func, lines_const, block_register_index
 
 
-def test_generate_indimgby4_as_rust_array():
+def test_generate_indimgby4_as_rust_array_1():
     ind_img_by4 = np.zeros((8, 16 // 4), dtype=np.uint32)
     ind = 10
     bw = 8
@@ -143,8 +148,8 @@ def test_generate_indimgby4_as_rust_array():
         filename="Test//test.png",
         index_img_by4=ind_img_by4,
         block_register="MY_TEST_REGISTER",
-        block_width=bw,
-        block_height=bh,
+        block_width_u8=bw,
+        block_height_u8=bh,
         block_register_index=ind,
     )
     expected_lines_func = """
@@ -167,12 +172,41 @@ pub const SIZE_TEST: usize = 4;
     assert expected_ind == result_ind
 
 
+def test_generate_indimgby4_as_rust_array_2():
+    ind_img_by4 = np.zeros((8, 16 // 4), dtype=np.uint32)
+    ind = 20
+    bw = 8
+    bh = 8
+
+    result_lines_func, result_lines_const, result_ind = generate_indimgby4_as_rust_array(
+        filename="Test//test2.png",
+        index_img_by4=ind_img_by4,
+        block_register="MY_TEST_REGISTER_2",
+        block_width_u8=bw,
+        block_height_u8=bh,
+        block_register_index=ind,
+    )
+    expected_lines_func = """
+
+    // Test//test2.png (8x16 pixels) -> (2x16 u32)
+    mmio::MY_TEST_REGISTER_2.index(20).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+    mmio::MY_TEST_REGISTER_2.index(21).write([0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000]);
+"""
+
+    expected_lines_const = """
+// Test//test2.png (8x16 pixels) -> (2x16 u32)
+pub const INDEX_TEST2: usize = 20;
+pub const SIZE_TEST2: usize = 2;
+"""
+    expected_ind = ind + (ind_img_by4.size * 4) // (bw * bh)
+    assert expected_lines_func == result_lines_func
+    assert expected_lines_const == result_lines_const
+    assert expected_ind == result_ind
+
+
 def main(folder_path, palette_register, block_register, block_width, block_height):
     foldername = os.path.split(folder_path)[-1]
     png_files = find_all_pngs(folder_path)
-
-    # ignore images in test folder
-    # png_files = [file for file in png_files if "test" not in file]
 
     dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
 
@@ -221,11 +255,21 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
 def main_test():
     test_generate_rust_palette()
-    test_generate_indimgby4_as_rust_array()
+    test_generate_indimgby4_as_rust_array_1()
+    test_generate_indimgby4_as_rust_array_2()
 
 
 if __name__ == '__main__':
     main_test()
+
+    # main(
+    #     folder_path=os.path.normpath("../src/assets/graphics/test"),
+    #     palette_register="OBJ_PALETTE",
+    #     block_register="OBJ_TILES",
+    #     block_width=8,
+    #     block_height=4,
+    # )
+
     main(
         folder_path=os.path.normpath("../src/assets/graphics/sprites"),
         palette_register="OBJ_PALETTE",
@@ -234,10 +278,10 @@ if __name__ == '__main__':
         block_height=4,
     )
 
-    # main(
-    #     folder_path=os.path.normpath("../src/assets/graphics/backgrounds"),
-    #     palette_register="BG_PALETTE",
-    #     block_register="CHARBLOCK0_8BPP",
-    #     block_width=8,
-    #     block_height=8,
-    # )
+    main(
+        folder_path=os.path.normpath("../src/assets/graphics/backgrounds"),
+        palette_register="BG_PALETTE",
+        block_register="CHARBLOCK0_8BPP",
+        block_width=8,
+        block_height=8,
+    )

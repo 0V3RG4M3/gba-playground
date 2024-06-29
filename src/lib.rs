@@ -1,6 +1,8 @@
 #![cfg_attr(not(test), no_std)]
 
 #[cfg(not(test))]
+pub mod backgrounds;
+#[cfg(not(test))]
 pub mod fixed;
 #[cfg(not(test))]
 pub mod game;
