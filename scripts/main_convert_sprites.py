@@ -195,10 +195,10 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
         h, w = index_img.shape
 
         # concat 4x u8 pixels in 1x u32
-        index_img_0 = index_img[:, 0::4].astype(np.uint32)
-        index_img_1 = index_img[:, 1::4].astype(np.uint32)
-        index_img_2 = index_img[:, 2::4].astype(np.uint32)
-        index_img_3 = index_img[:, 3::4].astype(np.uint32)
+        index_img_0 = index_img[:, 3::4].astype(np.uint32)
+        index_img_1 = index_img[:, 2::4].astype(np.uint32)
+        index_img_2 = index_img[:, 1::4].astype(np.uint32)
+        index_img_3 = index_img[:, 0::4].astype(np.uint32)
         index_img_by4 = (index_img_0 << (8 * 3)) + (index_img_1 << (8 * 2)) + (index_img_2 << 8) + index_img_3
 
         assert h, w // 4 == index_img_by4.shape
