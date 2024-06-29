@@ -2,7 +2,7 @@ import numpy as np
 import os
 from miditoolkit.midi import parser as mid_parser
 from miditoolkit.midi import containers as ct
-import subprocess
+import utils
 
 BAR_COUNT = 8
 BEAT_PER_BAR = 4
@@ -42,10 +42,6 @@ pub const TUNE_DRUMS: [(u8, u8); TUNE_STEP_COUNT as usize] = {drums};
         fio.write(txt)
 
 
-def format_rust_file(filename):
-    subprocess.run(['rustfmt', filename])
-
-
 def main():
     track1 = parse_file('../src/assets/tune/tune_lead.mid')
     track2 = parse_file('../src/assets/tune/tune_bass.mid')
@@ -53,7 +49,7 @@ def main():
 
     write_tune_rs_file('../src/tune.rs', track1, track2, drums)
 
-    format_rust_file('../src/tune.rs')
+    utils.format_rust_file('../src/tune.rs')
 
 
 if __name__ == '__main__':
