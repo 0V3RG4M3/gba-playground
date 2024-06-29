@@ -30,7 +30,7 @@ def parse_file(midi_path: str, bpm_gain: float = 1) -> list[tuple[int, int]]:
 
 def trim_00(midi_array: list[tuple[int, int]], margin:int)->list[tuple[int, int]]:
     last_occurence = 0
-    for i, note in midi_array:
+    for i, note in enumerate(midi_array):
         if note != (0, 0):
             last_occurence = i
     midi_array = midi_array[:last_occurence+margin]

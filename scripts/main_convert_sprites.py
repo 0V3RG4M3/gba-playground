@@ -203,7 +203,8 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
     palette = create_palette(png_files)
 
-    rust_lines = "use gba::mmio;\n"
+    rust_lines = "// This file has been automatically generated\n"
+    rust_lines += "use gba::mmio;\n"
     rust_lines += "use gba::video::Color;\n"
     rust_lines += "\n"
     rust_lines += "pub fn load(){\n"
