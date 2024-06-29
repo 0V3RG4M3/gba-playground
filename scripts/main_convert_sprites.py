@@ -36,10 +36,19 @@ def generate_rust_palette(palette):
     return lines
 
 
-def create_palette(sprites_folder):
+def find_all_pngs(folder):
+    png_file_list = []
+    for parent_path, folders, files in os.walk(folder):
+        png_file_list += [os.path.join(parent_path, file) for file in files if file.endswith(".png")]
+
+    png_file_list = [os.path.normpath(file) for file in png_file_list]
+    return png_file_list
+
+
+def create_palette(png_files: list[str]):
     full_palette = set([])
-    for filename in os.listdir(sprites_folder):
-        img = cv2.imread(os.path.join(sprites_folder, filename), flags=cv2.IMREAD_UNCHANGED)
+    for filename in png_files:
+        img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
         img = color15(img)
         h, w = img.shape
         assert h % 4 == 0, "height must be a multiple of 4"
@@ -67,6 +76,10 @@ def generate_indimgby4_as_rust_array(name, ind_img_by4, ind):
     :param ind: the starting index for this image.
     :return:the rust lines AND the new index that must be passed to this function next time you use it
     """
+
+    # fix windows path
+    name = name.replace('\\', '/')
+
     h, w = ind_img_by4.shape
     lines = f"\n\n"
     lines += f"    // {name} ({h}x{w})\n"
@@ -84,11 +97,15 @@ def generate_indimgby4_as_rust_array(name, ind_img_by4, ind):
 
 
 def main():
-    full_palette = set([])
-    sprites_folder = os.path.normpath("../src/assets/graphics/sprites/")
+    graphics_folder = os.path.normpath("../src/assets/graphics/")
+    png_files = find_all_pngs(graphics_folder)
+
+    # ignore images in test folder
+    png_files = [file for file in png_files if "test" not in file]
+
     dst_rust_file = os.path.normpath("../src/sprites.rs")
 
-    palette = create_palette(sprites_folder)
+    palette = create_palette(png_files)
 
     rust_lines = "use gba::mmio;\n"
     rust_lines += "use gba::video::Color;\n"
@@ -98,8 +115,8 @@ def main():
     rust_lines += generate_rust_palette(palette)
 
     OBJ_TILES_index = 0
-    for filename in os.listdir(sprites_folder):
-        img = cv2.imread(os.path.join(sprites_folder, filename), flags=cv2.IMREAD_UNCHANGED)
+    for filename in png_files:
+        img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
         img15 = color15(img)
         index_img = img15_to_ind(img15, palette)
         h, w = index_img.shape
@@ -118,12 +135,13 @@ def main():
 
     rust_lines += "}\n"
 
-    print("#",dst_rust_file)
+    print("#", dst_rust_file)
     print(rust_lines)
     with open(dst_rust_file, "w") as fio:
         fio.write(rust_lines)
 
     utils.format_rust_file(dst_rust_file)
+
 
 if __name__ == '__main__':
     main()
