@@ -153,18 +153,23 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     }
 
     let scale: Fixed<i32, 8> = Fixed::<i32, 16>::from_int(FOCAL_LENGTH).div(pos.z);
+
+    let left: Fixed<i32, 8> = pos.x.mul(scale);
+    let right: Fixed<i32, 8> = (pos.x + Fixed::from_int(size_x / 4)).mul(scale);
+    if right.into_int() < -120 || left.into_int() >= 120 {
+        return;
+    }
+
+    let top: Fixed<i32, 8> = pos.y.mul(scale);
+    let bottom: Fixed<i32, 8> = (pos.y + Fixed::from_int(size_y / 4)).mul(scale);
+    if bottom.into_int() < -80 || top.into_int() >= 80 {
+        return;
+    }
+
     let x: Fixed<i32, 8> = (pos.x + Fixed::from_int(size_x / 8)).mul(scale);
     let y: Fixed<i32, 8> = (pos.y + Fixed::from_int(size_y / 8)).mul(scale);
     let x = x.into_int() - size_x;
     let y = y.into_int() - size_y;
-
-    if x < -120 || x >= 120 {
-        return;
-    }
-
-    if y < -80 || y >= 80 {
-        return;
-    }
 
     sprite.obj.1 = sprite.obj.1.with_x((x + 120) as u16);
     sprite.obj.0 = sprite.obj.0.with_y((y + 80) as u16);
