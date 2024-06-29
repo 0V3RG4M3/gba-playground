@@ -21,6 +21,7 @@ static CAM_PITCH_SIN: GbaCell<Fixed<i32, 8>> = GbaCell::new(Fixed::from_raw(0));
 static CAM_PITCH_COS: GbaCell<Fixed<i32, 8>> = GbaCell::new(Fixed::from_raw(0));
 static HORIZON: GbaCell<i32> = GbaCell::new(160);
 
+#[derive(Clone, Copy, Debug)]
 pub struct Camera {
     pub pos: Vec3<i32, 8>,
     yaw_angle: u8,
@@ -102,6 +103,7 @@ impl Camera {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct Sprite {
     pub obj: ObjAttr,
     pub pos: Vec3<i32, 8>,
