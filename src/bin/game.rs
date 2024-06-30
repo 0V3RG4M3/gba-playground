@@ -6,7 +6,9 @@ use core::fmt::Write;
 use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 
 use gba_playground::game::game_scene::GameScene;
+use gba_playground::game::screen_scene::ScreenScene;
 use gba_playground::scene::SceneRunner;
+
 
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
@@ -18,7 +20,7 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
 
 #[no_mangle]
 extern "C" fn main() -> ! {
-    let mut scene_runner = SceneRunner::<()>::new::<GameScene>();
+    let mut scene_runner = SceneRunner::<()>::new::<ScreenScene>();
     loop {
         scene_runner = scene_runner.run(&mut ());
     }
