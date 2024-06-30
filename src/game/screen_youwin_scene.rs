@@ -1,26 +1,26 @@
-use gba::{bios, mmio};
+use crate::game::game_scene::GameScene;
+use crate::log4gba;
+use crate::scene::{Scene, SceneRunner};
+use crate::screens;
 use gba::interrupts::IrqBits;
 use gba::mem_fns::__aeabi_memcpy;
 use gba::mmio::{DISPCNT, TEXT_SCREENBLOCKS};
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
-use crate::game::game_scene::GameScene;
-use crate::scene::{Scene, SceneRunner};
-use crate::screens;
-use crate::log4gba;
+use gba::{bios, mmio};
 
 pub struct ScreenYouWinScene {}
 
 impl ScreenYouWinScene {
-    fn wait_start_bt(){
+    fn wait_start_bt() {
         loop {
             bios::VBlankIntrWait();
             let key_input = mmio::KEYINPUT.read();
-            if key_input.start() {break}
-
+            if key_input.start() {
+                break;
+            }
         }
     }
 }
-
 
 impl Scene for ScreenYouWinScene {
     type C = ();

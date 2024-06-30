@@ -11,7 +11,6 @@ use gba_playground::game::screen_splash_scene::ScreenSplashScene;
 use gba_playground::game::screen_youwin_scene::ScreenYouWinScene;
 use gba_playground::scene::SceneRunner;
 
-
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     if let Ok(mut logger) = MgbaBufferedLogger::try_new(MgbaMessageLevel::Fatal) {
