@@ -16,6 +16,9 @@ pub mod math;
 pub mod mode7;
 pub mod scene;
 #[cfg(not(test))]
+pub mod screens;
+pub mod sfx;
+#[cfg(not(test))]
 pub mod sprites;
 #[cfg(not(test))]
 pub mod static_sounds_lib;

@@ -13,6 +13,7 @@ use crate::game::leader::Leader;
 use crate::game::level::Level;
 use crate::game::levels;
 use crate::game::player::Player;
+use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
@@ -38,8 +39,11 @@ impl GameScene {
 
         let mut backflip_angle = 252;
 
+        gba_synth::init_synth();
+
         loop {
             bios::VBlankIntrWait();
+            gba_synth::play_step();
 
             let key_input = mmio::KEYINPUT.read();
             let is_done = player.process(

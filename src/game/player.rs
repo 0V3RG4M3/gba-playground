@@ -1,3 +1,5 @@
+use crate::gba_synth;
+use crate::sfx;
 use gba::keys::KeyInput;
 use gba::video::obj::ObjDisplayStyle;
 
@@ -9,11 +11,12 @@ use crate::sprites;
 
 pub struct Player {
     index: usize,
+    key_was_pressed: KeyInput,
 }
 
 impl Player {
     pub fn new() -> Player {
-        Player { index: 0 }
+        Player { index: 0, key_was_pressed: KeyInput::new() }
     }
 
     pub fn process<const A: usize, const R: usize>(
@@ -51,7 +54,7 @@ impl Player {
             .find(|(_, item)| item.state == ItemState::EquippedByPlayer)
             .map(|(i, _)| i);
         if let Some(equipped_item_index) = equipped_item_index {
-            if key_input.a() && !key_input.b() {
+            if key_input.a() && !self.key_was_pressed.a() {
                 if cauldron.sprite.obj.0.style() != ObjDisplayStyle::NotDisplayed {
                     let mut pos = cauldron.sprite.pos - camera.pos;
                     pos.y = Fixed::from_int(0);
@@ -66,7 +69,7 @@ impl Player {
                     }
                 }
             }
-            if key_input.b() && !key_input.a() {
+            if key_input.b() && !self.key_was_pressed.b() {
                 let item = &mut items[equipped_item_index];
                 let pos = &mut item.sprite.pos;
                 pos.x = camera.pos.x + camera.yaw_sin() * 32;
@@ -74,7 +77,7 @@ impl Player {
                 item.state = ItemState::Available;
             }
         } else {
-            if key_input.a() && !key_input.b() {
+            if key_input.a() && !self.key_was_pressed.a() {
                 for item in items {
                     if item.state != ItemState::Available {
                         continue;
@@ -86,12 +89,14 @@ impl Player {
                     pos.y = Fixed::from_int(0);
                     let sq_dist = pos.dot(pos);
                     if sq_dist.into_int() < 32 * 32 {
+                        gba_synth::play_sfx(sfx::ITEM_COLLECTED);
                         item.state = ItemState::EquippedByPlayer;
                         break;
                     }
                 }
             }
         }
+        self.key_was_pressed = *key_input;
         Ok(false)
     }
 }

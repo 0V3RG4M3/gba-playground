@@ -69,7 +69,6 @@ extern "C" fn main() -> ! {
     let mut stop_when_expired: bool = false;
 
     let mut key_was_pressed: KeyInput = KeyInput::new();
-    let mut frame_id = 0;
     let (mut x0, mut y0) = (0, 0);
     let (mut x1, mut y1) = (0, 0);
     let mut z = 0; // l-r
@@ -85,7 +84,7 @@ extern "C" fn main() -> ! {
 
     loop {
         bios::VBlankIntrWait();
-        gba_synth::play_tune(frame_id);
+        gba_synth::play_step();
 
         let mut obj_attr = ObjAttr::new();
         obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);
@@ -179,6 +178,5 @@ extern "C" fn main() -> ! {
             on_press = false;
         }
         key_was_pressed = key_input;
-        frame_id = (frame_id + 1) % gba_synth::get_tune_step_count();
     }
 }

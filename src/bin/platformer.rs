@@ -60,10 +60,9 @@ extern "C" fn main() -> ! {
     let mut div_code: u16 = 0;
     let mut shift: u16 = 0;
     let mut key_was_pressed: KeyInput = KeyInput::new();
-    let mut frame_id = 0;
     loop {
         bios::VBlankIntrWait();
-        gba_synth::play_tune(frame_id);
+        gba_synth::play_step();
 
         let mut obj_attr = ObjAttr::new();
         obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);
@@ -127,6 +126,5 @@ extern "C" fn main() -> ! {
         py = cmp::min(cmp::max(8, py + vy), 128);
 
         key_was_pressed = key_input;
-        frame_id = (frame_id + 1) % gba_synth::get_tune_step_count();
     }
 }
