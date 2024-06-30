@@ -73,6 +73,9 @@ impl GameScene {
                         if item.state != ItemState::Available {
                             continue;
                         }
+                        if item.sprite.obj.0.style() == ObjDisplayStyle::NotDisplayed {
+                            continue;
+                        }
                         let mut pos = item.sprite.pos - camera.pos;
                         pos.y = Fixed::from_int(0);
                         let sq_dist = pos.dot(pos);
