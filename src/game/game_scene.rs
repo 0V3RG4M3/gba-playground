@@ -48,12 +48,21 @@ impl GameScene {
                 &key_input,
             )?;
             leader.process(&mut items, &recipe_items, &leader_cauldron)?;
+            if is_done {
+                camera.set_pitch_angle(16 + backflip_angle);
+                if backflip_angle != 0 {
+                    backflip_angle -= 4;
+                }
+            }
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
             mode7::prepare_frame(&camera);
 
             let mut sprites = [Sprite::new(); 32];
+            for sprite in &mut sprites {
+                sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
+            }
 
             for (i, item) in items.iter_mut().enumerate() {
                 let sprite = &mut item.sprite;

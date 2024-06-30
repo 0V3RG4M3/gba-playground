@@ -209,7 +209,7 @@ pub fn prepare_frame(camera: &Camera) {
     } else {
         let n =
             (FAR * camera.pitch_sin().into_raw() - (camera.pos.y.into_raw() >> 12)) * FOCAL_LENGTH;
-        let d = FAR * camera.pitch_cos().into_raw();
+        let d = FAR * camera.pitch_cos().into_raw().abs();
         (80 - n / d).clamp(0, 160)
     };
     HORIZON.write(horizon);
@@ -219,8 +219,6 @@ pub fn prepare_frame(camera: &Camera) {
 pub fn process_line(line: i32) {
     if line < HORIZON.read() || line >= 160 {
         return;
-    } else {
-        mmio::BG2CNT.write(BackgroundControl::new().with_screenblock(1));
     }
 
     let yaw_sin = CAM_YAW_SIN.read();
@@ -228,6 +226,10 @@ pub fn process_line(line: i32) {
     let pitch_sin = CAM_PITCH_SIN.read();
     let pitch_cos = CAM_PITCH_COS.read();
     let by = pitch_cos * (line - 80) + pitch_sin * FOCAL_LENGTH;
+    if by.into_int() <= 1 {
+        return;
+    }
+    mmio::BG2CNT.write(BackgroundControl::new().with_screenblock(1));
     let bz = pitch_sin * (line - 80) - pitch_cos * FOCAL_LENGTH;
     let lambda: Fixed<i32, 12> = CAM_Y.read().div(by.max(Fixed::from_raw(1)));
 
