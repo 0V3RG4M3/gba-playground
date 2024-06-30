@@ -14,9 +14,12 @@ static mut SFX_CURRENT_TIME_STEP: u16 = 0;
 static mut IS_SFX_PLAYING: bool = false;
 const SFX_STEP_COUNT: u16 = 30;
 static mut CURRENT_SFX: [(u8, u8); SFX_STEP_COUNT as usize] = [(0, 0); SFX_STEP_COUNT as usize];
-static mut CURRENT_TUNE_1: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
-static mut CURRENT_TUNE_2: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
-static mut CURRENT_TUNE_DRUMS: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
+static mut CURRENT_TUNE_1: [(u8, u8); tune::TUNE_STEP_COUNT as usize] =
+    [(0, 0); tune::TUNE_STEP_COUNT as usize];
+static mut CURRENT_TUNE_2: [(u8, u8); tune::TUNE_STEP_COUNT as usize] =
+    [(0, 0); tune::TUNE_STEP_COUNT as usize];
+static mut CURRENT_TUNE_DRUMS: [(u8, u8); tune::TUNE_STEP_COUNT as usize] =
+    [(0, 0); tune::TUNE_STEP_COUNT as usize];
 
 pub fn init_synth() {
     // turn sound on
@@ -120,7 +123,7 @@ pub fn play_tune(
     track1: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
     track2: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
     drums: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
-    ) {
+) {
     log4gba::debug("ok");
     unsafe {
         CURRENT_TUNE_1 = track1;
@@ -129,7 +132,6 @@ pub fn play_tune(
         TUNE_CURRENT_TIME_STEP = 0;
     }
 }
-
 
 pub fn play_step() {
     unsafe {
