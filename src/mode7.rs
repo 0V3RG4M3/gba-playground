@@ -181,8 +181,8 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
         return;
     }
 
-    let x: Fixed<i32, 8> = (pos.x + Fixed::from_int(size_x >> (rescale_shift + 1))).mul(scale);
     let y: Fixed<i32, 8> = (pos.y + Fixed::from_int(size_y >> (rescale_shift + 1))).mul(scale);
+    let x: Fixed<i32, 8> = pos.x.mul(scale);
     let x = x.into_int() - size_x;
     let y = y.into_int() - size_y;
 
