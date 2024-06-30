@@ -145,6 +145,12 @@ impl Scene for GameScene {
 
         sprites::load();
 
+        let frame = mmio::AFFINE0_SCREENBLOCKS.get_frame(1).unwrap();
+        for y in 0..16 {
+            for x in 0..8 {
+                frame.index(x, y).write(Default::default());
+            }
+        }
         let mut tile = [0; 16];
         for (i, value) in tile.iter_mut().enumerate() {
             *value = match (i % 2 == 0, i < 8) {
