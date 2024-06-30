@@ -5,6 +5,7 @@ use crate::fixed::Fixed;
 use crate::game::cauldron::Cauldron;
 use crate::game::item::{Item, ItemKind, ItemState};
 use crate::mode7::Camera;
+use crate::sprites;
 
 pub struct Player {
     index: usize,
@@ -19,11 +20,13 @@ impl Player {
         &mut self,
         items: &mut [Item; A],
         recipe_items: &[ItemKind; R],
-        cauldron: &Cauldron,
+        cauldron: &mut Cauldron,
         camera: &mut Camera,
         key_input: &KeyInput,
     ) -> Result<bool, ()> {
         if self.index >= R {
+            cauldron.sprite.obj.2 =
+                cauldron.sprite.obj.2.with_tile_id(sprites::INDEX_10_CALDRON_FIRE as u16);
             return Ok(true);
         }
 

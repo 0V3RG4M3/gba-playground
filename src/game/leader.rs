@@ -5,6 +5,7 @@ use crate::game::cauldron::Cauldron;
 use crate::game::item::{Item, ItemKind, ItemState};
 use crate::math;
 use crate::mode7::Sprite;
+use crate::sprites;
 use crate::vec3::Vec3;
 
 pub struct Leader {
@@ -34,9 +35,11 @@ impl Leader {
         &mut self,
         items: &mut [Item; A],
         recipe_items: &[ItemKind; R],
-        cauldron: &Cauldron,
+        cauldron: &mut Cauldron,
     ) -> Result<(), ()> {
         if self.index >= R {
+            cauldron.sprite.obj.2 =
+                cauldron.sprite.obj.2.with_tile_id(sprites::INDEX_10_CALDRON_FIRE as u16);
             return Ok(());
         }
 
