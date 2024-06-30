@@ -16,7 +16,6 @@ fn panic_handler(_: &core::panic::PanicInfo) -> ! {
 
 #[no_mangle]
 fn main() -> ! {
-
     let a = TEXT_SCREENBLOCKS.get_frame(0).unwrap().as_usize();
     unsafe {
         __aeabi_memcpy(
@@ -25,8 +24,6 @@ fn main() -> ! {
             core::mem::size_of_val(screens::SCREEN_SPLASH) as _,
         )
     };
-    DISPCNT.write(
-        DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true),
-    );
+    DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
     loop {}
 }
