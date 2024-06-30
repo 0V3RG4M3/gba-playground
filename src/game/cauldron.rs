@@ -16,7 +16,7 @@ impl Cauldron {
             sprite: Sprite {
                 obj: ObjAttr {
                     0: ObjAttr0::new().with_bpp8(true),
-                    1: ObjAttr1::new().with_affine_index(affine_index).with_size(2),
+                    1: ObjAttr1::new().with_affine_index(affine_index).with_size(3),
                     2: ObjAttr2::new().with_tile_id(sprites::INDEX_07_CALDRON_COLD as u16),
                 },
                 pos,

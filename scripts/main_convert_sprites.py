@@ -250,7 +250,7 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
 def find_and_define_rs_file(folder_path):
     foldername = os.path.split(folder_path)[-1]
-    png_files = find_all_pngs(folder_path)
+    png_files = utils.find_all_by_extension(folder_path, ".png")
     dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
     return dst_rust_file, png_files
 

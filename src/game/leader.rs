@@ -21,7 +21,7 @@ impl Leader {
                 obj: ObjAttr {
                     0: ObjAttr0::new().with_bpp8(true).with_shape(ObjShape::Vertical),
                     1: ObjAttr1::new().with_affine_index(31).with_size(2),
-                    2: ObjAttr2::new(),
+                    2: ObjAttr2::new().with_tile_id(sprites::INDEX_00_SNAIL_BACK as u16),
                 },
                 pos,
                 scale: Fixed::from_int(1),
