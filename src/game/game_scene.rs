@@ -19,7 +19,7 @@ use crate::sprites;
 pub struct GameScene {}
 
 impl GameScene {
-    fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) -> ! {
+    fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) {
         let mut items = level.available_items;
         let recipe_items = level.recipe_items;
 
@@ -60,6 +60,17 @@ impl GameScene {
                 .find(|(_, item)| item.state == ItemState::EquippedByPlayer)
                 .map(|(i, _)| i);
             if let Some(equipped_item_index) = equipped_item_index {
+                if key_input.a() && !key_input.b() {
+                    if player_cauldron.sprite.obj.0.style() != ObjDisplayStyle::NotDisplayed {
+                        let mut pos = player_cauldron.sprite.pos - camera.pos;
+                        pos.y = Fixed::from_int(0);
+                        let sq_dist = pos.dot(pos);
+                        if sq_dist.into_int() < 32 * 32 {
+                            let item = &mut items[equipped_item_index];
+                            item.state = ItemState::ConsumedByPlayer;
+                        }
+                    }
+                }
                 if key_input.b() && !key_input.a() {
                     let item = &mut items[equipped_item_index];
                     let pos = &mut item.sprite.pos;
@@ -87,7 +98,9 @@ impl GameScene {
                 }
             }
 
-            let _ = leader.process(&mut items, &recipe_items, &leader_cauldron);
+            if leader.process(&mut items, &recipe_items, &leader_cauldron).is_err() {
+                return;
+            }
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -180,7 +193,8 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        self.run_level(levels::first())
+        self.run_level(levels::first());
+        SceneRunner::<()>::new::<GameScene>()
     }
 }
 

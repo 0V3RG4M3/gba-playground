@@ -37,6 +37,7 @@ pub enum ItemState {
     EquippedByLeader,
     ConsumedByLeader,
     EquippedByPlayer,
+    ConsumedByPlayer,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
