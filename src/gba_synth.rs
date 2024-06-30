@@ -4,7 +4,6 @@ use gba::sound::{
     ToneFrequency,
 };
 
-
 use crate::static_sounds_lib;
 use crate::tune;
 
