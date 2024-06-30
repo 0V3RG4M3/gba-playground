@@ -4,3 +4,4 @@ mod item;
 mod leader;
 mod level;
 mod levels;
+mod player;

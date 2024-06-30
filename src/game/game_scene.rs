@@ -12,6 +12,7 @@ use crate::game::item::ItemState;
 use crate::game::leader::Leader;
 use crate::game::level::Level;
 use crate::game::levels;
+use crate::game::player::Player;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
@@ -19,7 +20,7 @@ use crate::sprites;
 pub struct GameScene {}
 
 impl GameScene {
-    fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) {
+    fn run_level<const A: usize, const R: usize>(&mut self, level: Level<A, R>) -> Result<(), ()> {
         let mut items = level.available_items;
         let recipe_items = level.recipe_items;
 
@@ -27,6 +28,7 @@ impl GameScene {
         let mut player_cauldron = Cauldron::new(30, 80, 64);
 
         let mut leader = Leader::new(64, 64);
+        let mut player = Player::new();
 
         let mut camera = Camera::new();
         camera.pos.x = Fixed::from_int(68);
@@ -38,69 +40,14 @@ impl GameScene {
             bios::VBlankIntrWait();
 
             let key_input = mmio::KEYINPUT.read();
-
-            let mut cam_yaw_angle = camera.yaw_angle();
-            cam_yaw_angle -= key_input.l() as u8;
-            cam_yaw_angle += key_input.r() as u8;
-            camera.set_yaw_angle(cam_yaw_angle);
-
-            camera.pos.x += camera.yaw_sin() * (key_input.up() as i32);
-            camera.pos.x -= camera.yaw_sin() * (key_input.down() as i32);
-            camera.pos.x -= camera.yaw_cos() * (key_input.left() as i32);
-            camera.pos.x += camera.yaw_cos() * (key_input.right() as i32);
-
-            camera.pos.z -= camera.yaw_cos() * (key_input.up() as i32);
-            camera.pos.z += camera.yaw_cos() * (key_input.down() as i32);
-            camera.pos.z -= camera.yaw_sin() * (key_input.left() as i32);
-            camera.pos.z += camera.yaw_sin() * (key_input.right() as i32);
-
-            let equipped_item_index = items
-                .iter()
-                .enumerate()
-                .find(|(_, item)| item.state == ItemState::EquippedByPlayer)
-                .map(|(i, _)| i);
-            if let Some(equipped_item_index) = equipped_item_index {
-                if key_input.a() && !key_input.b() {
-                    if player_cauldron.sprite.obj.0.style() != ObjDisplayStyle::NotDisplayed {
-                        let mut pos = player_cauldron.sprite.pos - camera.pos;
-                        pos.y = Fixed::from_int(0);
-                        let sq_dist = pos.dot(pos);
-                        if sq_dist.into_int() < 32 * 32 {
-                            let item = &mut items[equipped_item_index];
-                            item.state = ItemState::ConsumedByPlayer;
-                        }
-                    }
-                }
-                if key_input.b() && !key_input.a() {
-                    let item = &mut items[equipped_item_index];
-                    let pos = &mut item.sprite.pos;
-                    pos.x = camera.pos.x + camera.yaw_sin() * 32;
-                    pos.z = camera.pos.z - camera.yaw_cos() * 32;
-                    item.state = ItemState::Available;
-                }
-            } else {
-                if key_input.a() && !key_input.b() {
-                    for item in &mut items {
-                        if item.state != ItemState::Available {
-                            continue;
-                        }
-                        if item.sprite.obj.0.style() == ObjDisplayStyle::NotDisplayed {
-                            continue;
-                        }
-                        let mut pos = item.sprite.pos - camera.pos;
-                        pos.y = Fixed::from_int(0);
-                        let sq_dist = pos.dot(pos);
-                        if sq_dist.into_int() < 32 * 32 {
-                            item.state = ItemState::EquippedByPlayer;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if leader.process(&mut items, &recipe_items, &leader_cauldron).is_err() {
-                return;
-            }
+            player.process(
+                &mut items,
+                &recipe_items,
+                &mut player_cauldron,
+                &mut camera,
+                &key_input,
+            )?;
+            leader.process(&mut items, &recipe_items, &leader_cauldron)?;
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -193,7 +140,7 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        self.run_level(levels::first());
+        let _ = self.run_level(levels::first());
         SceneRunner::<()>::new::<GameScene>()
     }
 }
