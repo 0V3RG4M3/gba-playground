@@ -24,6 +24,7 @@ impl Leader {
                 },
                 pos,
                 scale: Fixed::from_int(1),
+                z: Fixed::from_int(0),
             },
             index: 0,
         }

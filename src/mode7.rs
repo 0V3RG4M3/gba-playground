@@ -108,6 +108,18 @@ pub struct Sprite {
     pub obj: ObjAttr,
     pub pos: Vec3<i32, 8>,
     pub scale: Fixed<i32, 8>,
+    pub z: Fixed<i32, 8>,
+}
+
+impl Sprite {
+    pub fn new() -> Sprite {
+        Sprite {
+            obj: ObjAttr::new(),
+            pos: Vec3 { x: Fixed::from_int(0), y: Fixed::from_int(0), z: Fixed::from_int(0) },
+            scale: Fixed::from_int(1),
+            z: Fixed::from_int(0),
+        }
+    }
 }
 
 pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
@@ -174,6 +186,7 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     sprite.obj.1 = sprite.obj.1.with_x((x + 120) as u16);
     sprite.obj.0 = sprite.obj.0.with_y((y + 80) as u16);
 
+    sprite.z = pos.z;
     sprite.scale = Fixed::from_raw(pos.z.into_raw() >> 6);
 
     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::DoubleSizeAffine);

@@ -90,6 +90,8 @@ impl GameScene {
 
             mode7::prepare_frame(&camera);
 
+            let mut sprites = [Sprite::new(); 32];
+
             for (i, item) in items.iter_mut().enumerate() {
                 let sprite = &mut item.sprite;
                 if item.state == ItemState::Available {
@@ -105,12 +107,17 @@ impl GameScene {
                 } else {
                     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
                 }
-                mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
+                sprites[i] = *sprite;
             }
 
-            self.process_sprite(&camera, &mut leader.sprite);
-            self.process_sprite(&camera, &mut leader_cauldron.sprite);
-            self.process_sprite(&camera, &mut player_cauldron.sprite);
+            Self::process_sprite(&camera, &mut sprites, &mut leader.sprite);
+            Self::process_sprite(&camera, &mut sprites, &mut leader_cauldron.sprite);
+            Self::process_sprite(&camera, &mut sprites, &mut player_cauldron.sprite);
+
+            sprites.sort_unstable_by_key(|sprite| sprite.z);
+            for (i, sprite) in sprites.iter().enumerate() {
+                mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
+            }
 
             mode7::process_line(0);
 
@@ -125,13 +132,13 @@ impl GameScene {
         }
     }
 
-    fn process_sprite(&mut self, camera: &Camera, sprite: &mut Sprite) {
+    fn process_sprite(camera: &Camera, sprites: &mut [Sprite; 32], sprite: &mut Sprite) {
         mode7::prepare_sprite(&camera, sprite);
         let affine_index = sprite.obj.1.affine_index() as usize;
         let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
         mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
         mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
-        mmio::OBJ_ATTR_ALL.index(affine_index).write(sprite.obj);
+        sprites[affine_index] = *sprite;
     }
 }
 
