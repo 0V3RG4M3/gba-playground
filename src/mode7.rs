@@ -34,7 +34,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn new() -> Camera {
-        let pos = Vec3 { x: Fixed::from_int(64), y: Fixed::from_int(16), z: Fixed::from_int(64) };
+        let pos = Vec3 { x: Fixed::from_int(0), y: Fixed::from_int(0), z: Fixed::from_int(0) };
         Camera {
             pos,
             yaw_angle: 0,

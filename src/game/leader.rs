@@ -1,6 +1,7 @@
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjShape};
 
 use crate::fixed::Fixed;
+use crate::game::cauldron::Cauldron;
 use crate::game::item::{Item, ItemKind, ItemState};
 use crate::math;
 use crate::mode7::Sprite;
@@ -32,12 +33,13 @@ impl Leader {
         &mut self,
         items: &mut [Item; A],
         recipe_items: &[ItemKind; R],
+        cauldron: &Cauldron,
     ) -> Result<(), ()> {
         if self.index >= R {
             return Ok(());
         }
 
-        let target = self.find_target(items, recipe_items[self.index]).ok_or(())?;
+        let target = self.find_target(items, recipe_items[self.index], cauldron).ok_or(())?;
         let x = target.pos.x.into_int();
         let z = target.pos.z.into_int();
         let angle = math::fast_atan2(x, z);
@@ -61,6 +63,7 @@ impl Leader {
         &self,
         items: &[Item; A],
         recipe_item: ItemKind,
+        cauldron: &Cauldron,
     ) -> Option<Target> {
         let equipped_item_index = items
             .iter()
@@ -68,9 +71,7 @@ impl Leader {
             .find(|(_, item)| item.state == ItemState::EquippedByLeader)
             .map(|(i, _)| i);
         if let Some(item_index) = equipped_item_index {
-            let cauldron_pos =
-                Vec3 { x: Fixed::from_int(64), y: Fixed::from_int(2), z: Fixed::from_int(64) };
-            let mut pos = cauldron_pos - self.sprite.pos;
+            let mut pos = cauldron.sprite.pos - self.sprite.pos;
             pos.y = Fixed::from_int(0);
             let sq_dist = pos.dot(pos).into_int();
             return Some(Target { item_index, sq_dist, pos });

@@ -7,11 +7,12 @@ use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 use crate::fixed::Fixed;
+use crate::game::cauldron::Cauldron;
 use crate::game::item::ItemState;
 use crate::game::leader::Leader;
 use crate::game::level::Level;
 use crate::game::levels;
-use crate::mode7::{self, Camera};
+use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
 
@@ -22,9 +23,15 @@ impl GameScene {
         let mut items = level.available_items;
         let recipe_items = level.recipe_items;
 
-        let mut leader = Leader::new(96, 32);
+        let mut leader_cauldron = Cauldron::new(29, 48, 64);
+        let mut player_cauldron = Cauldron::new(30, 80, 64);
+
+        let mut leader = Leader::new(64, 64);
 
         let mut camera = Camera::new();
+        camera.pos.x = Fixed::from_int(68);
+        camera.pos.y = Fixed::from_int(16);
+        camera.pos.z = Fixed::from_int(112);
         camera.set_pitch_angle(16);
 
         loop {
@@ -77,7 +84,7 @@ impl GameScene {
                 }
             }
 
-            let _ = leader.process(&mut items, &recipe_items);
+            let _ = leader.process(&mut items, &recipe_items, &leader_cauldron);
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -101,13 +108,9 @@ impl GameScene {
                 mmio::OBJ_ATTR_ALL.index(i).write(sprite.obj);
             }
 
-            let sprite = &mut leader.sprite;
-            mode7::prepare_sprite(&camera, sprite);
-            let affine_index = sprite.obj.1.affine_index() as usize;
-            let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
-            mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
-            mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
-            mmio::OBJ_ATTR_ALL.index(31).write(sprite.obj);
+            self.process_sprite(&camera, &mut leader.sprite);
+            self.process_sprite(&camera, &mut leader_cauldron.sprite);
+            self.process_sprite(&camera, &mut player_cauldron.sprite);
 
             mode7::process_line(0);
 
@@ -120,6 +123,15 @@ impl GameScene {
                 .with_obj_vram_1d(true);
             mmio::DISPCNT.write(display_control);
         }
+    }
+
+    fn process_sprite(&mut self, camera: &Camera, sprite: &mut Sprite) {
+        mode7::prepare_sprite(&camera, sprite);
+        let affine_index = sprite.obj.1.affine_index() as usize;
+        let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+        mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
+        mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
+        mmio::OBJ_ATTR_ALL.index(affine_index).write(sprite.obj);
     }
 }
 

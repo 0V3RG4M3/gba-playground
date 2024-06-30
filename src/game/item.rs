@@ -33,9 +33,9 @@ impl Item {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ItemState {
     Available,
-    EquippedByPlayer,
     EquippedByLeader,
     ConsumedByLeader,
+    EquippedByPlayer,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
