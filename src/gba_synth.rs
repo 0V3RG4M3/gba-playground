@@ -6,6 +6,7 @@ use gba::sound::{
 
 use crate::static_sounds_lib;
 use crate::tune;
+use crate::sfx;
 
 pub fn init_synth() {
     // turn sound on
