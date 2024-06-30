@@ -69,10 +69,11 @@ def main_sfx():
     for filename in midi_files:
         name = os.path.split(filename)[-1]
         assert name.endswith(".mid")
-        name = name[:-4].upper()
+        name = name[:-4].upper().replace(" ", "_").replace("-", "_")
 
         midi_array = parse_file(filename, bpm_gain=2)
-        midi_array = trim_00(midi_array, margin=16)
+        # midi_array = trim_00(midi_array, margin=16)
+        midi_array = midi_array[:30]  # force length to 30 because gba_synth doesn't support multiple length yet
         txt += f"\n"
         txt += f"pub const {name}_STEP_COUNT: u16 = {len(midi_array)};\n"
         txt += f"pub const {name}: [(u8, u8); {name}_STEP_COUNT as usize] = {midi_array};\n"
