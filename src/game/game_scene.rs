@@ -36,11 +36,13 @@ impl GameScene {
         camera.pos.z = Fixed::from_int(112);
         camera.set_pitch_angle(16);
 
+        let mut backflip_angle = 252;
+
         loop {
             bios::VBlankIntrWait();
 
             let key_input = mmio::KEYINPUT.read();
-            player.process(
+            let is_done = player.process(
                 &mut items,
                 &recipe_items,
                 &mut player_cauldron,

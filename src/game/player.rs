@@ -22,9 +22,9 @@ impl Player {
         cauldron: &Cauldron,
         camera: &mut Camera,
         key_input: &KeyInput,
-    ) -> Result<(), ()> {
+    ) -> Result<bool, ()> {
         if self.index >= R {
-            return Ok(());
+            return Ok(true);
         }
 
         let mut cam_yaw_angle = camera.yaw_angle();
@@ -89,6 +89,6 @@ impl Player {
                 }
             }
         }
-        Ok(())
+        Ok(false)
     }
 }
