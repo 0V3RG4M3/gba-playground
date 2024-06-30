@@ -49,6 +49,9 @@ pub enum ItemKind {
     Watermelon,
     IceCream0,
     IceCream1,
+    Crab,
+    Artichoke,
+    SugarPaste,
 }
 
 impl ItemKind {
@@ -60,6 +63,9 @@ impl ItemKind {
             ItemKind::Watermelon => ObjShape::Horizontal,
             ItemKind::IceCream0 => ObjShape::Vertical,
             ItemKind::IceCream1 => ObjShape::Vertical,
+            ItemKind::Crab => ObjShape::Horizontal,
+            ItemKind::Artichoke => ObjShape::Square,
+            ItemKind::SugarPaste => ObjShape::Square,
         }
     }
 
@@ -71,6 +77,9 @@ impl ItemKind {
             ItemKind::Watermelon => 2,
             ItemKind::IceCream0 => 2,
             ItemKind::IceCream1 => 2,
+            ItemKind::Crab => 2,
+            ItemKind::Artichoke => 2,
+            ItemKind::SugarPaste => 2,
         }
     }
 
@@ -82,6 +91,9 @@ impl ItemKind {
             ItemKind::Watermelon => sprites::INDEX_05_WATERMELONE as u16,
             ItemKind::IceCream0 => sprites::INDEX_11_ICESCREAM_CONE as u16,
             ItemKind::IceCream1 => sprites::INDEX_12_ICESCREAM_CONE as u16,
+            ItemKind::Crab => sprites::INDEX_13_CRAB as u16,
+            ItemKind::Artichoke => sprites::INDEX_14_ARTICHOKE as u16,
+            ItemKind::SugarPaste => sprites::INDEX_15_SUGARPASTE as u16,
         }
     }
 }
