@@ -15,6 +15,7 @@ pub mod math;
 #[cfg(not(test))]
 pub mod mode7;
 pub mod scene;
+pub mod sfx;
 #[cfg(not(test))]
 pub mod sprites;
 #[cfg(not(test))]

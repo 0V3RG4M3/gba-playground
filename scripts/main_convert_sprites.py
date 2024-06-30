@@ -53,15 +53,6 @@ def test_generate_rust_palette():
     assert result == expected
 
 
-def find_all_pngs(folder):
-    png_file_list = []
-    for parent_path, folders, files in os.walk(folder):
-        png_file_list += [os.path.join(parent_path, file) for file in files if file.endswith(".png")]
-
-    png_file_list = [os.path.normpath(file) for file in png_file_list]
-    return png_file_list
-
-
 def create_palette(png_files: list[str]):
     full_palette = set([])
     for filename in png_files:
@@ -206,13 +197,14 @@ pub const SIZE_TEST2: usize = 2;
 
 def main(folder_path, palette_register, block_register, block_width, block_height):
     foldername = os.path.split(folder_path)[-1]
-    png_files = find_all_pngs(folder_path)
+    png_files = utils.find_all_by_extension(folder_path, ".png")
 
     dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
 
     palette = create_palette(png_files)
 
-    rust_lines = "use gba::mmio;\n"
+    rust_lines = "// This file has been automatically generated\n"
+    rust_lines += "use gba::mmio;\n"
     rust_lines += "use gba::video::Color;\n"
     rust_lines += "\n"
     rust_lines += "pub fn load(){\n"

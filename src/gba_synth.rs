@@ -7,6 +7,12 @@ use gba::sound::{
 use crate::static_sounds_lib;
 use crate::tune;
 
+static mut TUNE_CURRENT_TIME_STEP: u16 = 0;
+static mut SFX_CURRENT_TIME_STEP: u16 = 0;
+static mut IS_SFX_PLAYING: bool = false;
+const SFX_STEP_COUNT: u16 = 30;
+static mut CURRENT_SFX: [(u8, u8); SFX_STEP_COUNT as usize] = [(0, 0); SFX_STEP_COUNT as usize];
+
 pub fn init_synth() {
     // turn sound on
     mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
@@ -95,17 +101,48 @@ pub fn get_tune_step_count() -> u16 {
     return tune::TUNE_STEP_COUNT;
 }
 
-pub fn play_tune(step_id: u16) {
-    let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK1[step_id as usize];
-    if pitch > 0 {
-        play_tone1(pitch, velocity);
+pub fn play_sfx(sfx: [(u8, u8); SFX_STEP_COUNT as usize]) {
+    unsafe {
+        IS_SFX_PLAYING = true;
+        SFX_CURRENT_TIME_STEP = 0;
+        CURRENT_SFX = sfx;
     }
-    let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK2[step_id as usize];
-    if pitch > 0 {
-        play_tone2(pitch, velocity);
-    }
-    let (pitch, velocity): (u8, u8) = tune::TUNE_DRUMS[step_id as usize];
-    if pitch > 0 {
-        play_noise_drum(pitch, velocity);
+}
+
+pub fn play_step() {
+    unsafe {
+        // GBA TONE 1
+        let (pitch, velocity): (u8, u8);
+        if IS_SFX_PLAYING {
+            (pitch, velocity) = CURRENT_SFX[SFX_CURRENT_TIME_STEP as usize]
+        } else {
+            (pitch, velocity) = tune::TUNE_TRACK1[TUNE_CURRENT_TIME_STEP as usize];
+        }
+        if pitch > 0 {
+            play_tone1(pitch, velocity);
+        }
+
+        // GBA TONE 2
+        let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK2[TUNE_CURRENT_TIME_STEP as usize];
+        if pitch > 0 {
+            play_tone2(pitch, velocity);
+        }
+
+        // GBA NOISE
+        let (pitch, velocity): (u8, u8) = tune::TUNE_DRUMS[TUNE_CURRENT_TIME_STEP as usize];
+        if pitch > 0 {
+            play_noise_drum(pitch, velocity);
+        }
+
+        // update time steps
+        TUNE_CURRENT_TIME_STEP = (TUNE_CURRENT_TIME_STEP + 1) % tune::TUNE_STEP_COUNT;
+
+        if IS_SFX_PLAYING {
+            SFX_CURRENT_TIME_STEP = SFX_CURRENT_TIME_STEP + 1;
+
+            if SFX_CURRENT_TIME_STEP >= SFX_STEP_COUNT {
+                IS_SFX_PLAYING = false;
+            }
+        }
     }
 }
