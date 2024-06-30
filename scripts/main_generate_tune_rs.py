@@ -37,13 +37,15 @@ def trim_00(midi_array: list[tuple[int, int]], margin:int)->list[tuple[int, int]
     return midi_array
 
 
-def write_tune_rs_file(filename, track1, track2, drums):
+def write_tune_rs_file(filename, track1, track2, drums, win_track1, win_track2):
     txt = f"""// This file has been automatically generated
     
 pub const TUNE_STEP_COUNT: u16 = {STEP_COUNT};
 pub const TUNE_TRACK1: [(u8, u8); TUNE_STEP_COUNT as usize] = {track1};
 pub const TUNE_TRACK2: [(u8, u8); TUNE_STEP_COUNT as usize] = {track2};
 pub const TUNE_DRUMS: [(u8, u8); TUNE_STEP_COUNT as usize] = {drums};
+pub const TUNE_WIN_TRACK1: [(u8, u8); TUNE_STEP_COUNT as usize] = {win_track1};
+pub const TUNE_WIN_TRACK2: [(u8, u8); TUNE_STEP_COUNT as usize] = {win_track2};
 """
 
     print(txt)
@@ -55,8 +57,12 @@ def main_tune():
     track1 = parse_file('../src/assets/tune/tune_lead.mid')
     track2 = parse_file('../src/assets/tune/tune_bass.mid')
     drums = parse_file('../src/assets/tune/tune_drum.mid')
+    win_track1 = parse_file('../src/assets/tune/win_track1.mid')
+    win_track2 = parse_file('../src/assets/tune/win_track2.mid')
 
-    write_tune_rs_file('../src/tune.rs', track1, track2, drums)
+
+
+    write_tune_rs_file('../src/tune.rs', track1, track2, drums, win_track1, win_track2)
 
     utils.format_rust_file('../src/tune.rs')
 
