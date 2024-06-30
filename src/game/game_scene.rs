@@ -58,8 +58,10 @@ impl GameScene {
             leader.process(&mut items, &recipe_items, &mut leader_cauldron)?;
             if is_done {
                 camera.set_pitch_angle(16 + backflip_angle);
-                if backflip_angle != 0 {
+                if backflip_angle == 0 {
                     backflip_angle -= 4;
+                } else {
+                    return Ok(());
                 }
             }
 
