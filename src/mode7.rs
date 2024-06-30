@@ -109,7 +109,7 @@ pub struct Sprite {
     pub pos: Vec3<i32, 8>,
     pub scale: Fixed<i32, 8>,
     pub z: Fixed<i32, 8>,
-    pub rescale_shift: u8,
+    pub rescale_factor: Fixed<i32, 8>,
 }
 
 impl Sprite {
@@ -119,7 +119,7 @@ impl Sprite {
             pos: Vec3 { x: Fixed::from_int(0), y: Fixed::from_int(0), z: Fixed::from_int(0) },
             scale: Fixed::from_int(1),
             z: Fixed::from_int(0),
-            rescale_shift: 2,
+            rescale_factor: Fixed::from_int(1),
         }
     }
 }
@@ -150,8 +150,8 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     let size_x = 8 << x_shift;
     let size_y = 8 << y_shift;
 
-    let rescale_shift = sprite.rescale_shift;
-    sprite.pos.y = Fixed::from_int(size_y >> rescale_shift);
+    let rescale_factor = sprite.rescale_factor;
+    sprite.pos.y = rescale_factor * size_y;
     let pos = Vec3::<i32, 8> {
         x: sprite.pos.x - camera.pos.x,
         y: sprite.pos.y - camera.pos.y,
@@ -170,18 +170,18 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     let scale: Fixed<i32, 8> = Fixed::<i32, 16>::from_int(FOCAL_LENGTH).div(pos.z);
 
     let left: Fixed<i32, 8> = pos.x.mul(scale);
-    let right: Fixed<i32, 8> = (pos.x + Fixed::from_int(size_x >> rescale_shift)).mul(scale);
+    let right: Fixed<i32, 8> = (pos.x + rescale_factor * size_x).mul(scale);
     if right.into_int() < -120 || left.into_int() >= 120 {
         return;
     }
 
     let top: Fixed<i32, 8> = pos.y.mul(scale);
-    let bottom: Fixed<i32, 8> = (pos.y + Fixed::from_int(size_y >> rescale_shift)).mul(scale);
+    let bottom: Fixed<i32, 8> = (pos.y + rescale_factor * size_y).mul(scale);
     if bottom.into_int() < -80 || top.into_int() >= 80 {
         return;
     }
 
-    let y: Fixed<i32, 8> = (pos.y + Fixed::from_int(size_y >> (rescale_shift + 1))).mul(scale);
+    let y: Fixed<i32, 8> = (pos.y + rescale_factor * (size_y / 2)).mul(scale);
     let x: Fixed<i32, 8> = pos.x.mul(scale);
     let x = x.into_int() - size_x;
     let y = y.into_int() - size_y;
@@ -190,7 +190,8 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     sprite.obj.0 = sprite.obj.0.with_y((y + 80) as u16);
 
     sprite.z = pos.z;
-    sprite.scale = Fixed::from_raw(pos.z.into_raw() >> (8 - rescale_shift));
+    let scale = pos.z.into_raw() / rescale_factor.into_raw();
+    sprite.scale = Fixed::from_raw(scale);
 
     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::DoubleSizeAffine);
 }

@@ -22,7 +22,7 @@ impl Cauldron {
                 pos,
                 scale: Fixed::from_int(1),
                 z: Fixed::from_int(0),
-                rescale_shift: 3,
+                rescale_factor: Fixed::from_int(1) / 6,
             },
         }
     }
