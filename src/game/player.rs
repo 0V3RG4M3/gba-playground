@@ -63,13 +63,19 @@ impl Player {
                         let item = &mut items[equipped_item_index];
                         item.state = ItemState::ConsumedByPlayer;
                         if item.kind != recipe_items[self.index] {
+                            // Player places bad item in cauldron
+                            gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_FAIL);
                             return Err(());
                         }
+                        // Player successfully places item in cauldron
+                        gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_SUCCESS);
                         self.index += 1;
                     }
                 }
             }
             if key_input.b() && !self.key_was_pressed.b() {
+                // Player drops item on the floor
+                gba_synth::play_sfx(sfx::ITEM_DROPPED);  
                 let item = &mut items[equipped_item_index];
                 let pos = &mut item.sprite.pos;
                 pos.x = camera.pos.x + camera.yaw_sin() * 32;
@@ -89,9 +95,13 @@ impl Player {
                     pos.y = Fixed::from_int(0);
                     let sq_dist = pos.dot(pos);
                     if sq_dist.into_int() < 32 * 32 {
+                        // Player successfully collected an item
                         gba_synth::play_sfx(sfx::ITEM_COLLECTED);
                         item.state = ItemState::EquippedByPlayer;
                         break;
+                    } else {
+                        // No item close enough to be taken by the user
+                        gba_synth::play_sfx(sfx::CANT_TAKE);
                     }
                 }
             }
