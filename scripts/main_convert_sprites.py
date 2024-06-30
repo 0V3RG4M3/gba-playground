@@ -76,7 +76,8 @@ def img15_to_ind(img15, palette):
     return index_img
 
 
-def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width_u8, block_height_u8, block_register_index):
+def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width_u8, block_height_u8,
+                                     block_register_index):
     """
     :param filename: this filename is only used to define the name of the constant in the rust code
     :param index_img_by4:  image of indexes merged 4by4 (4 x u8 = u32)
@@ -98,7 +99,7 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     filename = filename.replace('\\', '/')
 
     im_height_u8, im_width_u32 = index_img_by4.shape
-    im_width_u8 = 4*im_width_u32  # pixels are grouped by 4
+    im_width_u8 = 4 * im_width_u32  # pixels are grouped by 4
     block_width_u32 = block_width_u8 // 4
 
     lines_func = f"\n\n"
@@ -112,7 +113,8 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
     lines_const += f"pub const SIZE_{name}: usize = {line_count};\n"
 
-    assert (block_register_index + line_count) < 1024, f"Registers can hold max 1024 elements, got {block_register_index + line_count}"
+    assert (
+                   block_register_index + line_count) < 1024, f"Registers can hold max 1024 elements, got {block_register_index + line_count}"
 
     for i0 in range(0, im_height_u8, 8):
         for j in range(0, im_width_u32, block_width_u32):
@@ -196,10 +198,8 @@ pub const SIZE_TEST2: usize = 2;
 
 
 def main(folder_path, palette_register, block_register, block_width, block_height):
-    foldername = os.path.split(folder_path)[-1]
-    png_files = utils.find_all_by_extension(folder_path, ".png")
 
-    dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
+    dst_rust_file, png_files = find_and_define_rs_file(folder_path)
 
     palette = create_palette(png_files)
 
@@ -229,7 +229,10 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
 
         assert h, w // 4 == index_img_by4.shape
 
-        lines_func, lines_const, block_register_index = generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, block_width, block_height, block_register_index)
+        lines_func, lines_const, block_register_index = generate_indimgby4_as_rust_array(filename, index_img_by4,
+                                                                                         block_register, block_width,
+                                                                                         block_height,
+                                                                                         block_register_index)
 
         rust_lines += lines_func
         rust_lines_const += lines_const
@@ -245,25 +248,69 @@ def main(folder_path, palette_register, block_register, block_width, block_heigh
     utils.format_rust_file(dst_rust_file)
 
 
+def find_and_define_rs_file(folder_path):
+    foldername = os.path.split(folder_path)[-1]
+    png_files = find_all_pngs(folder_path)
+    dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
+    return dst_rust_file, png_files
+
+
 def main_test():
     test_generate_rust_palette()
     test_generate_indimgby4_as_rust_array_1()
     test_generate_indimgby4_as_rust_array_2()
 
 
+def convert_screens(folder_path):
+    linesize = 8
+    dst_rust_file, png_files = find_and_define_rs_file(folder_path)
+
+    rust_lines = "use gba::mmio;\n"
+    rust_lines += "use gba::video::Color;\n"
+    rust_lines += "\n"
+
+    for filename in png_files:
+        img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
+        img15 = color15(img)
+
+        name = os.path.split(filename)[-1].split('.')[0].split('_')[1]
+        rust_lines += "pub const SCREEN_%s : &[u16] = \n" % name.upper()
+        rust_lines += '\t'
+        rust_lines += '&[\n\t\t'
+        for vindex, vpixel in enumerate(img15, 0):
+            for index, pixel in enumerate(vpixel, 0):
+                if pixel == -1: pixel = 0xFFFF
+                rust_lines += "0x%x" % pixel
+                if not ((vindex == len(img15) - 1) and (index == len(vpixel) - 1)):
+                    rust_lines += ', '
+                if (index % linesize) == 0 and (index > 0):
+                    rust_lines += '\n\t\t'
+        rust_lines += '\n'
+        rust_lines += '\t];\n\n'
+    print("#", dst_rust_file)
+    print(rust_lines)
+    with open(dst_rust_file, "w") as fio:
+        fio.write(rust_lines)
+
+    utils.format_rust_file(dst_rust_file)
+
+
 if __name__ == '__main__':
     main_test()
 
-    # main(
-    #     folder_path=os.path.normpath("../src/assets/graphics/test"),
-    #     palette_register="OBJ_PALETTE",
-    #     block_register="OBJ_TILES",
-    #     block_width=8,
-    #     block_height=4,
-    # )
+    test = False
+
+    sprites_location = "../src/assets/graphics/sprites"
+    background_location = "../src/assets/graphics/backgrounds"
+    screen_location = "../src/assets/graphics/screens"
+
+    if test:
+        sprites_location = "../src/assets/graphics/test"
+        background_location = sprites_location
+        screen_location = background_location
 
     main(
-        folder_path=os.path.normpath("../src/assets/graphics/sprites"),
+        folder_path=os.path.normpath(sprites_location),
         palette_register="OBJ_PALETTE",
         block_register="OBJ_TILES",
         block_width=8,
@@ -271,9 +318,13 @@ if __name__ == '__main__':
     )
 
     main(
-        folder_path=os.path.normpath("../src/assets/graphics/backgrounds"),
+        folder_path=os.path.normpath(background_location),
         palette_register="BG_PALETTE",
         block_register="CHARBLOCK0_8BPP",
         block_width=8,
         block_height=8,
+    )
+
+    convert_screens(
+        folder_path=os.path.normpath(screen_location)
     )
