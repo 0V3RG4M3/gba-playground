@@ -4,6 +4,8 @@ use gba::sound::{
     ToneFrequency,
 };
 
+use crate::log4gba;
+
 use crate::static_sounds_lib;
 use crate::tune;
 
@@ -12,6 +14,9 @@ static mut SFX_CURRENT_TIME_STEP: u16 = 0;
 static mut IS_SFX_PLAYING: bool = false;
 const SFX_STEP_COUNT: u16 = 30;
 static mut CURRENT_SFX: [(u8, u8); SFX_STEP_COUNT as usize] = [(0, 0); SFX_STEP_COUNT as usize];
+static mut CURRENT_TUNE_1: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
+static mut CURRENT_TUNE_2: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
+static mut CURRENT_TUNE_DRUMS: [(u8, u8); tune::TUNE_STEP_COUNT as usize] = [(0, 0); tune::TUNE_STEP_COUNT as usize];
 
 pub fn init_synth() {
     // turn sound on
@@ -39,6 +44,8 @@ pub fn init_synth() {
 
     mmio::TONE2_PATTERN.write(static_sounds_lib::GLOCKENSPIEL);
     mmio::TONE2_FREQUENCY.write(ToneFrequency::new().with_frequency(0));
+
+    play_tune(tune::TUNE_TRACK1, tune::TUNE_TRACK2, tune::TUNE_DRUMS);
 }
 
 pub fn play_tone1(pitch: u8, velocity: u8) {
@@ -101,13 +108,28 @@ pub fn get_tune_step_count() -> u16 {
     return tune::TUNE_STEP_COUNT;
 }
 
-pub fn play_sfx(sfx: [(u8, u8); SFX_STEP_COUNT as usize]) {
+pub fn play_sfx(midi_array: [(u8, u8); SFX_STEP_COUNT as usize]) {
     unsafe {
         IS_SFX_PLAYING = true;
         SFX_CURRENT_TIME_STEP = 0;
-        CURRENT_SFX = sfx;
+        CURRENT_SFX = midi_array;
     }
 }
+
+pub fn play_tune(
+    track1: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
+    track2: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
+    drums: [(u8, u8); tune::TUNE_STEP_COUNT as usize],
+    ) {
+    log4gba::debug("ok");
+    unsafe {
+        CURRENT_TUNE_1 = track1;
+        CURRENT_TUNE_2 = track2;
+        CURRENT_TUNE_DRUMS = drums;
+        TUNE_CURRENT_TIME_STEP = 0;
+    }
+}
+
 
 pub fn play_step() {
     unsafe {
@@ -116,20 +138,20 @@ pub fn play_step() {
         if IS_SFX_PLAYING {
             (pitch, velocity) = CURRENT_SFX[SFX_CURRENT_TIME_STEP as usize]
         } else {
-            (pitch, velocity) = tune::TUNE_TRACK1[TUNE_CURRENT_TIME_STEP as usize];
+            (pitch, velocity) = CURRENT_TUNE_1[TUNE_CURRENT_TIME_STEP as usize];
         }
         if pitch > 0 {
             play_tone1(pitch, velocity);
         }
 
         // GBA TONE 2
-        let (pitch, velocity): (u8, u8) = tune::TUNE_TRACK2[TUNE_CURRENT_TIME_STEP as usize];
+        let (pitch, velocity): (u8, u8) = CURRENT_TUNE_2[TUNE_CURRENT_TIME_STEP as usize];
         if pitch > 0 {
             play_tone2(pitch, velocity);
         }
 
         // GBA NOISE
-        let (pitch, velocity): (u8, u8) = tune::TUNE_DRUMS[TUNE_CURRENT_TIME_STEP as usize];
+        let (pitch, velocity): (u8, u8) = CURRENT_TUNE_DRUMS[TUNE_CURRENT_TIME_STEP as usize];
         if pitch > 0 {
             play_noise_drum(pitch, velocity);
         }
