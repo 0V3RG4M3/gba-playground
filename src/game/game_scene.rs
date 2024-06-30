@@ -5,6 +5,8 @@ use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
+use crate::game::screen_youwin_scene::ScreenYouWinScene;
+use crate::game::screen_gameover_scene::ScreenGameoverScene;
 
 use crate::fixed::Fixed;
 use crate::game::cauldron::Cauldron;
@@ -161,8 +163,11 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        let _ = self.run_level(levels::first());
-        SceneRunner::<()>::new::<GameScene>()
+        match self.run_level(levels::first()){
+            Ok(_) => {SceneRunner::<()>::new::<ScreenYouWinScene>()}
+            Err(_) => {SceneRunner::<()>::new::<ScreenGameoverScene>()}
+        }
+
     }
 }
 

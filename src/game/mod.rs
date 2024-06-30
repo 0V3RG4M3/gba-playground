@@ -5,4 +5,6 @@ mod leader;
 mod level;
 mod levels;
 mod player;
-pub mod screen_scene;
+pub mod screen_splash_scene;
+pub mod screen_gameover_scene;
+pub mod screen_youwin_scene;
