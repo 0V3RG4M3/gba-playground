@@ -1,13 +1,3 @@
-use crate::game::screen_gameover_scene::ScreenGameoverScene;
-use crate::game::screen_youwin_scene::ScreenYouWinScene;
-use gba::asm_runtime;
-use gba::bios;
-use gba::fixed::i16fx8;
-use gba::interrupts::IrqBits;
-use gba::mmio;
-use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
-use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
-
 use crate::fixed::Fixed;
 use crate::game::cauldron::Cauldron;
 use crate::game::item::ItemState;
@@ -15,10 +5,20 @@ use crate::game::leader::Leader;
 use crate::game::level::Level;
 use crate::game::levels;
 use crate::game::player::Player;
+use crate::game::screen_gameover_scene::ScreenGameoverScene;
+use crate::game::screen_youwin_scene::ScreenYouWinScene;
 use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
+use crate::tune;
+use gba::asm_runtime;
+use gba::bios;
+use gba::fixed::i16fx8;
+use gba::interrupts::IrqBits;
+use gba::mmio;
+use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
+use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 pub struct GameScene {}
 
@@ -59,9 +59,17 @@ impl GameScene {
             if is_done {
                 camera.set_pitch_angle(16 + backflip_angle);
                 if backflip_angle == 0 {
-                    backflip_angle -= 4;
-                } else {
                     return Ok(());
+                } else {
+                    if backflip_angle == 252 {
+                        // play win music
+                        gba_synth::play_tune(
+                            tune::TUNE_WIN_TRACK1,
+                            tune::TUNE_WIN_TRACK2,
+                            [(0, 0); tune::TUNE_STEP_COUNT as usize],
+                        );
+                    }
+                    backflip_angle -= 4;
                 }
             }
 

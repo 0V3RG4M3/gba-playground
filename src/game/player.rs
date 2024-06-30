@@ -1,5 +1,6 @@
 use crate::gba_synth;
 use crate::sfx;
+use crate::tune;
 use gba::keys::KeyInput;
 use gba::video::obj::ObjDisplayStyle;
 
@@ -76,6 +77,7 @@ impl Player {
             if key_input.b() && !self.key_was_pressed.b() {
                 // Player drops item on the floor
                 gba_synth::play_sfx(sfx::ITEM_DROPPED);
+
                 let item = &mut items[equipped_item_index];
                 let pos = &mut item.sprite.pos;
                 pos.x = camera.pos.x + camera.yaw_sin() * 32;
