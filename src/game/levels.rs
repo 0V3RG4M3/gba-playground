@@ -9,7 +9,7 @@ pub fn first() -> Level<20, 5> {
         Item::new(3, ItemKind::BoarThigh, 48, 2, 8),
         Item::new(4, ItemKind::Melon, 96, 2, 8),
         Item::new(5, ItemKind::Watermelon, 34, 2, 15),
-        Item::new(6, ItemKind::Watermelon, 0 , 2, 24),
+        Item::new(6, ItemKind::Watermelon, 0, 2, 24),
         Item::new(7, ItemKind::Watermelon, 40, 2, 44),
         Item::new(8, ItemKind::IceCream0, 61, 2, 24),
         Item::new(9, ItemKind::IceCream0, 83, 2, 30),
@@ -24,6 +24,12 @@ pub fn first() -> Level<20, 5> {
         Item::new(18, ItemKind::SugarPaste, 11, 2, 4),
         Item::new(19, ItemKind::SugarPaste, 14, 2, 37),
     ];
-    let recipe_items = [ItemKind::Banana, ItemKind::BoarThigh, ItemKind::Crab, ItemKind::IceCream0, ItemKind::SugarPaste];
+    let recipe_items = [
+        ItemKind::Banana,
+        ItemKind::BoarThigh,
+        ItemKind::Crab,
+        ItemKind::IceCream0,
+        ItemKind::SugarPaste,
+    ];
     Level { available_items, recipe_items }
 }
