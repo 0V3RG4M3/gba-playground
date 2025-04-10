@@ -12,7 +12,7 @@ use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
 use crate::tune;
-use gba::asm_runtime;
+use gba;
 use gba::bios;
 use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
@@ -87,7 +87,7 @@ impl GameScene {
                 if item.state == ItemState::Available {
                     mode7::prepare_sprite(&camera, sprite);
                     let affine_index = sprite.obj.1.affine_index() as usize;
-                    let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+                    let scale = i16fx8::from_bits(sprite.scale.into_raw() as i16);
                     mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
                     mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
                 } else if item.state == ItemState::EquippedByPlayer {
@@ -111,7 +111,7 @@ impl GameScene {
 
             mode7::process_line(0);
 
-            asm_runtime::RUST_IRQ_HANDLER.write(Some(irq_handler));
+            gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
 
             let display_control = DisplayControl::new()
                 .with_video_mode(VideoMode::_2)
@@ -125,7 +125,7 @@ impl GameScene {
     fn process_sprite(camera: &Camera, sprites: &mut [Sprite; 32], sprite: &mut Sprite) {
         mode7::prepare_sprite(&camera, sprite);
         let affine_index = sprite.obj.1.affine_index() as usize;
-        let scale = i16fx8::from_raw(sprite.scale.into_raw() as i16);
+        let scale = i16fx8::from_bits(sprite.scale.into_raw() as i16);
         mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
         mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
         sprites[affine_index] = *sprite;

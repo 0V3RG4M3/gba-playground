@@ -3,7 +3,7 @@
 
 use core::fmt::Write;
 
-use gba::asm_runtime;
+use gba;
 use gba::bios;
 use gba::fixed::{i16fx8, i32fx8};
 use gba::interrupts::IrqBits;
@@ -11,10 +11,7 @@ use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::mmio;
 use gba::video::DisplayStatus;
 
-use gba_playground::game::game_scene::GameScene;
-use gba_playground::game::screen_gameover_scene::ScreenGameoverScene;
 use gba_playground::game::screen_splash_scene::ScreenSplashScene;
-use gba_playground::game::screen_youwin_scene::ScreenYouWinScene;
 use gba_playground::scene::SceneRunner;
 
 #[panic_handler]
@@ -32,11 +29,11 @@ extern "C" fn main() -> ! {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true));
         mmio::IME.write(true);
-        asm_runtime::RUST_IRQ_HANDLER.write(None);
+        gba::RUST_IRQ_HANDLER.write(None);
         mmio::BG2PA.write(i16fx8::wrapping_from(1));
         mmio::BG2PC.write(i16fx8::wrapping_from(0));
-        mmio::BG2X.write(i32fx8::from_raw(0));
-        mmio::BG2Y.write(i32fx8::from_raw(0));
+        mmio::BG2X.write(i32fx8::from_bits(0));
+        mmio::BG2Y.write(i32fx8::from_bits(0));
         bios::VBlankIntrWait();
         scene_runner = scene_runner.run(&mut ());
     }

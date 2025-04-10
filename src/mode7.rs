@@ -239,11 +239,11 @@ pub fn process_line(line: i32) {
 
     let pa: Fixed<i32, 12> = lambda.mul(yaw_cos);
     let pc: Fixed<i32, 12> = lambda.mul(yaw_sin);
-    mmio::BG2PA.write(i16fx8::from_raw(Fixed::<i32, 8>::from(pa).into_raw() as i16));
-    mmio::BG2PC.write(i16fx8::from_raw(Fixed::<i32, 8>::from(pc).into_raw() as i16));
+    mmio::BG2PA.write(i16fx8::from_bits(Fixed::<i32, 8>::from(pa).into_raw() as i16));
+    mmio::BG2PC.write(i16fx8::from_bits(Fixed::<i32, 8>::from(pc).into_raw() as i16));
 
     let x = CAM_X.read() - (Fixed::from(pa) * 120) - bz.mul(pc);
     let y = CAM_Z.read() - (Fixed::from(pc) * 120) + bz.mul(pa);
-    mmio::BG2X.write(i32fx8::from_raw(x.into_raw()));
-    mmio::BG2Y.write(i32fx8::from_raw(y.into_raw()));
+    mmio::BG2X.write(i32fx8::from_bits(x.into_raw()));
+    mmio::BG2Y.write(i32fx8::from_bits(y.into_raw()));
 }

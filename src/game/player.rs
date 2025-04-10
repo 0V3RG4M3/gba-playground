@@ -1,6 +1,5 @@
 use crate::gba_synth;
 use crate::sfx;
-use crate::tune;
 use gba::keys::KeyInput;
 use gba::video::obj::ObjDisplayStyle;
 

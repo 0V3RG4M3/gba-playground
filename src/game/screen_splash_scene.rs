@@ -3,10 +3,9 @@ use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
 use crate::screens;
 use gba::interrupts::IrqBits;
-use gba::mem_fns::__aeabi_memcpy;
-use gba::mmio::{DISPCNT, TEXT_SCREENBLOCKS};
+use gba::mmio::DISPCNT;
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
-use gba::{bios, mmio};
+use gba::{bios, mmio, video};
 
 pub struct ScreenSplashScene {}
 
@@ -29,19 +28,12 @@ impl Scene for ScreenSplashScene {
         ScreenSplashScene {}
     }
 
-    fn run(&mut self, context: &mut Self::C) -> SceneRunner<Self::C> {
+    fn run(&mut self, _: &mut Self::C) -> SceneRunner<Self::C> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true));
         mmio::IME.write(true);
 
-        let a = TEXT_SCREENBLOCKS.get_frame(0).unwrap().as_usize();
-        unsafe {
-            __aeabi_memcpy(
-                a as _,
-                screens::SCREEN_SPLASH.as_ptr().cast(),
-                core::mem::size_of_val(screens::SCREEN_SPLASH) as _,
-            )
-        };
+        video::video3_set_bitmap(&screens::SCREEN_SPLASH);
         DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
 
         log4gba::debug("wait start bt");
