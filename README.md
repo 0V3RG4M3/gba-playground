@@ -3,13 +3,14 @@
 ## Pre-Building
 
 #### Install python venv (from `scripts` folder):
+with uv from [astral](https://docs.astral.sh/uv/#__tabbed_1_1)
 ```bash
-poetry install --no-root
+uv sync
 ```
 
 #### Generate tune.rs file (from `scripts` folder):
 ```bash
-poetry run main_generate_tune_rs.py
+uv run main_generate_tune_rs.py
 ```
 ## Building
 
