@@ -5,12 +5,8 @@ set -e
 rustup component add rust-src || true
 rustup component add rustfmt || true
 
-# Build GBA binaries if nightly is available
-if rustup toolchain list | grep -q '^nightly'; then
-  cargo +nightly build --release --out-dir=out -Z unstable-options
-else
-  echo "Skipping GBA build -- nightly toolchain not installed"
-fi
+# Build GBA binaries
+cargo build --release --out-dir=out -Z unstable-options
 
 # Run tests on host
 cargo test --lib --target=x86_64-unknown-linux-gnu --release

@@ -32,7 +32,7 @@ convertir les graphismes en palettes et tuiles compatibles GBA.
 
 ## Compilation
 
-Le projet fonctionne avec Rust stable. Avant la première compilation, installez les
+Le projet nécessite Rust nightly. Avant la première compilation, installez les
 composants pour la cible GBA :
 
 ```bash
