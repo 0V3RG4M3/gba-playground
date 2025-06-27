@@ -1,8 +1,8 @@
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjShape};
 
+use crate::egj2024::cauldron::Cauldron;
+use crate::egj2024::item::{Item, ItemKind, ItemState};
 use crate::fixed::Fixed;
-use crate::game::cauldron::Cauldron;
-use crate::game::item::{Item, ItemKind, ItemState};
 use crate::math;
 use crate::mode7::Sprite;
 use crate::sprites;

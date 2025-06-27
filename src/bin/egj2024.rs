@@ -11,7 +11,7 @@ use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::mmio;
 use gba::video::DisplayStatus;
 
-use gba_playground::game::screen_splash_scene::ScreenSplashScene;
+use gba_playground::egj2024::screen_splash_scene::ScreenSplashScene;
 use gba_playground::scene::SceneRunner;
 
 #[panic_handler]

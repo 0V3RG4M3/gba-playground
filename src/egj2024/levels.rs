@@ -1,5 +1,5 @@
-use crate::game::item::{Item, ItemKind};
-use crate::game::level::Level;
+use crate::egj2024::item::{Item, ItemKind};
+use crate::egj2024::level::Level;
 
 pub fn first() -> Level<20, 5> {
     let available_items = [

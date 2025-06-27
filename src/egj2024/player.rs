@@ -3,9 +3,9 @@ use crate::sfx;
 use gba::keys::KeyInput;
 use gba::video::obj::ObjDisplayStyle;
 
+use crate::egj2024::cauldron::Cauldron;
+use crate::egj2024::item::{Item, ItemKind, ItemState};
 use crate::fixed::Fixed;
-use crate::game::cauldron::Cauldron;
-use crate::game::item::{Item, ItemKind, ItemState};
 use crate::mode7::Camera;
 use crate::sprites;
 

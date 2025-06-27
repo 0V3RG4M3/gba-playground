@@ -1,4 +1,4 @@
-use crate::game::game_scene::GameScene;
+use crate::egj2024::game_scene::GameScene;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
 use crate::screens;

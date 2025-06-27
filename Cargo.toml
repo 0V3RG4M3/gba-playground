@@ -2,7 +2,7 @@
 name = "gba-playground"
 version = "0.0.0"
 edition = "2021"
-default-run = "game"
+default-run = "egj2024"
 
 [target.thumbv4t-none-eabi.dependencies]
 gba = "0.14.1"
