@@ -3,3 +3,4 @@
 .idea
 scripts/__pycache__
 src/assets/graphics/example
+__pycache__
