@@ -2,9 +2,10 @@ import numpy as np
 import os
 import utils
 
-def parse_file(csv_path: str, bpm_gain: float = 1) -> list[tuple[int, int, int, int, int]]:
+def parse_file(csv_path: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
     """Parse a CSV file containing MIDI data and convert it to a list of tuples representing the track. """    
     result = []
+    loop_size: int = 0  # important to know when the loop must start over
     with open(csv_path, 'r') as csvfile:
 
         header = csvfile.readline()
@@ -16,6 +17,11 @@ def parse_file(csv_path: str, bpm_gain: float = 1) -> list[tuple[int, int, int, 
 
             time, cmd, addr, value = line.strip().split(',')
             frame = int(round(float(time) * fps / bpm_gain))
+
+            if cmd == "STOP":
+                loop_size = frame
+                break
+
             size = int(cmd[len('WRITE'):]) // 8
             addr = int(addr, 16)
             value = int(value, 16)
@@ -24,15 +30,16 @@ def parse_file(csv_path: str, bpm_gain: float = 1) -> list[tuple[int, int, int, 
     # Sort by frame
     result.sort(key=lambda x: x[0])
 
-    return result
+    return result, loop_size
 
 
-def write_reg_tune_rs_file(filename, regs):
+def write_reg_tune_rs_file(filename, regs, frame_count):
     txt = f"""// This file has been automatically generated
     
 
-pub const TUNE_STEP_COUNT: u16 = {len(regs)};
-pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_STEP_COUNT as usize] = {regs};
+pub const TUNE_LOOP_SIZE: u16 = {frame_count};
+pub const TUNE_SIZE: u16 = {len(regs)};
+pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 """
     print(txt)
     with open(filename, "w") as fio:
@@ -40,8 +47,9 @@ pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_STEP_COUNT as usize] = {regs};
 
 
 def main_tune():
-    tune = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    write_reg_tune_rs_file('../src/reg_tune.rs', tune)
+    # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
+    tune, frame_count = parse_file('./remote/pyGBA/reg_tune.csv')
+    write_reg_tune_rs_file('../src/reg_tune.rs', tune, frame_count)
 
     utils.format_rust_file('../src/reg_tune.rs')
 

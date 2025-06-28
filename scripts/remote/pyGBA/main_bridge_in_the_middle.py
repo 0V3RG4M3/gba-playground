@@ -19,10 +19,10 @@ class BridgeInTheMiddle:
         with open(self.FILENAME, "w") as file:
             file.write(self.HEADER + "\n")
 
-    def log(self, cmd):
-        func, address, value = cmd.split(" ")
+    def log(self, command_line):
+        cmd, address, value = command_line.split(" ")
         ts = str(time.time() - self.t0)
-        line = ",".join([ts, func, address, value])
+        line = ",".join([ts, cmd, address, value])
         info = mmio.addr2reg_map(address)
         info = info.NAME if info is not None else ""
         print(f"{line} ({info})")
@@ -55,6 +55,7 @@ class BridgeInTheMiddle:
                                 self.t0 = time.time()
                                 self.is_recording = True
                             elif command.startswith("STOP"):
+                                self.log("STOP -1 -1")
                                 self.is_recording = False
                                 print("STOP")
 
