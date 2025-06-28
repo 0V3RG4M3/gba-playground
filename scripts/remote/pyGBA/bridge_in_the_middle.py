@@ -1,5 +1,6 @@
 import socket
 import time
+import mmio
 
 
 class BridgeInTheMiddle:
@@ -12,16 +13,22 @@ class BridgeInTheMiddle:
         self.tcp_port = tcp_port
         self.t0: float = 0
 
-    def newfile(self):
+        self.is_recording = False
+
+    def newlogfile(self):
         with open(self.FILENAME, "w") as file:
             file.write(self.HEADER + "\n")
 
-    def log_to_file(self, cmd):
+    def log(self, cmd):
         func, address, value = cmd.split(" ")
         ts = str(time.time() - self.t0)
         line = ",".join([ts, func, address, value])
-        with open(self.FILENAME, "a") as file:
-            file.write(line + "\n")
+        info = mmio.addr2reg_map(address)
+        info = info.NAME if info is not None else ""
+        print(f"{line} ({info})")
+        if self.is_recording:
+            with open(self.FILENAME, "a") as file:
+                file.write(line + "\n")
 
     def run(self):
         # Create a UDP socket
@@ -34,25 +41,23 @@ class BridgeInTheMiddle:
                     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_socket:
                         tcp_socket.connect((self.tcp_host, self.tcp_port))
 
-                        is_recording = False
                         while True:
                             # Receive data from UDP socket
-                            data, addr = udp_socket.recvfrom(1024)
+                            data, addr = udp_socket.recvfrom(128)
                             data = data.rstrip(b'\x00').rstrip(b',').rstrip(b'\x00')
-                            print(f"Received UDP data from {addr}: {data}")
                             command = data.decode("utf-8")
                             if command.startswith("WRITE"):
                                 # Send data to TCP socket
                                 tcp_socket.sendall(data)
-                                if is_recording:
-                                    self.log_to_file(command)
+                                self.log(command)
                             elif command.startswith("REC"):
-                                self.newfile()
-                                is_recording = True
+                                self.newlogfile()
+                                self.t0 = time.time()
+                                self.is_recording = True
                             elif command.startswith("STOP"):
-                                is_recording = False
+                                self.is_recording = False
+                                print("STOP")
 
-                    break
                 except socket.error as e:
                     print(f"Socket error: {e}")
                     print("Reconnecting TCP socket...")
