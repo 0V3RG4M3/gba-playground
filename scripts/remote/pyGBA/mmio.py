@@ -30,18 +30,39 @@ class Register:
     ADDRESS: int
     SIZE: int
     DATA_TYPE: type[sound.RegData]
+    NAME: str
     CNAME: str
     DESCRIPTION: str
 
     def write_cmd(self, data: sound.RegData) -> str:
-
         return f"WRITE{self.SIZE*8} {hex(self.ADDRESS)} {hex(data.value())}"
 
-TONE1_SWEEP = Register(ADDRESS=0x04000060, SIZE=1, CNAME="SOUND1CNT_L", DATA_TYPE=sound.SweepControl, DESCRIPTION="Tone 1 Sweep control")
-TONE1_PATTERN = Register(ADDRESS=0x04000062, SIZE=2, CNAME="SOUND1CNT_H", DATA_TYPE=sound.TonePattern, DESCRIPTION="Tone 1 Duty/Length/Envelope")
-TONE1_FREQUENCY = Register(ADDRESS=0x04000064, SIZE=2, CNAME="SOUND1CNT_X", DATA_TYPE=sound.ToneFrequency, DESCRIPTION="Tone 1 Frequency/Control")
+TONE1_SWEEP = Register(ADDRESS=0x04000060, SIZE=1, NAME="TONE1_SWEEP", CNAME="SOUND1CNT_L", DATA_TYPE=sound.SweepControl, DESCRIPTION="Tone 1 Sweep control")
+TONE1_PATTERN = Register(ADDRESS=0x04000062, SIZE=2, NAME="TONE1_PATTERN", CNAME="SOUND1CNT_H", DATA_TYPE=sound.TonePattern, DESCRIPTION="Tone 1 Duty/Length/Envelope")
+TONE1_FREQUENCY = Register(ADDRESS=0x04000064, SIZE=2, NAME="TONE1_FREQUENCY", CNAME="SOUND1CNT_X", DATA_TYPE=sound.ToneFrequency, DESCRIPTION="Tone 1 Frequency/Control")
 
-LEFT_RIGHT_VOLUME = Register(ADDRESS=0x04000080, SIZE=2, CNAME="SOUNDCNT_L", DATA_TYPE=sound.LeftRightVolume, DESCRIPTION="Left/Right sound control")
-SOUND_MIX = Register(ADDRESS=0x04000082, SIZE=2, CNAME="SOUNDCNT_H", DATA_TYPE=sound.SoundMix, DESCRIPTION="Sound mix control")
-SOUND_ENABLED = Register(ADDRESS=0x04000084, SIZE=1, CNAME="SOUNDCNT_X", DATA_TYPE=sound.SoundEnable, DESCRIPTION="Sound enable control")
-SOUNDBIAS = Register(ADDRESS=0x04000088, SIZE=2, CNAME="SOUNDBIAS", DATA_TYPE=sound.SoundBias, DESCRIPTION="Sound bias control")
+TONE2_PATTERN = Register(ADDRESS=0x04000068, SIZE=2, NAME="TONE2_PATTERN", CNAME="SOUND2CNT_H", DATA_TYPE=sound.TonePattern, DESCRIPTION="Tone 2 Duty/Length/Envelope")
+TONE2_FREQUENCY = Register(ADDRESS=0x0400006C, SIZE=2, NAME="TONE2_FREQUENCY", CNAME="SOUND2CNT_H", DATA_TYPE=sound.ToneFrequency, DESCRIPTION="Tone 2 Frequency/Control")
+
+LEFT_RIGHT_VOLUME = Register(ADDRESS=0x04000080, SIZE=2, NAME="LEFT_RIGHT_VOLUME", CNAME="SOUNDCNT_L", DATA_TYPE=sound.LeftRightVolume, DESCRIPTION="Left/Right sound control")
+SOUND_MIX = Register(ADDRESS=0x04000082, SIZE=2, NAME="SOUND_MIX", CNAME="SOUNDCNT_H", DATA_TYPE=sound.SoundMix, DESCRIPTION="Sound mix control")
+SOUND_ENABLED = Register(ADDRESS=0x04000084, SIZE=1, NAME="SOUND_ENABLED", CNAME="SOUNDCNT_X", DATA_TYPE=sound.SoundEnable, DESCRIPTION="Sound enable control")
+SOUNDBIAS = Register(ADDRESS=0x04000088, SIZE=2, NAME="SOUNDBIAS", CNAME="SOUNDBIAS", DATA_TYPE=sound.SoundBias, DESCRIPTION="Sound bias control")
+
+def addr2reg_map(address):
+    register_list = [
+        TONE1_SWEEP,
+        TONE1_PATTERN,
+        TONE1_FREQUENCY,
+        TONE2_PATTERN,
+        TONE2_FREQUENCY,
+        LEFT_RIGHT_VOLUME,
+        SOUND_MIX,
+        SOUND_ENABLED,
+        SOUNDBIAS,
+    ]
+    addr_int = int(address[2:], 16)
+    match = [reg for reg in register_list if reg.ADDRESS == addr_int]
+    if len(match) == 0:
+        return None
+    return match[0]
