@@ -1,3 +1,4 @@
+use crate::egj2025::context::Context;
 use crate::egj2025::level::Level;
 use crate::egj2025::levels;
 use crate::egj2025::player::Player;
@@ -85,13 +86,13 @@ impl GameScene {
 }
 
 impl Scene for GameScene {
-    type C = ();
+    type C = Context;
 
-    fn new(_: &mut ()) -> GameScene {
+    fn new(_: &mut Context) -> GameScene {
         GameScene {}
     }
 
-    fn run(&mut self, _: &mut ()) -> SceneRunner<()> {
+    fn run(&mut self, context: &mut Context) -> SceneRunner<Context> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true).with_irq_hblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true));
         mmio::IME.write(true);
@@ -125,9 +126,13 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        self.run_level(levels::first());
-
-        SceneRunner::<()>::new::<ScreenSplashScene>()
+        self.run_level(levels::LEVELS[context.level_index]());
+        context.level_index += 1;
+        if context.level_index < levels::LEVELS.len() {
+            SceneRunner::<()>::new::<GameScene>()
+        } else {
+            SceneRunner::<()>::new::<ScreenSplashScene>()
+        }
     }
 }
 

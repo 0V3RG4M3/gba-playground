@@ -1,3 +1,4 @@
+pub mod context;
 mod game_scene;
 mod item;
 mod level;

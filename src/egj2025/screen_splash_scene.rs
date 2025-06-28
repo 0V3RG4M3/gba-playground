@@ -1,3 +1,4 @@
+use crate::egj2025::context::Context;
 use crate::egj2025::game_scene::GameScene;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
@@ -22,13 +23,13 @@ impl ScreenSplashScene {
 }
 
 impl Scene for ScreenSplashScene {
-    type C = ();
+    type C = Context;
 
-    fn new(_: &mut ()) -> ScreenSplashScene {
+    fn new(_: &mut Context) -> ScreenSplashScene {
         ScreenSplashScene {}
     }
 
-    fn run(&mut self, _: &mut Self::C) -> SceneRunner<Self::C> {
+    fn run(&mut self, _: &mut Context) -> SceneRunner<Context> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true));
         mmio::IME.write(true);
@@ -40,6 +41,6 @@ impl Scene for ScreenSplashScene {
         Self::wait_start_bt();
         log4gba::debug("start bt pressed");
 
-        SceneRunner::<()>::new::<GameScene>()
+        SceneRunner::<Context>::new::<GameScene>()
     }
 }
