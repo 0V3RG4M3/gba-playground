@@ -18,12 +18,10 @@ function sendRegData() {
          (ctx.stop_when_expired ? (1 << 14) : 0) |
          (ctx.enabled ? (1 << 15) : 0);
 
-  log("sendRegData(): size", ctx.SIZE);
   outlet(0, "reg_data", ctx.SIZE, regData);
 }
 
 function set_value(key, value){
   ctx[key] = value;
-  log("set_value(): set", key, "to", value);
   sendRegData();
 }

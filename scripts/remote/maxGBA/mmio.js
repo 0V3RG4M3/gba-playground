@@ -26,13 +26,11 @@ function sendRegData(size, regData) {
     }
 
     const cmd = "WRITE" + size*8 + " 0x" + register.ADDRESS.toString(16) + " 0x" + regData.toString(16);
-    log("Sending command:", cmd);
     outlet(0, cmd);
 }
 
 
 function reg_data(size, regData){
-    log("reg_data(size, regData): received command:", size, regData);
     sendRegData(size, regData);
 }
 
