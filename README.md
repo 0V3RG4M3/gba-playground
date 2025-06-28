@@ -75,3 +75,8 @@ log4gba::debug("Hello world!")
 ```
 
 Les logs apparaissent dans la fenêtre *Logs* de mGBA (`Tools > View Logs…`).
+
+# Le jeu epj 2025
+Le jeu `egj2025` est un jeu d'aventure où le joueur doit résoudre
+des énigmes en jouant avec des malentendus. le scénario est décrit dans
+`story-board.md`. 
