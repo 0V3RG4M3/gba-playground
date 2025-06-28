@@ -2,7 +2,7 @@ import socket
 import time
 
 
-class UdpToTCP:
+class BridgeInTheMiddle:
     FILENAME = "chiptune.csv"
     HEADER = "time,size,address,value"
 
@@ -61,7 +61,7 @@ class UdpToTCP:
 
 
 def main():
-    UdpToTCP(9999, 'localhost', 8888).run()
+    BridgeInTheMiddle(9999, 'localhost', 8888).run()
 
 
 if __name__ == "__main__":
