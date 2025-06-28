@@ -1,3 +1,5 @@
+use crate::egj2025::level::Level;
+use crate::egj2025::levels;
 use crate::egj2025::player::Player;
 use crate::fixed::Fixed;
 use crate::gba_synth;
@@ -6,6 +8,7 @@ use crate::scene::{Scene, SceneRunner};
 use crate::sprites;
 use gba;
 use gba::bios;
+use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
@@ -14,7 +17,9 @@ use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoM
 pub struct GameScene {}
 
 impl GameScene {
-    fn run_level(&mut self) -> ! {
+    fn run_level(&mut self, level: Level) -> ! {
+        let mut items = level.items;
+
         let mut player = Player::new();
 
         let mut camera = Camera::new();
@@ -30,7 +35,7 @@ impl GameScene {
             gba_synth::play_step();
 
             let key_input = mmio::KEYINPUT.read();
-            player.process(&mut camera, &key_input);
+            player.process(&mut items, &mut camera, &key_input);
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -39,6 +44,23 @@ impl GameScene {
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {
                 sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
+            }
+
+            for (i, item) in items.iter_mut().enumerate() {
+                let Some(item) = item else { continue };
+                let sprite = &mut item.sprite;
+                if player.item_index() == Some(i) {
+                    sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::Normal);
+                    sprite.obj.1 = sprite.obj.1.with_x(0);
+                    sprite.obj.0 = sprite.obj.0.with_y(0);
+                } else {
+                    mode7::prepare_sprite(&camera, sprite);
+                    let affine_index = sprite.obj.1.affine_index() as usize;
+                    let scale = i16fx8::from_bits(sprite.scale.into_raw() as i16);
+                    mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
+                    mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
+                }
+                sprites[i] = *sprite;
             }
 
             sprites.sort_unstable_by_key(|sprite| sprite.z);
@@ -101,7 +123,7 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        self.run_level()
+        self.run_level(levels::first())
     }
 }
 
