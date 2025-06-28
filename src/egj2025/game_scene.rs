@@ -1,6 +1,7 @@
 use crate::egj2025::level::Level;
 use crate::egj2025::levels;
 use crate::egj2025::player::Player;
+use crate::egj2025::screen_splash_scene::ScreenSplashScene;
 use crate::fixed::Fixed;
 use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
@@ -17,9 +18,7 @@ use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoM
 pub struct GameScene {}
 
 impl GameScene {
-    fn run_level(&mut self, level: Level) -> ! {
-        let mut items = level.items;
-
+    fn run_level(&mut self, mut level: Level) {
         let mut player = Player::new();
 
         let mut camera = Camera::new();
@@ -35,7 +34,10 @@ impl GameScene {
             gba_synth::play_step();
 
             let key_input = mmio::KEYINPUT.read();
-            player.process(&mut items, &mut camera, &key_input);
+            player.process(&mut level.items, &mut camera, &key_input);
+            if level.process(player.item_index()) {
+                return;
+            }
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
@@ -46,7 +48,7 @@ impl GameScene {
                 sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
             }
 
-            for (i, item) in items.iter_mut().enumerate() {
+            for (i, item) in level.items.iter_mut().enumerate() {
                 let Some(item) = item else { continue };
                 let sprite = &mut item.sprite;
                 if player.item_index() == Some(i) {
@@ -123,7 +125,9 @@ impl Scene for GameScene {
         }
         mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
-        self.run_level(levels::first())
+        self.run_level(levels::first());
+
+        SceneRunner::<()>::new::<ScreenSplashScene>()
     }
 }
 

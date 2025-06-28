@@ -6,6 +6,7 @@ use crate::sprites;
 use crate::vec3::Vec3;
 
 pub struct Item {
+    pub kind: ItemKind,
     pub sprite: Sprite,
 }
 
@@ -13,6 +14,7 @@ impl Item {
     pub fn new(affine_index: u16, kind: ItemKind, x: i32, y: i32, z: i32) -> Item {
         let pos = Vec3 { x: Fixed::from_int(x), y: Fixed::from_int(y), z: Fixed::from_int(z) };
         Item {
+            kind,
             sprite: Sprite {
                 obj: ObjAttr {
                     0: ObjAttr0::new().with_bpp8(true).with_shape(kind.shape()),
