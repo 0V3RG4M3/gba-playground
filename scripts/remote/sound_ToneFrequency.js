@@ -1,6 +1,6 @@
 include("utils.js");
 
-ctx = {
+var ctx = {
   frequency_rate: 0,
   stop_when_expired: false,
   enabled: false,
@@ -17,18 +17,13 @@ function ToneFrequency(frequency_rate, stop_when_expired, enabled) {
   ctx.enabled = !!enabled;
 }
 
-ToneFrequency.prototype.value = function() {
-  return (this.frequency_rate << 0) |
-         (this.stop_when_expired ? (1 << 14) : 0) |
-         (this.enabled ? (1 << 15) : 0);
-};
-
 function sendRegData() {
-  regData = (ctx.frequency_rate << 0) |
+  const regData = (ctx.frequency_rate << 0) |
          (ctx.stop_when_expired ? (1 << 14) : 0) |
          (ctx.enabled ? (1 << 15) : 0);
 
-  outlet(0, ctx.SIZE, regData);
+  log("sendRegData(): size", ctx.SIZE);
+  outlet(0, "reg_data", ctx.SIZE, regData);
 }
 
 function frequency_rate(value) {
@@ -52,5 +47,8 @@ function enabled(value) {
   sendRegData();
 }
 
-inlets = 1;
-outlets = 1;
+function initialize() {
+  // get current file name
+  log("sound_ToneFrequency.js:", "I N I T I A L I Z E");
+}
+initialize();
