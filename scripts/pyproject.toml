@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dotenv>=0.9.9",
+    "loguru>=0.7.3",
     "miditoolkit>=1.0.1",
     "numpy>=2.3.0",
+    "openai>=1.93.0",
     "opencv-python>=4.11.0.86",
+    "toml>=0.10.2",
 ]
