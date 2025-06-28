@@ -1,3 +1,4 @@
+use crate::egj2025::game_scene::GameScene;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
 use crate::screens;
@@ -39,6 +40,6 @@ impl Scene for ScreenSplashScene {
         Self::wait_start_bt();
         log4gba::debug("start bt pressed");
 
-        loop {}
+        SceneRunner::<()>::new::<GameScene>()
     }
 }
