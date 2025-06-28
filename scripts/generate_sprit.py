@@ -45,18 +45,20 @@ def download_and_save_image(image_url, levelname, filename):
         # Ouvrir et sauvegarder l'image
         image = Image.open(io.BytesIO(response.content))
         full_path = output_path / filename
+        fullsize_name = full_path.with_name(full_path.stem + "_fullsize" + full_path.suffix)
+        image.save(fullsize_name)
+
         # resize form 512x512 to 32x32
-        image = image.resize((32, 32), Image.Resampling.LANCZOS)
-        #replace wite background with transparent
-        image = image.convert("RGBA")
-        datas = image.getdata()
-        new_data = []
-        for item in datas:
-            # Change all white (also shades of whites)
-            # pixels to transparent
-            if item[0] in list(range(200, 256)) and item[1] in list(range(200, 256)) and item[2] in list(range(200, 256)):
-                new_data.append((255, 255, 255, 0))
-        image.save(full_path)
+        image = image.resize((32, 32), Image.Resampling.NEAREST)
+        resize_name = full_path.with_name(full_path.stem + "_32x32" + full_path.suffix)
+        image.save(resize_name)
+
+        # apply k-means quantization to reduce colors to 16 
+        image = image.convert("P", palette=Image.ADAPTIVE, colors=16)
+
+        kmeans_name = full_path.with_name(full_path.stem + "_kmeans" + full_path.suffix)
+        # Save the image with reduced colors
+        image.save(kmeans_name)
 
         loguru.logger.info(f"Image saved to: {full_path}")
         return full_path
