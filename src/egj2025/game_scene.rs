@@ -1,8 +1,9 @@
 use crate::egj2025::context::Context;
+use crate::egj2025::event_scene::EventScene;
 use crate::egj2025::level::Level;
 use crate::egj2025::levels;
 use crate::egj2025::player::Player;
-use crate::egj2025::screen_splash_scene::ScreenSplashScene;
+use crate::egj2025::splash_scene::SplashScene;
 use crate::fixed::Fixed;
 use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
@@ -129,9 +130,9 @@ impl Scene for GameScene {
         self.run_level(levels::LEVELS[context.level_index]());
         context.level_index += 1;
         if context.level_index < levels::LEVELS.len() {
-            SceneRunner::<()>::new::<GameScene>()
+            SceneRunner::<()>::new::<EventScene>()
         } else {
-            SceneRunner::<()>::new::<ScreenSplashScene>()
+            SceneRunner::<()>::new::<SplashScene>()
         }
     }
 }

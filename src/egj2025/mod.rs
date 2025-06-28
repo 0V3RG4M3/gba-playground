@@ -1,7 +1,8 @@
 pub mod context;
+mod event_scene;
 mod game_scene;
 mod item;
 mod level;
 mod levels;
 mod player;
-pub mod screen_splash_scene;
+pub mod splash_scene;

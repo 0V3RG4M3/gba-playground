@@ -12,7 +12,7 @@ use gba::mmio;
 use gba::video::DisplayStatus;
 
 use gba_playground::egj2025::context::Context;
-use gba_playground::egj2025::screen_splash_scene::ScreenSplashScene;
+use gba_playground::egj2025::splash_scene::SplashScene;
 use gba_playground::scene::SceneRunner;
 
 #[panic_handler]
@@ -26,7 +26,7 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
 #[no_mangle]
 extern "C" fn main() -> ! {
     let mut context = Context { level_index: 0 };
-    let mut scene_runner = SceneRunner::<Context>::new::<ScreenSplashScene>();
+    let mut scene_runner = SceneRunner::<Context>::new::<SplashScene>();
     loop {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true));

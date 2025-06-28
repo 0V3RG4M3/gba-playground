@@ -1,32 +1,38 @@
-use crate::egj2025::context::Context;
-use crate::egj2025::game_scene::GameScene;
-use crate::log4gba;
-use crate::scene::{Scene, SceneRunner};
-use crate::screens;
 use gba::interrupts::IrqBits;
+use gba::keys::KeyInput;
 use gba::mmio::DISPCNT;
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
-pub struct ScreenSplashScene {}
+use crate::egj2025::context::Context;
+use crate::egj2025::event_scene::EventScene;
+use crate::log4gba;
+use crate::scene::{Scene, SceneRunner};
+use crate::screens;
 
-impl ScreenSplashScene {
+pub struct SplashScene {}
+
+impl SplashScene {
     fn wait_start_bt() {
+        let mut prev_key_input: Option<KeyInput> = None;
         loop {
             bios::VBlankIntrWait();
             let key_input = mmio::KEYINPUT.read();
-            if key_input.start() {
-                break;
+            if let Some(prev_key_input) = prev_key_input {
+                if !prev_key_input.start() && key_input.start() {
+                    break;
+                }
             }
+            prev_key_input = Some(key_input);
         }
     }
 }
 
-impl Scene for ScreenSplashScene {
+impl Scene for SplashScene {
     type C = Context;
 
-    fn new(_: &mut Context) -> ScreenSplashScene {
-        ScreenSplashScene {}
+    fn new(_: &mut Context) -> SplashScene {
+        SplashScene {}
     }
 
     fn run(&mut self, _: &mut Context) -> SceneRunner<Context> {
@@ -41,6 +47,6 @@ impl Scene for ScreenSplashScene {
         Self::wait_start_bt();
         log4gba::debug("start bt pressed");
 
-        SceneRunner::<Context>::new::<GameScene>()
+        SceneRunner::<Context>::new::<EventScene>()
     }
 }
