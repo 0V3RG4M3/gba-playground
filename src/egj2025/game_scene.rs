@@ -25,9 +25,9 @@ impl GameScene {
         let mut player = Player::new();
 
         let mut camera = Camera::new();
-        camera.pos.x = Fixed::from_int(68);
+        camera.pos.x = Fixed::from_int(128);
         camera.pos.y = Fixed::from_int(16);
-        camera.pos.z = Fixed::from_int(112);
+        camera.pos.z = Fixed::from_int(128);
         camera.set_pitch_angle(16);
 
         gba_synth::init_synth();
@@ -44,7 +44,7 @@ impl GameScene {
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
-            mode7::prepare_frame(3, &camera);
+            mode7::prepare_frame(1, &camera);
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {
@@ -109,9 +109,9 @@ impl Scene for GameScene {
         backgrounds::load();
         sprites::load();
 
-        let frame = mmio::AFFINE3_SCREENBLOCKS.get_frame(1).unwrap();
-        for y in 0..128 {
-            for x in 0..64 {
+        let frame = mmio::AFFINE1_SCREENBLOCKS.get_frame(1).unwrap();
+        for y in 0..32 {
+            for x in 0..16 {
                 let indices = if y % 2 == 0 { [0, 1] } else { [2, 3] };
                 frame.index(x, y).write(indices.into());
             }
