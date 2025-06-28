@@ -27,8 +27,8 @@ pub fn init_synth() {
 
     mmio::LEFT_RIGHT_VOLUME.write(
         LeftRightVolume::new()
-            .with_right_volume(15)
-            .with_left_volume(15)
+            .with_right_volume(7)
+            .with_left_volume(7)
             .with_tone1_left(true)
             .with_tone2_left(true)
             .with_noise_left(true)

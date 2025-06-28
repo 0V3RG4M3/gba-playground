@@ -9,6 +9,8 @@ pub mod fixed;
 #[cfg(not(test))]
 pub mod gba_synth;
 #[cfg(not(test))]
+pub mod gba_synth2;
+#[cfg(not(test))]
 pub mod log4gba;
 #[cfg(not(test))]
 pub mod math;
