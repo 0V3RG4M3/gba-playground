@@ -31,28 +31,18 @@ Wait for instructions in the format:
 name = "level1"
 
 sprites = [
-    { target = "sprite", name = "hero", description = "Hero sprite for the game", size = "32x" },
-    { target = "sprite", name = "enemy", description = "Enemy sprite for the game", size = "32x32" },
-    { target = "sprite", name = "item", description = "Item sprite for the game", size = "16x16" }
-    { target = "splash", name = "start_screen", description = "Start screen for the game", size = "240x160" },
-    { target = "splash", name = "game_over_screen", description = "Game over screen for the game", size = "240x160" },
-    { target = "splash", name = "welcome", description = "Welcome splash screen for the game", size = "240x160" },
-    { target = "splash", name = "game_over", description = "Game over splash screen", size = "240x160" }
-    { target = "splash", name = "forest", description = "Forest background for the game", size = "240x160" },
-    { target = "splash", name = "castle", description = "Castle background for the game", size = "240x160" }
+    { target = "character", name = "Manu", description = "a color full sneil", size = "32x32" },
+    { target = "character", name = "Pablo", description = "an happy alien pink", size = "32x32" },
+    { target = "character", name = "Florian", description = "A cool blue robot", size = "32x32" },
+    { target = "item", name = "coin", description = "Coin item sprite for the game", size = "32x32" },
+    { target = "item", name = "gem", description = "Gem item sprite for the game", size = "32x32" },
+    { target = "item", name = "key", description = "Key item sprite for the game", size = "32x32" },
+    { target = "item", name = "door", description = "magic door", size = "32x32" },
+   #{ target = "splash", name = "start_screen", description = "Start screen for the game", size = "240x160" },
+   #{ target = "splash", name = "game_over_screen", description = "Game over screen for the game", size = "240x160" },
+   #{ target = "splash", name = "welcome", description = "Welcome splash screen for the game", size = "240x160" },
+   #{ target = "splash", name = "game_over", description = "Game over splash screen", size = "240x160" }
+   #{ target = "splash", name = "forest", description = "Forest background for the game", size = "240x160" },
+   #{ target = "splash", name = "castle", description = "Castle background for the game", size = "240x160" }
 ]
 
-[[level]]
-name = "level2"
-
-sprites = [
-    { target = "sprite", name = "hero", description = "Hero sprite for the game", size = "32x32" },
-    { target = "sprite", name = "enemy", description = "Enemy sprite for the game", size = "32x32" },
-    { target = "sprite", name = "item", description = "Item sprite for the game", size = "16x16" }
-    { target = "splash", name = "start_screen", description = "Start screen for the game", size = "240x160" },
-    { target = "splash", name = "game_over_screen", description = "Game over screen for the game", size = "240x160" },
-    { target = "splash", name = "welcome", description = "Welcome splash screen for the game", size = "240x160" },
-    { target = "splash", name = "game_over", description = "Game over splash screen", size = "240x160" }
-    { target = "splash", name = "forest", description = "Forest background for the game", size = "240x160" },
-    { target = "splash", name = "castle", description = "Castle background for the game", size = "240x160" }
-]

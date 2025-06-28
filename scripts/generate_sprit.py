@@ -26,20 +26,17 @@ api_key=os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 def generate_prompt(asset):
-    palette = "#0F0F0F, #3F3F3F, #6F6F6F, #9F9F9F, #D7D7D7, #FFFFFF, #FF0000, #00FF00, #0000FF, #FFFF00, #FF00FF, #00FFFF, #804000, #008040, #800080, #4040FF"
-    if asset["target"] == "sprite":
-        return f"""Pixel art sprite of a single {asset['description']} , centered and occupying the full height and width of the canvas, without any cropping or padding. Use only hard edges and flat colors. No gradients. No anti-aliasing. No color swatches. No multiple views. Transparent background only. Use only this 16-color GBA-safe palette: {palette}. Output must be a clean 64x64 pixel sprite ready for downscaling."""
-    elif asset["target"] == "splash":
-        return f"""Pixel-perfect splash screen for a Game Boy Advance game: {asset['description']}. Resolution must be exactly {asset['size']}. Retro 16-bit style using only flat colors and clean outlines — no gradients or shading. Use only this GBA-safe 16-color palette: {palette}. Background allowed. No text unless specified."""
-    else:
-        return "Unknown asset type."
+    panel = "#0F0F0F, #3F3F3F, #6F6F6F, #9F9F9F, #D7D7D7, #FF0000, #00FF00, #0000FF, #FFFF00, #FF00FF, #00FFFF, #804000, #008040, #800080, #4040FF"
+    return f"""Pixel art of a single {asset['target']} - {asset['description']} sprite for a Game Boy Advance game, centered and occupying the full canvas edge to edge, without padding or cropping. The sprite must be drawn using clean pixel art, sharp edges, flat colors, and no gradients, blur, or anti-aliasing. Background must be flat white (#FFFFFF), used only as chroma key to be removed later. Do not use pure white (#FFFFFF) anywhere in the character sprite. Use only this 16-color GBA-safe palette (excluding white): {panel}. Do not add text, frames, labels, or swatches. Output must be a single character only."""
 
-def download_and_save_image(image_url, filename, output_dir="generated_sprites"):
+def download_and_save_image(image_url, levelname, filename):
+    output_dir="generated_sprites"
+    
     """Télécharge et sauvegarde une image depuis une URL"""
     try:
         # Créer le dossier de sortie s'il n'existe pas
-        output_path = Path(output_dir)
-        output_path.mkdir(exist_ok=True)
+        output_path = Path(output_dir) / levelname
+        output_path.mkdir(parents=True, exist_ok=True)
 
         # Télécharger l'image
         response = requests.get(image_url)
@@ -48,6 +45,17 @@ def download_and_save_image(image_url, filename, output_dir="generated_sprites")
         # Ouvrir et sauvegarder l'image
         image = Image.open(io.BytesIO(response.content))
         full_path = output_path / filename
+        # resize form 512x512 to 32x32
+        image = image.resize((32, 32), Image.Resampling.LANCZOS)
+        #replace wite background with transparent
+        image = image.convert("RGBA")
+        datas = image.getdata()
+        new_data = []
+        for item in datas:
+            # Change all white (also shades of whites)
+            # pixels to transparent
+            if item[0] in list(range(200, 256)) and item[1] in list(range(200, 256)) and item[2] in list(range(200, 256)):
+                new_data.append((255, 255, 255, 0))
         image.save(full_path)
 
         loguru.logger.info(f"Image saved to: {full_path}")
@@ -113,8 +121,7 @@ if __name__ == "__main__":
                 loguru.logger.info(f"Sprite generated successfully: {image_url}")
 
                 # Optionnel: télécharger et sauvegarder l'image
-                download_and_save_image(image_url, f"{asset['name']}_{asset['size']}.png")
-
+                download_and_save_image(image_url, level.get('name'), f"{asset['name']}_{asset['size']}.png")
             except Exception as e:
                 loguru.logger.error(f"Error generating sprite '{asset['name']}': {e}")
                 continue
