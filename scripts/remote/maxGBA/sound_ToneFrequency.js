@@ -1,5 +1,6 @@
 include("utils.js");
 
+log("sound_ToneFrequency.js: I N I T I A L I Z E");
 var ctx = {
   frequency_rate: 0,
   stop_when_expired: false,
@@ -26,9 +27,3 @@ function set_value(key, value){
   log("set_value(): set", key, "to", value);
   sendRegData();
 }
-
-function initialize() {
-  // get current file name
-  log("sound_ToneFrequency.js:", "I N I T I A L I Z E");
-}
-initialize();
