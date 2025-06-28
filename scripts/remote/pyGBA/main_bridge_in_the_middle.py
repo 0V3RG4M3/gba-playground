@@ -4,8 +4,8 @@ import mmio
 
 
 class BridgeInTheMiddle:
-    FILENAME = "chiptune.csv"
-    HEADER = "time,size,address,value"
+    FILENAME = "reg_tune.csv"
+    HEADER = "time,cmd,address,value"
 
     def __init__(self, udp_port, tcp_host, tcp_port):
         self.udp_port = udp_port

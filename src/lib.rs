@@ -20,4 +20,6 @@ pub mod sfx;
 pub mod static_sounds_lib;
 pub mod tune;
 #[cfg(not(test))]
+pub mod reg_tune;
+#[cfg(not(test))]
 pub mod vec3;
