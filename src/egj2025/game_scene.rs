@@ -1,3 +1,4 @@
+use crate::backgrounds;
 use crate::egj2025::context::Context;
 use crate::egj2025::end_scene::EndScene;
 use crate::egj2025::event_scene::EventScene;
@@ -15,7 +16,7 @@ use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
-use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
+use gba::video::{BackgroundControl, DisplayControl, DisplayStatus, VideoMode};
 
 pub struct GameScene {}
 
@@ -43,7 +44,7 @@ impl GameScene {
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
-            mode7::prepare_frame(&camera);
+            mode7::prepare_frame(3, &camera);
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {
@@ -98,10 +99,6 @@ impl Scene for GameScene {
         mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true));
         mmio::IME.write(true);
 
-        mmio::BG_PALETTE.index(1).write(Color::from_rgb(12, 17, 31));
-        mmio::BG_PALETTE.index(2).write(Color::from_rgb(31, 22, 0));
-        mmio::BG_PALETTE.index(3).write(Color::from_rgb(27, 4, 15));
-
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
         mmio::OBJ_TILES.index(1).write([0x01010101; 8]);
         for i in 0..128 {
@@ -109,23 +106,16 @@ impl Scene for GameScene {
             va.write(ObjAttr0::new().with_style(ObjDisplayStyle::NotDisplayed));
         }
 
+        backgrounds::load();
         sprites::load();
 
-        let frame = mmio::AFFINE0_SCREENBLOCKS.get_frame(1).unwrap();
-        for y in 0..16 {
-            for x in 0..8 {
-                frame.index(x, y).write(Default::default());
+        let frame = mmio::AFFINE3_SCREENBLOCKS.get_frame(1).unwrap();
+        for y in 0..128 {
+            for x in 0..64 {
+                let indices = if y % 2 == 0 { [0, 1] } else { [2, 3] };
+                frame.index(x, y).write(indices.into());
             }
         }
-        let mut tile = [0; 16];
-        for (i, value) in tile.iter_mut().enumerate() {
-            *value = match (i % 2 == 0, i < 8) {
-                (true, true) => 0x01010101,
-                (false, false) => 0x02020202,
-                _ => 0x03030303,
-            };
-        }
-        mmio::CHARBLOCK0_8BPP.index(0).write(tile);
 
         self.run_level(levels::LEVELS[context.level_index]());
         context.level_index += 1;

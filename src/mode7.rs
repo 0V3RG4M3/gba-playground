@@ -12,6 +12,7 @@ const FOCAL_LENGTH: i32 = 256;
 const NEAR: i32 = 24;
 const FAR: i32 = 512;
 
+static SIZE: GbaCell<u16> = GbaCell::new(0);
 static CAM_X: GbaCell<Fixed<i32, 8>> = GbaCell::new(Fixed::from_raw(0));
 static CAM_Y: GbaCell<Fixed<i32, 20>> = GbaCell::new(Fixed::from_raw(0));
 static CAM_Z: GbaCell<Fixed<i32, 8>> = GbaCell::new(Fixed::from_raw(0));
@@ -196,7 +197,8 @@ pub fn prepare_sprite(camera: &Camera, sprite: &mut Sprite) {
     sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::DoubleSizeAffine);
 }
 
-pub fn prepare_frame(camera: &Camera) {
+pub fn prepare_frame(size: u16, camera: &Camera) {
+    SIZE.write(size);
     CAM_X.write(camera.pos.x);
     CAM_Y.write(Fixed::from(camera.pos.y));
     CAM_Z.write(camera.pos.z);
@@ -233,7 +235,8 @@ pub fn process_line(line: i32) {
     if by.into_int() <= 1 {
         return;
     }
-    mmio::BG2CNT.write(BackgroundControl::new().with_screenblock(1));
+    let size = SIZE.read();
+    mmio::BG2CNT.write(BackgroundControl::new().with_screenblock(1).with_size(size));
     let bz = pitch_sin * (line - 80) - pitch_cos * FOCAL_LENGTH;
     let lambda: Fixed<i32, 12> = CAM_Y.read().div(by.max(Fixed::from_raw(1)));
 

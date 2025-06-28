@@ -75,7 +75,7 @@ impl GameScene {
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
-            mode7::prepare_frame(&camera);
+            mode7::prepare_frame(0, &camera);
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {
