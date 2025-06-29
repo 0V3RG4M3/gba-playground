@@ -8,6 +8,7 @@ mod level;
 mod level_scene;
 mod level_scene_runners;
 mod player;
+mod rabbit_level;
 mod screens;
 pub mod splash_scene;
 mod sprites;
