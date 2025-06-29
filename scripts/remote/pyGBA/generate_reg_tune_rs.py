@@ -48,10 +48,10 @@ pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 
 def main_tune():
     # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    tune, frame_count = parse_file('./remote/pyGBA/reg_tune.csv')
-    write_reg_tune_rs_file('../src/reg_tune.rs', tune, frame_count)
+    tune, frame_count = parse_file('reg_tune.csv')
+    write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
 
-    utils.format_rust_file('../src/reg_tune.rs')
+    utils.format_rust_file('../../../src/reg_tune.rs')
 
 
 if __name__ == '__main__':

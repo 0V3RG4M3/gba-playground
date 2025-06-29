@@ -1,6 +1,7 @@
 import socket
 import time
 import mmio
+import generate_reg_tune_rs
 
 
 class BridgeInTheMiddle:
@@ -58,6 +59,7 @@ class BridgeInTheMiddle:
                                 self.log("STOP -1 -1")
                                 self.is_recording = False
                                 print("STOP")
+                                return
 
                 except socket.error as e:
                     print(f"Socket error: {e}")
@@ -68,7 +70,8 @@ class BridgeInTheMiddle:
 
 def main():
     BridgeInTheMiddle(9999, 'localhost', 8888).run()
-
+    time.sleep(0.1)
+    generate_reg_tune_rs.main_tune()
 
 if __name__ == "__main__":
     main()
