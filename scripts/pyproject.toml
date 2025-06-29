@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dotenv>=0.9.9",
+    "flashgbx>=4.4",
     "loguru>=0.7.3",
     "miditoolkit>=1.0.1",
     "numpy>=2.3.0",

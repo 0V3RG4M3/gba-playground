@@ -8,3 +8,8 @@ build-std = ["core"]
 [target.thumbv4t-none-eabi]
 runner = "mgba"
 rustflags = ["-Clink-arg=-Tlinker_scripts/mono_boot.ld"]
+
+#add rule to flash with cargo flash and use flashgbx like: cargo flash --bin gba-playground
+
+[alias]
+flash_gba = "cargo run --runner flashgbx --bin gba-playground"
