@@ -45,7 +45,7 @@ Create a splash screen with theme "Happy forest" and title text "Rappel-toi que 
 - Description: La porte est ouvert seulement quand le temps = -quelque chose. On revient dans le temps avec un objet magique. plus tu prend d'objets plus tu recule dans le temps. Temps cible 10s. start à 11s.
 
 - But: Ouvrir la porte en revenant dans le temps.
-- sprite: flesh undo
+- sprite: flèche undo
 - Sprite: chiffre 0-9 signe -
 
 Create a splash screen with theme "Tic-tac" and title text "Tac Tic Tac Tic"
@@ -69,13 +69,13 @@ Create a splash screen with theme "Tic-tac" and title text "Tac Tic Tac Tic"
 
 
     Create a splash screen with theme "daysitting crazy baby" and title text "Ho non !"
-# Enigmes 7: 
-- sous theme: prêt à porter
 
-# Enigmes 8: 
+# Enigmes 7: 
 - sous theme: faster than the wind
 - Description: le joueur doit attraper un objet qui se déplace rapidement à l'écran (windman)
 - sprite: windman
 
 Create a splash screen with theme "la flûte enchantée" and title text "Attrape le vent"
 
+# Enigmes 8: 
+- sous theme: prêt à porter
