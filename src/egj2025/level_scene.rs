@@ -97,7 +97,7 @@ impl<L: Level> Scene for LevelScene<L> {
         let frame = mmio::AFFINE1_SCREENBLOCKS.get_frame(1).unwrap();
         for y in 0..32 {
             for x in 0..16 {
-                let indices = if y % 2 == 0 { [0, 1] } else { [2, 3] };
+                let indices = if y % 2 == 0 { [4, 5] } else { [6, 7] };
                 frame.index(x, y).write(indices.into());
             }
         }
