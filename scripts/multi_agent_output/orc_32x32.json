@@ -1,0 +1,55 @@
+{
+  "initial_prompt": "green orc warrior with axe",
+  "final_prompt": "green orc warrior with axe, multiple colors, vibrant colors, multiple colors, vibrant colors",
+  "best_score": 0.6411896332075055,
+  "iterations": 3,
+  "target_achieved": false,
+  "iteration_history": [
+    {
+      "iteration": 1,
+      "prompt": "green orc warrior with axe",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.7482424359520373,
+        "pixel_art_style": 0.6844444444444444,
+        "composition": 0.5043003490598691
+      },
+      "overall_score": 0.6411896332075055,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 2,
+      "prompt": "green orc warrior with axe, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.5084448205678271,
+        "pixel_art_style": 0.6,
+        "composition": 0.5005894115598691
+      },
+      "overall_score": 0.5717479052695524,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 3,
+      "prompt": "green orc warrior with axe, multiple colors, vibrant colors, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.7476461861272823,
+        "pixel_art_style": 0.4311111111111111,
+        "composition": 0.6742635007031316
+      },
+      "overall_score": 0.5947333650735475,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts",
+        "Make more pixelated - add '16-bit style', 'blocky pixels' to prompt"
+      ]
+    }
+  ]
+}

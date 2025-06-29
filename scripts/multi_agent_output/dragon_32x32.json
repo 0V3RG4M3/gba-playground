@@ -1,0 +1,56 @@
+{
+  "initial_prompt": "red dragon breathing fire",
+  "final_prompt": "red dragon breathing fire, 16-bit style, multiple colors, blocky pixels, vibrant colors, retro game graphics, high contrast, multiple colors, vibrant colors, bright highlights, dark shadows",
+  "best_score": 0.6175442711775415,
+  "iterations": 3,
+  "target_achieved": false,
+  "iteration_history": [
+    {
+      "iteration": 1,
+      "prompt": "red dragon breathing fire",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.8594800946495201,
+        "pixel_art_style": 0.49333333333333335,
+        "composition": 0.5231491891430422
+      },
+      "overall_score": 0.6175442711775415,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts",
+        "Make more pixelated - add '16-bit style', 'blocky pixels' to prompt"
+      ]
+    },
+    {
+      "iteration": 2,
+      "prompt": "red dragon breathing fire, 16-bit style, multiple colors, blocky pixels, vibrant colors, retro game graphics",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.27663202401228704,
+        "pixel_art_style": 0.56,
+        "composition": 0.5279029130879204
+      },
+      "overall_score": 0.5181166961112496,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts",
+        "Increase contrast - use brighter highlights and darker shadows"
+      ]
+    },
+    {
+      "iteration": 3,
+      "prompt": "red dragon breathing fire, 16-bit style, multiple colors, blocky pixels, vibrant colors, retro game graphics, high contrast, multiple colors, vibrant colors, bright highlights, dark shadows",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.4759076028360167,
+        "pixel_art_style": 0.5022222222222222,
+        "composition": 0.5279029130879204
+      },
+      "overall_score": 0.5435273674315511,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "initial_prompt": "blue wizard with pointy hat and staff",
+  "final_prompt": "blue wizard with pointy hat and staff, multiple colors, vibrant colors, multiple colors, vibrant colors",
+  "best_score": 0.6644880095264193,
+  "iterations": 3,
+  "target_achieved": false,
+  "iteration_history": [
+    {
+      "iteration": 1,
+      "prompt": "blue wizard with pointy hat and staff",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.5556544374129853,
+        "pixel_art_style": 0.7244444444444444,
+        "composition": 0.5189900632031316
+      },
+      "overall_score": 0.6141410049140213,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 2,
+      "prompt": "blue wizard with pointy hat and staff, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.7768230542249747,
+        "pixel_art_style": 0.7644444444444445,
+        "composition": 0.48012287570313156
+      },
+      "overall_score": 0.6644880095264193,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 3,
+      "prompt": "blue wizard with pointy hat and staff, multiple colors, vibrant colors, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.7445918144704248,
+        "pixel_art_style": 0.5466666666666666,
+        "composition": 0.5751953125
+      },
+      "overall_score": 0.6131045608107516,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    }
+  ]
+}

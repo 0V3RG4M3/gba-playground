@@ -1,0 +1,54 @@
+{
+  "initial_prompt": "small health potion bottle",
+  "final_prompt": "small health potion bottle, multiple colors, vibrant colors, multiple colors, vibrant colors",
+  "best_score": 0.716159092663137,
+  "iterations": 3,
+  "target_achieved": true,
+  "iteration_history": [
+    {
+      "iteration": 1,
+      "prompt": "small health potion bottle",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.6832272348103039,
+        "pixel_art_style": 1.0,
+        "composition": 0.45117882311973817
+      },
+      "overall_score": 0.7017633292740346,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 2,
+      "prompt": "small health potion bottle, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.7370454633156852,
+        "pixel_art_style": 1.0,
+        "composition": 0.4875
+      },
+      "overall_score": 0.716159092663137,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    },
+    {
+      "iteration": 3,
+      "prompt": "small health potion bottle, multiple colors, vibrant colors, multiple colors, vibrant colors",
+      "scores": {
+        "color_variety": 0.1,
+        "edge_sharpness": 1.0,
+        "contrast": 0.6031792586185484,
+        "pixel_art_style": 1.0,
+        "composition": 0.5058058261758408
+      },
+      "overall_score": 0.6912164343412937,
+      "feedback": [
+        "Increase color variety - use more distinct colors for different parts"
+      ]
+    }
+  ]
+}
