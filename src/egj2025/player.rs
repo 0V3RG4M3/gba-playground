@@ -20,12 +20,7 @@ impl Player {
         self.item_index
     }
 
-    pub fn process(
-        &mut self,
-        items: &mut [Option<Item>; 32],
-        camera: &mut Camera,
-        key_input: &KeyInput,
-    ) {
+    pub fn process(&mut self, items: &mut [Item], camera: &mut Camera, key_input: &KeyInput) {
         let mut cam_yaw_angle = camera.yaw_angle();
         cam_yaw_angle -= key_input.left() as u8;
         cam_yaw_angle += key_input.right() as u8;
@@ -47,7 +42,6 @@ impl Player {
                     gba_synth::play_sfx(sfx::ITEM_DROPPED);
 
                     let item = &mut items[item_index];
-                    let item = item.as_mut().unwrap();
                     let pos = &mut item.sprite.pos;
                     pos.x = camera.pos.x + camera.yaw_sin() * 32;
                     pos.z = camera.pos.z - camera.yaw_cos() * 32;
@@ -57,7 +51,6 @@ impl Player {
             None => {
                 if key_input.a() && !self.key_was_pressed.a() {
                     for (i, item) in items.iter().enumerate() {
-                        let Some(item) = item else { continue };
                         let mut pos = item.sprite.pos - camera.pos;
                         pos.y = Fixed::from_int(0);
                         let sq_dist = pos.dot(pos);

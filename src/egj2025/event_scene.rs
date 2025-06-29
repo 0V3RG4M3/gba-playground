@@ -5,7 +5,7 @@ use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
 use crate::egj2025::context::Context;
-use crate::egj2025::game_scene::GameScene;
+use crate::egj2025::level_scene_runners;
 use crate::egj2025::screens;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
@@ -35,7 +35,7 @@ impl Scene for EventScene {
         EventScene {}
     }
 
-    fn run(&mut self, _: &mut Context) -> SceneRunner<Context> {
+    fn run(&mut self, context: &mut Context) -> SceneRunner<Context> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true));
         mmio::IME.write(true);
@@ -47,6 +47,6 @@ impl Scene for EventScene {
         Self::wait_start_bt();
         log4gba::debug("start bt pressed");
 
-        SceneRunner::<()>::new::<GameScene>()
+        level_scene_runners::LEVEL_SCENE_RUNNERS[context.level_index]()
     }
 }

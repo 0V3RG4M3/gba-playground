@@ -1,28 +1,31 @@
-use crate::egj2025::backgrounds;
-use crate::egj2025::context::Context;
-use crate::egj2025::end_scene::EndScene;
-use crate::egj2025::event_scene::EventScene;
-use crate::egj2025::level::Level;
-use crate::egj2025::levels;
-use crate::egj2025::player::Player;
-use crate::egj2025::sprites;
-use crate::fixed::Fixed;
-use crate::gba_synth;
-use crate::mode7::{self, Camera, Sprite};
-use crate::scene::{Scene, SceneRunner};
+use core::marker::PhantomData;
+
 use gba;
 use gba::bios;
-use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
 use gba::video::{BackgroundControl, DisplayControl, DisplayStatus, VideoMode};
 
-pub struct GameScene {}
+use crate::egj2025::backgrounds;
+use crate::egj2025::context::Context;
+use crate::egj2025::end_scene::EndScene;
+use crate::egj2025::event_scene::EventScene;
+use crate::egj2025::level::Level;
+use crate::egj2025::level_scene_runners;
+use crate::egj2025::sprites;
+use crate::fixed::Fixed;
+use crate::gba_synth;
+use crate::mode7::{self, Camera, Sprite};
+use crate::scene::{Scene, SceneRunner};
 
-impl GameScene {
-    fn run_level(&mut self, mut level: Level) {
-        let mut player = Player::new();
+pub struct LevelScene<L: Level> {
+    marker: PhantomData<L>,
+}
+
+impl<L: Level> LevelScene<L> {
+    fn run_level(&mut self) {
+        let mut level = L::new();
 
         let mut camera = Camera::new();
         camera.pos.x = Fixed::from_int(128);
@@ -36,37 +39,19 @@ impl GameScene {
             bios::VBlankIntrWait();
             gba_synth::play_step();
 
+            let mut sprites = [Sprite::new(); 32];
+            for sprite in &mut sprites {
+                sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
+            }
+
             let key_input = mmio::KEYINPUT.read();
-            player.process(&mut level.items, &mut camera, &key_input);
-            if level.process(player.item_index()) {
+            if level.process(&mut camera, &mut sprites, &key_input) {
                 return;
             }
 
             mmio::BG2CNT.write(BackgroundControl::new().with_charblock(1));
 
             mode7::prepare_frame(1, &camera);
-
-            let mut sprites = [Sprite::new(); 32];
-            for sprite in &mut sprites {
-                sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::NotDisplayed);
-            }
-
-            for (i, item) in level.items.iter_mut().enumerate() {
-                let Some(item) = item else { continue };
-                let sprite = &mut item.sprite;
-                if player.item_index() == Some(i) {
-                    sprite.obj.0 = sprite.obj.0.with_style(ObjDisplayStyle::Normal);
-                    sprite.obj.1 = sprite.obj.1.with_x(0);
-                    sprite.obj.0 = sprite.obj.0.with_y(0);
-                } else {
-                    mode7::prepare_sprite(&camera, sprite);
-                    let affine_index = sprite.obj.1.affine_index() as usize;
-                    let scale = i16fx8::from_bits(sprite.scale.into_raw() as i16);
-                    mmio::AFFINE_PARAM_A.index(affine_index).write(scale);
-                    mmio::AFFINE_PARAM_D.index(affine_index).write(scale);
-                }
-                sprites[i] = *sprite;
-            }
 
             sprites.sort_unstable_by_key(|sprite| sprite.z);
             for (i, sprite) in sprites.iter().enumerate() {
@@ -87,11 +72,11 @@ impl GameScene {
     }
 }
 
-impl Scene for GameScene {
+impl<L: Level> Scene for LevelScene<L> {
     type C = Context;
 
-    fn new(_: &mut Context) -> GameScene {
-        GameScene {}
+    fn new(_: &mut Context) -> LevelScene<L> {
+        LevelScene { marker: PhantomData }
     }
 
     fn run(&mut self, context: &mut Context) -> SceneRunner<Context> {
@@ -117,9 +102,9 @@ impl Scene for GameScene {
             }
         }
 
-        self.run_level(levels::LEVELS[context.level_index]());
+        self.run_level();
         context.level_index += 1;
-        if context.level_index < levels::LEVELS.len() {
+        if context.level_index < level_scene_runners::LEVEL_SCENE_RUNNERS.len() {
             SceneRunner::<()>::new::<EventScene>()
         } else {
             SceneRunner::<()>::new::<EndScene>()
