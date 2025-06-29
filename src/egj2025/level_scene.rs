@@ -15,7 +15,7 @@ use crate::egj2025::level::Level;
 use crate::egj2025::level_scene_runners;
 use crate::egj2025::sprites;
 use crate::fixed::Fixed;
-use crate::gba_synth;
+use crate::gba_synth2;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 
@@ -33,11 +33,11 @@ impl<L: Level> LevelScene<L> {
         camera.pos.z = Fixed::from_int(128);
         camera.set_pitch_angle(16);
 
-        gba_synth::init_synth();
+        gba_synth2::init_synth();
 
         loop {
             bios::VBlankIntrWait();
-            gba_synth::play_step();
+            gba_synth2::play_step();
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {

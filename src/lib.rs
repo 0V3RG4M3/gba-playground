@@ -9,11 +9,15 @@ pub mod fixed;
 #[cfg(not(test))]
 pub mod gba_synth;
 #[cfg(not(test))]
+pub mod gba_synth2;
+#[cfg(not(test))]
 pub mod log4gba;
 #[cfg(not(test))]
 pub mod math;
 #[cfg(not(test))]
 pub mod mode7;
+#[cfg(not(test))]
+pub mod reg_tune;
 pub mod scene;
 pub mod sfx;
 #[cfg(not(test))]

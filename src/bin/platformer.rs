@@ -12,7 +12,7 @@ use gba::mmio;
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, TextEntry};
 
-use gba_playground::gba_synth;
+use gba_playground::gba_synth2;
 
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
@@ -53,7 +53,7 @@ extern "C" fn main() -> ! {
     let mut vy = 0;
     let (mut px, mut py): (i16, i16) = (32, 128);
 
-    gba_synth::init_synth();
+    gba_synth2::init_synth();
 
     // let mut pitch = 60;
     // let mut vel = 64;
@@ -62,7 +62,7 @@ extern "C" fn main() -> ! {
     let mut key_was_pressed: KeyInput = KeyInput::new();
     loop {
         bios::VBlankIntrWait();
-        gba_synth::play_step();
+        gba_synth2::play_step();
 
         let mut obj_attr = ObjAttr::new();
         obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);

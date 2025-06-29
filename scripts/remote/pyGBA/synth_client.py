@@ -1,7 +1,6 @@
 import socket
 import time
-import sound
-import mmio
+from remote.pyGBA import mmio, sound
 
 # convert midi pitch in[0, 127] to rates used in gba tone1 and tone2. lowest available pitch is 36
 PITCH2RATE = [
@@ -64,7 +63,7 @@ def main():
             commands = [
                 mmio.TONE1_SWEEP.write_cmd(no_sweep),
                 mmio.TONE1_PATTERN.write_cmd(glockenspiel_tone_pattern),
-                mmio.TONE1_FREQUENCY.write_cmd(sound.ToneFrequency(frequency_rate=frequency_to_rate(440+frame_id), stop_when_expired=False, enabled=True)),
+                mmio.TONE1_FREQUENCY.write_cmd(sound.ToneFrequency(frequency_rate=frequency_to_rate(440 + frame_id), stop_when_expired=False, enabled=True)),
             ]
             log_cmd(frame_id, commands)
             send_cmd(s, commands)
