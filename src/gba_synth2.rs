@@ -1,19 +1,16 @@
 use gba::mmio;
 use gba::mmio::{Safe, VolAddress};
-use gba::sound::{
-    LeftRightVolume, PsgMix, SoundEnable, SoundMix
-};
+use gba::sound::{LeftRightVolume, PsgMix, SoundEnable, SoundMix};
 
 use crate::reg_tune;
 
 static mut LOOP_DELTA_COUNT: i8 = 0;
 static mut CURRENT_TIME_STEP_TUNE_1: u16 = 0;
-static mut CURRENT_INDEX_TUNE_1: usize = 0;  // frame step on tune 1
+static mut CURRENT_INDEX_TUNE_1: usize = 0; // frame step on tune 1
 static mut CURRENT_TUNE_1: [(u16, u8, u32, u32); reg_tune::TUNE_SIZE as usize] =
     [(0, 0, 0, 0); reg_tune::TUNE_SIZE as usize];
 
 pub fn init_synth() {
-    
     mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
 
     mmio::LEFT_RIGHT_VOLUME.write(
@@ -30,9 +27,7 @@ pub fn init_synth() {
 
     mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_50));
 
-    play_tune(
-        reg_tune::TUNE_TRACK1,
-    );
+    play_tune(reg_tune::TUNE_TRACK1);
 }
 
 pub fn write(size: u8, addr: u32, value: u32) {
@@ -46,9 +41,7 @@ pub fn write(size: u8, addr: u32, value: u32) {
     }
 }
 
-pub fn play_tune(
-    reg_tune1: [(u16, u8, u32, u32); reg_tune::TUNE_SIZE as usize],
-) {
+pub fn play_tune(reg_tune1: [(u16, u8, u32, u32); reg_tune::TUNE_SIZE as usize]) {
     unsafe {
         CURRENT_TUNE_1 = reg_tune1;
     }
@@ -64,9 +57,9 @@ pub fn play_step() {
             let (next_time_step, size, addr, value) = CURRENT_TUNE_1[CURRENT_INDEX_TUNE_1]; // time step
             let wait_on_loop_back = LOOP_DELTA_COUNT != 0;
             if (next_time_step > CURRENT_TIME_STEP_TUNE_1) || (wait_on_loop_back) {
-                break
+                break;
             }
-            
+
             // write the value to the address
             write(size, addr, value);
 

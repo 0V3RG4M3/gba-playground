@@ -16,12 +16,12 @@ pub mod log4gba;
 pub mod math;
 #[cfg(not(test))]
 pub mod mode7;
+#[cfg(not(test))]
+pub mod reg_tune;
 pub mod scene;
 pub mod sfx;
 #[cfg(not(test))]
 pub mod static_sounds_lib;
 pub mod tune;
-#[cfg(not(test))]
-pub mod reg_tune;
 #[cfg(not(test))]
 pub mod vec3;

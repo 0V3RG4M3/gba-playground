@@ -15,14 +15,13 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
-fn enable_sound(){
-
+fn enable_sound() {
     mmio::SOUND_ENABLED.write(sound::SoundEnable::new().with_enabled(true));
 
     mmio::LEFT_RIGHT_VOLUME.write(
         sound::LeftRightVolume::new()
-            .with_right_volume(15)  // attention il semble que le volume doit etre dans [0, 7]
-            .with_left_volume(15)
+            .with_right_volume(7)
+            .with_left_volume(7)
             .with_tone1_left(true)
             .with_tone2_left(true)
             .with_noise_left(true)
