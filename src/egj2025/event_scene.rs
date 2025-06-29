@@ -40,7 +40,7 @@ impl Scene for EventScene {
         mmio::IE.write(IrqBits::new().with_vblank(true));
         mmio::IME.write(true);
 
-        video::video3_set_bitmap(&screens::SCREEN_GAMEOVER);
+        video::video3_set_bitmap(&screens::SCREEN_ENIGME2);
         DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
 
         log4gba::debug("wait start bt");

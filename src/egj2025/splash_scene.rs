@@ -40,7 +40,7 @@ impl Scene for SplashScene {
         mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true));
         mmio::IME.write(true);
 
-        video::video3_set_bitmap(&screens::SCREEN_SPLASH);
+        video::video3_set_bitmap(&screens::SCREEN_INTRO);
         DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
 
         log4gba::debug("wait start bt");
