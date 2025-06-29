@@ -32,29 +32,29 @@ impl Item {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ItemKind {
-    Melon,
-    Watermelon,
+    Door,
+    Key,
 }
 
 impl ItemKind {
     pub fn shape(&self) -> ObjShape {
         match self {
-            ItemKind::Melon => ObjShape::Square,
-            ItemKind::Watermelon => ObjShape::Horizontal,
+            ItemKind::Door => ObjShape::Square,
+            ItemKind::Key => ObjShape::Square,
         }
     }
 
     pub fn size(&self) -> u16 {
         match self {
-            ItemKind::Melon => 2,
-            ItemKind::Watermelon => 2,
+            ItemKind::Door => 2,
+            ItemKind::Key => 2,
         }
     }
 
     pub fn tile_id(&self) -> u16 {
         match self {
-            ItemKind::Melon => sprites::INDEX_04_MELONE as u16,
-            ItemKind::Watermelon => sprites::INDEX_05_WATERMELONE as u16,
+            ItemKind::Door => sprites::INDEX_24_DOOR_32 as u16,
+            ItemKind::Key => sprites::INDEX_28_KEY1_32 as u16,
         }
     }
 }
