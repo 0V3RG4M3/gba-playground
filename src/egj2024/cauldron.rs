@@ -1,8 +1,8 @@
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2};
 
+use crate::egj2024::sprites;
 use crate::fixed::Fixed;
 use crate::mode7::Sprite;
-use crate::sprites;
 use crate::vec3::Vec3;
 
 pub struct Cauldron {

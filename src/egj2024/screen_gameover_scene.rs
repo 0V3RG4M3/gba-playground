@@ -1,7 +1,7 @@
 use crate::egj2024::game_scene::GameScene;
+use crate::egj2024::screens;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
-use crate::screens;
 use gba::interrupts::IrqBits;
 use gba::mmio::DISPCNT;
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};

@@ -1,3 +1,4 @@
+mod backgrounds;
 pub mod context;
 mod end_scene;
 mod event_scene;
@@ -6,4 +7,6 @@ mod item;
 mod level;
 mod levels;
 mod player;
+mod screens;
 pub mod splash_scene;
+mod sprites;

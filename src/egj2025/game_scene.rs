@@ -1,15 +1,15 @@
-use crate::backgrounds;
+use crate::egj2025::backgrounds;
 use crate::egj2025::context::Context;
 use crate::egj2025::end_scene::EndScene;
 use crate::egj2025::event_scene::EventScene;
 use crate::egj2025::level::Level;
 use crate::egj2025::levels;
 use crate::egj2025::player::Player;
+use crate::egj2025::sprites;
 use crate::fixed::Fixed;
 use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
-use crate::sprites;
 use gba;
 use gba::bios;
 use gba::fixed::i16fx8;

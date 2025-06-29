@@ -6,9 +6,9 @@ use gba::{bios, mmio, video};
 
 use crate::egj2025::context::Context;
 use crate::egj2025::game_scene::GameScene;
+use crate::egj2025::screens;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
-use crate::screens;
 
 pub struct EventScene {}
 

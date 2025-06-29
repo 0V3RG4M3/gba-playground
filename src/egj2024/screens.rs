@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use gba::video::Video3Bitmap;
 
 pub const SCREEN_YOUWIN: Video3Bitmap = Video3Bitmap::new_from_u16([

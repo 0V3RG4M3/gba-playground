@@ -5,10 +5,10 @@ use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
 use crate::egj2025::context::Context;
+use crate::egj2025::screens;
 use crate::egj2025::splash_scene::SplashScene;
 use crate::log4gba;
 use crate::scene::{Scene, SceneRunner};
-use crate::screens;
 
 pub struct EndScene {}
 

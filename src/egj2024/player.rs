@@ -5,9 +5,9 @@ use gba::video::obj::ObjDisplayStyle;
 
 use crate::egj2024::cauldron::Cauldron;
 use crate::egj2024::item::{Item, ItemKind, ItemState};
+use crate::egj2024::sprites;
 use crate::fixed::Fixed;
 use crate::mode7::Camera;
-use crate::sprites;
 
 pub struct Player {
     index: usize,
