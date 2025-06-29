@@ -7,6 +7,7 @@ use crate::reg_tune;
 static mut LOOP_DELTA_COUNT: i8 = 0;
 static mut CURRENT_TIME_STEP_TUNE_1: u16 = 0;
 static mut CURRENT_INDEX_TUNE_1: usize = 0; // frame step on tune 1
+#[link_section = ".ewram"]
 static mut CURRENT_TUNE_1: [(u16, u8, u32, u32); reg_tune::TUNE_SIZE as usize] =
     [(0, 0, 0, 0); reg_tune::TUNE_SIZE as usize];
 

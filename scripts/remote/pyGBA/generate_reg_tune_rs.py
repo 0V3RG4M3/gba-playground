@@ -27,8 +27,11 @@ def parse_file(csv_path: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int,
             value = int(value, 16)
             result.append((frame, size, addr, value))
 
-    # Sort by frame
+    # Sort by frame (just in case)
     result.sort(key=lambda x: x[0])
+
+    if result[-1][0] >= loop_size:
+        loop_size = result[-1][0] + 1
 
     return result, loop_size
 
@@ -39,7 +42,8 @@ def write_reg_tune_rs_file(filename, regs, frame_count):
 
 pub const TUNE_LOOP_SIZE: u16 = {frame_count};
 pub const TUNE_SIZE: u16 = {len(regs)};
-pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
+#[link_section =".rodata"]
+pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 """
     print(txt)
     with open(filename, "w") as fio:
@@ -48,7 +52,7 @@ pub const TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 
 def main_tune():
     # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    tune, frame_count = parse_file('reg_tune.csv')
+    tune, frame_count = parse_file('reg_tune.csv', bpm_gain=1)
     write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
 
     utils.format_rust_file('../../../src/reg_tune.rs')
