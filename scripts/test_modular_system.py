@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for the modular epjtools package.
+Test script for the modular egjtools package.
 """
 
 import sys
@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
 import loguru
-from epjtools import VisionEnhancedMultiAgentSystem
+from egjtools import VisionEnhancedMultiAgentSystem
 
 def test_modular_system():
     """Test the modular multi-agent system."""

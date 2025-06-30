@@ -5,7 +5,7 @@ Main script to run the vision-enhanced multi-agent system.
 
 import sys
 import loguru
-from epjtools import VisionEnhancedMultiAgentSystem
+from egjtools import VisionEnhancedMultiAgentSystem
 
 def main():
     """Main function to test the vision-enhanced multi-agent system."""

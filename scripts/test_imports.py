@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple test for epjtools package import.
+Simple test for egjtools package import.
 """
 
 print("Starting import test...")
@@ -9,31 +9,31 @@ try:
     print("Testing individual imports...")
     
     print("1. Importing SpriteGeneratorAgent...")
-    from epjtools.sprite_generator import SpriteGeneratorAgent
+    from egjtools.sprite_generator import SpriteGeneratorAgent
     print("   ✅ SpriteGeneratorAgent imported successfully")
     
     print("2. Importing VisionEvaluatorAgent...")
-    from epjtools.vision_evaluator import VisionEvaluatorAgent
+    from egjtools.vision_evaluator import VisionEvaluatorAgent
     print("   ✅ VisionEvaluatorAgent imported successfully")
     
     print("3. Importing PromptRefinerAgent...")
-    from epjtools.prompt_refiner import PromptRefinerAgent
+    from egjtools.prompt_refiner import PromptRefinerAgent
     print("   ✅ PromptRefinerAgent imported successfully")
     
     print("4. Importing PromptCondenserAgent...")
-    from epjtools.prompt_condenser import PromptCondenserAgent
+    from egjtools.prompt_condenser import PromptCondenserAgent
     print("   ✅ PromptCondenserAgent imported successfully")
     
     print("5. Importing TransparencyProcessorAgent...")
-    from epjtools.transparency_processor import TransparencyProcessorAgent
+    from egjtools.transparency_processor import TransparencyProcessorAgent
     print("   ✅ TransparencyProcessorAgent imported successfully")
     
     print("6. Importing VisionEnhancedMultiAgentSystem...")
-    from epjtools.multi_agent_system import VisionEnhancedMultiAgentSystem
+    from egjtools.multi_agent_system import VisionEnhancedMultiAgentSystem
     print("   ✅ VisionEnhancedMultiAgentSystem imported successfully")
     
     print("7. Testing package-level import...")
-    from epjtools import VisionEnhancedMultiAgentSystem as VEMAS
+    from egjtools import VisionEnhancedMultiAgentSystem as VEMAS
     print("   ✅ Package-level import successful")
     
     print("\n🎉 All imports successful! EPJTools package is working correctly.")

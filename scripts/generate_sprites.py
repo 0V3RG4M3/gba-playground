@@ -1,4 +1,4 @@
-from epjtools.toml import load_asset_description
+from egjtools.toml import load_asset_description
 from dotenv import load_dotenv
 from PIL import Image
 import sys
