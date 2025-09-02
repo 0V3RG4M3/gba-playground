@@ -24,7 +24,7 @@ class LogPlayer:
             print(f"Error details: {e}")
             return None
 
-    async def read_log_file(self, log_file: str):
+    async def read_log_file(self, log_file: str, timescale: float=1.0):
         """Read and replay log file with original timing."""
         try:
             with open(log_file, "r") as f:
@@ -43,7 +43,10 @@ class LogPlayer:
                         continue
 
                     ts, command = result
-                    
+
+                    # Adjust timestamp according to timescale
+                    ts = ts / timescale
+
                     # Calculate and apply delay
                     delay = float(ts) - (time.time() - t0)
                     if delay > 0:
@@ -97,7 +100,7 @@ class LogPlayer:
             except Exception as e:
                 print(f"Error during cleanup: {e}")
 
-    async def run(self, log_file: str, host: str, port: int):
+    async def run(self, log_file: str, host: str, port: int, timescale: float = 1.0):
         """Main entry point."""
         try:
             print(f"🔌 Connecting to {host}:{port}...")
@@ -106,7 +109,7 @@ class LogPlayer:
 
             # Start both tasks
             await asyncio.gather(
-                self.read_log_file(log_file),
+                self.read_log_file(log_file, timescale),
                 self.send_commands()
             )
 
@@ -126,11 +129,12 @@ def main():
     log_file = "reg_tune.csv"  # sys.argv[1]
     host = "localhost"  # sys.argv[2]
     port = 8888  # int(sys.argv[3])
+    timescale = 0.1  # float(sys.argv[4]) if len(sys.argv) > 4 else 1.0
 
     player = LogPlayer()
     
     try:
-        asyncio.run(player.run(log_file, host, port))
+        asyncio.run(player.run(log_file, host, port, timescale))
     except KeyboardInterrupt:
         print("\n👋 Interrupted by user")
     except Exception as e:
