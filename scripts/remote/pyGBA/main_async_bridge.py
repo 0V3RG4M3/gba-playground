@@ -65,22 +65,22 @@ class LogPlayer:
     async def send_commands(self):
         """Send buffered commands at 60Hz."""
         t_next = time.time()
-        
+
         while self.running and self.writer:
             try:
-                t_next += 1/60
+                t_next += 1 / 60
                 t_now = time.time()
                 delay = max(0.0, t_next - t_now)
                 await asyncio.sleep(delay)
 
                 if self.buffer:
-                    commands = "\n".join(self.buffer)
+                    commands = "\n".join(self.buffer) + "\n"
                     self.buffer.clear()
 
                     self.writer.write(commands.encode())
                     await self.writer.drain()
 
-                    print(f"📤 Sent {len(commands)} bytes, delay:{int(delay*1000)}ms")
+                    print(f"📤 Sent {len(commands)} bytes, delay:{int(delay * 1000)}ms")
 
             except ConnectionError as e:
                 print(f"Connection error: {e}")
@@ -129,10 +129,10 @@ def main():
     log_file = "reg_tune.csv"  # sys.argv[1]
     host = "localhost"  # sys.argv[2]
     port = 8888  # int(sys.argv[3])
-    timescale = 0.1  # float(sys.argv[4]) if len(sys.argv) > 4 else 1.0
+    timescale = 1  # float(sys.argv[4]) if len(sys.argv) > 4 else 1.0
 
     player = LogPlayer()
-    
+
     try:
         asyncio.run(player.run(log_file, host, port, timescale))
     except KeyboardInterrupt:
