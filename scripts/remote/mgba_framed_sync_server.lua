@@ -1,11 +1,11 @@
--- Réutilise l'infra du script exemple que tu as trouvé :
-
 console:log("\n---------------------------------------")
-console:log("MGBA REMOTE SERVER SCRIPT")
+console:log("MGBA FRAMED SYNC SERVER SCRIPT")
 
 ST_sockets = {}
 nextID = 1
 server = nil
+
+COMMANDS_BLOCK = ""
 
 function ST_stop(id)
 	local sock = ST_sockets[id]
@@ -24,19 +24,17 @@ function ST_error(id, err)
 	ST_stop(id)
 end
 
-function parse_command(id, line)
-    console:log("parse_command")
+function write_command(line)
+    console:log("write_command")
 
 	local cmd, addr, val = line:match("^(%w+)%s+(0x%x+)%s+(0x%x+)$")
 	if not cmd then
-		console:error(ST_format(id, "MG: Invalid command: " .. line, true))
+		console:error("MG: Invalid command: " .. line)
 		return
 	end
 
-
 	local address = tonumber(addr)
 	local value = tonumber(val)
-
 
 	if cmd == "WRITE8" then
         -- log lua equivalent of python f"emu:write8({address}, {value})"
@@ -49,8 +47,18 @@ function parse_command(id, line)
         console:log(string.format("emu:write32(0x%X, 0x%X)", address, value))
 		emu:write32(address, value)
 	else
-		console:error(ST_format(id, "Unknown command: " .. cmd, true))
+		console:error("Unknown command: " .. cmd)
 	end
+end
+
+function write_commands_block()
+    if COMMANDS_BLOCK ~= "" then
+        for line in COMMANDS_BLOCK:gmatch("[^\r\n]+") do
+            line = line:match("^(.-)%s*$")
+            write_command(line)
+        end
+        COMMANDS_BLOCK = ""
+    end
 end
 
 function ST_received(id)
@@ -61,10 +69,7 @@ function ST_received(id)
 		if data then
             console:log(ST_format(id, data, false))
             console:log("...")
-			for line in data:gmatch("[^\r\n]+") do
-				line = line:match("^(.-)%s*$")
-				parse_command(id, line)
-			end
+            COMMANDS_BLOCK = COMMANDS_BLOCK .. data
 		else
 			if err ~= socket.ERRORS.AGAIN then
 				console:error(ST_format(id, err, true))
@@ -111,7 +116,10 @@ if server then
 end
 
 function ST_onFrame()
-    console:log("ST_onFramesss")
+    write_commands_block()
+    for id, sock in pairs(ST_sockets) do
+        sock:send("TRIGGER\n")
+    end
 end
 
---callbacks:add("frame", ST_onFrame)
+callbacks:add("frame", ST_onFrame)
