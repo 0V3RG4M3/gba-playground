@@ -89,7 +89,8 @@ async def start_socket_producer_async(queue: asyncio.Queue, stop_event: asyncio.
         is_recording = False
         while not stop_event.is_set():
             data, addr = await conn.recv()
-            command = data.decode().strip()
+            data = data.rstrip(b'\x00').rstrip(b',').rstrip(b'\x00')
+            command = data.decode("utf-8")
 
             if not command:
                 continue
@@ -147,9 +148,8 @@ async def start_offline_producer_async(queue: asyncio.Queue, stop_event: asyncio
                     delay = float(ts) - (time.time() - t0)
                     if delay > 0:
                         await asyncio.sleep(delay)
-                    else:
-                        print(
-                            f"PRODUCER: ⚠️ Warning: behind schedule by {-delay:.3f} seconds ({-delay * 60:.2f} frames)")
+                    elif delay < -1/60:
+                        print(f"PRODUCER: ⚠️ Warning: behind schedule by {-delay:.3f} seconds ({-delay * 60:.2f} frames)")
 
                     await queue.put(command)
                     print(f"PRODUCER: 📝 Queued: {command}")
@@ -182,8 +182,7 @@ def main():
         asyncio.run(
             run_producer_consumer_tasks(
                 # start_offline_producer_async(command_queue, stop_event, log_file="reg_tune.csv", timescale=1.0),
-                start_socket_producer_async(command_queue, stop_event, host="localhost", port=max4live_udp_port,
-                                            reg_tune_logger=RegTuneCsvWriter("reg_tune2.csv")),
+                start_socket_producer_async(command_queue, stop_event, host="127.0.0.1", port=max4live_udp_port, reg_tune_logger=RegTuneCsvWriter("reg_tune2.csv")),
                 start_socket_consumer_async(command_queue, stop_event, host="localhost", port=lua_tcp_port),
             )
         )
