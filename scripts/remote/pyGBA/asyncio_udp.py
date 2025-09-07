@@ -14,9 +14,9 @@ class UDPConnection(asyncio.DatagramProtocol):
         print(f"📩 reçu {data.decode()} de {addr}")
         self.queue.put_nowait((data, addr))
 
-    async def recv(self) -> Tuple[str, Tuple[str, int]]:
-        message, addr = await self.queue.get()
-        return message, addr
+    async def recv(self) -> Tuple[bytes, Tuple[str, int]]:
+        data, addr = await self.queue.get()
+        return data, addr
 
     def send(self, data: bytes, addr: Tuple[str, int]):
         if self.transport:
@@ -29,7 +29,8 @@ class UDPConnection(asyncio.DatagramProtocol):
             self.transport = None
 
 
-async def main():
+async def demo():
+    """ """
     loop = asyncio.get_running_loop()
     conn = UDPConnection()
 
@@ -39,11 +40,11 @@ async def main():
     )
 
     try:
-        print("Serveur UDP en écoute sur le port 9999...")
+        print("UDP server listening on port 9999...")
         while True:
-            msg, addr = await conn.recv()
-            # Répondre automatiquement
-            conn.send(f"ACK: {msg}".encode(), addr)
+            data, addr = await conn.recv()
+            # Automatically sending an acknowledgment back to the sender
+            conn.send(f"ACK: {data.decode()}".encode(), addr)
     except asyncio.CancelledError:
         pass
     finally:
@@ -51,4 +52,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(demo())
