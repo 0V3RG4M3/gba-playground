@@ -115,11 +115,11 @@ if server then
 	console:log("Listening on port " .. port)
 end
 
-function ST_onFrame()
+function CB_onFrame()
     write_commands_block()
     for id, sock in pairs(ST_sockets) do
         sock:send("TRIGGER\n")
     end
 end
 
-callbacks:add("frame", ST_onFrame)
+callbacks:add("frame", CB_onFrame)
