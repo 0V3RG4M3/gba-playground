@@ -1,11 +1,12 @@
 import asyncio
-import threading
-from collections import deque
 import time
-import sys
 from typing import Optional
 
-MAX_BUFFER_SIZE = 1000
+# Local imports
+from reg_tune_csv import RegTuneCsvWriter
+from asyncio_udp import UDPConnection
+
+MAX_BUFFER_SIZE = 1024
 
 
 async def cleanup_socket(reader: Optional[asyncio.StreamReader], writer: Optional[asyncio.StreamWriter]):
@@ -51,20 +52,70 @@ async def triggered_consumer_loop_async(queue: asyncio.Queue, stop_event: asynci
 async def start_socket_consumer_async(queue: asyncio.Queue, stop_event: asyncio.Event, host: str, port: int):
     reader: Optional[asyncio.StreamReader] = None
     writer: Optional[asyncio.StreamWriter] = None
-    try:
-        print(f"🔌 Connecting to {host}:{port}...")
-        reader, writer = await asyncio.open_connection(host, port)
-        print("✅ Connected!")
 
+    print(f"CONSUMER: 🔌⏳ Connecting with TCP on {host}:{port}...")
+    while not stop_event.is_set():
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+            print("CONSUMER: 🔌✅ TCP socket connected!")
+            break
+        except ConnectionRefusedError:
+            await asyncio.sleep(1)
+
+    try:
         await triggered_consumer_loop_async(queue, stop_event, reader, writer)
 
-    except ConnectionRefusedError:
-        print(f"CONSUMER: Could not connect to {host}:{port}")
     except Exception as e:
         print(f"CONSUMER: Unexpected error: {e}")
     finally:
         await cleanup_socket(reader, writer)
         stop_event.set()
+
+
+async def start_socket_producer_async(queue: asyncio.Queue, stop_event: asyncio.Event, host: str, port: int,
+                                      reg_tune_logger: Optional[RegTuneCsvWriter] = None):
+    loop = asyncio.get_running_loop()
+    conn = UDPConnection()
+
+    print(f"PRODUCER: 🔌⏳ Binding UDP endpoint to {host}:{port}...")
+    transport, _ = await loop.create_datagram_endpoint(
+        protocol_factory=lambda: conn,
+        local_addr=(host, port),
+    )
+    conn.connection_made(transport)
+    print("PRODUCER: 🔌✅ UDP endpoint ready!")
+
+    try:
+        is_recording = False
+        while not stop_event.is_set():
+            data, addr = await conn.recv()
+            command = data.decode().strip()
+
+            if not command:
+                continue
+
+            if command.startswith("WRITE"):
+                await queue.put(command)
+                if is_recording and reg_tune_logger:
+                    reg_tune_logger.log(command)
+                print(f"PRODUCER: 📝 Queued: {command}")
+                # self.log(command)
+            elif command.startswith("REC"):
+                reg_tune_logger.newlogfile()
+                reg_tune_logger.reset_timer()
+                is_recording = True
+            elif command.startswith("STOP"):
+                reg_tune_logger.log("STOP -1 -1")
+                is_recording = False
+                print("STOP")
+
+    except Exception as e:
+        print(f"PRODUCER: Unexpected error: {e}")
+    finally:
+        conn.close()
+        stop_event.set()
+
+
 
 
 async def start_offline_producer_async(queue: asyncio.Queue, stop_event: asyncio.Event, log_file: str,
@@ -97,7 +148,8 @@ async def start_offline_producer_async(queue: asyncio.Queue, stop_event: asyncio
                     if delay > 0:
                         await asyncio.sleep(delay)
                     else:
-                        print(f"PRODUCER: ⚠️ Warning: behind schedule by {-delay:.3f} seconds ({-delay*60:.2f} frames)")
+                        print(
+                            f"PRODUCER: ⚠️ Warning: behind schedule by {-delay:.3f} seconds ({-delay * 60:.2f} frames)")
 
                     await queue.put(command)
                     print(f"PRODUCER: 📝 Queued: {command}")
@@ -120,10 +172,8 @@ async def run_producer_consumer_tasks(producer_task, consumer_task):
 
 
 def main():
-    log_file = "reg_tune.csv"  # sys.argv[1]
-    host = "localhost"  # sys.argv[2]
-    port = 8888  # int(sys.argv[3])
-    timescale = 1  # float(sys.argv[4]) if len(sys.argv) > 4 else 1.0
+    lua_tcp_port = 8888
+    max4live_udp_port = 9999
 
     try:
         command_queue = asyncio.Queue()
@@ -131,8 +181,10 @@ def main():
 
         asyncio.run(
             run_producer_consumer_tasks(
-                start_offline_producer_async(command_queue, stop_event, log_file, timescale),
-                start_socket_consumer_async(command_queue, stop_event, host, port),
+                # start_offline_producer_async(command_queue, stop_event, log_file="reg_tune.csv", timescale=1.0),
+                start_socket_producer_async(command_queue, stop_event, host="localhost", port=max4live_udp_port,
+                                            reg_tune_logger=RegTuneCsvWriter("reg_tune2.csv")),
+                start_socket_consumer_async(command_queue, stop_event, host="localhost", port=lua_tcp_port),
             )
         )
 
@@ -143,5 +195,12 @@ def main():
     finally:
         print("👋 Exiting...")
 
+
 if __name__ == "__main__":
+    # TODO: next step is the triple queue design:
+    #   - Max4live device must include a frame_id in the command.
+    #   - There should be 3 different queues acting as a triple buffer:
+    #       - Producer fills queue frame_id % 3
+    #       - Consumer reads from queue (frame_id - 1) % 3
+
     main()
