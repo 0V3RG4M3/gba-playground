@@ -17,7 +17,7 @@ function flush() {
         return;
     }
 
-    var output = frame_id + "\n" + storage.join("\n");
+    var output = frame_id + "\n" + storage.join("\n") + "\n";
     clear();
 
     outlet(0, output);
