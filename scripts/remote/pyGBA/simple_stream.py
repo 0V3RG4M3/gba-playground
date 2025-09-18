@@ -1,5 +1,8 @@
-import socket
+from typing import Optional
 import time
+import socket
+
+from reg_tune_logger import RegTuneLogReader
 
 
 class ISimpleStream:
@@ -102,3 +105,30 @@ class NullSimpleStream(ISimpleStream):
         assert self._is_opened, "Stream is not opened. Use 'with' statement to open the stream."
         time.sleep(1.0 / self.rate_hz)
         return b''
+
+
+# wraps RegTuneLogReader to provide ISimpleStream interface
+class FileSimpleStream(ISimpleStream):
+    def __init__(self, filename: str):
+        self.reader = RegTuneLogReader(filename, time_scale=1.0)
+        self._is_opened = False
+        self._iterator = None
+
+    def __enter__(self):
+        self._is_opened = True
+        self._iterator = self.reader.read()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._is_opened = False
+        self._iterator = None
+
+    def push(self, data: bytes) -> None:
+        raise NotImplementedError("FileSimpleStream does not support push operation.")
+
+    def read(self) -> bytes:
+        assert self._is_opened, "Stream is not opened. Use 'with' statement to open the stream."
+        try:
+            return next(self._iterator)
+        except StopIteration:
+            return b''
