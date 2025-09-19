@@ -53,12 +53,12 @@ class RegTuneLogReader:
         lines: list[bytes] = []
 
         with open(self.filename, encoding="utf-8") as file:
-            t0 = time.time()
             for line in file:
                 line = line.strip()
                 data = eval(line).encode()
                 lines.append(data)
 
+        t0 = time.time()
         for data in lines:
             items = data.decode("utf-8").splitlines()
 
