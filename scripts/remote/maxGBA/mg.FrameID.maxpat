@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 290.0, 163.0, 1002.0, 591.0 ],
+		"rect" : [ 163.0, 120.0, 882.0, 591.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,58 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-12",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 318.0, 493.5, 78.0, 33.0 ],
+					"presentation_linecount" : 2,
+					"text" : "Returns bang"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-11",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 151.0, 493.5, 78.0, 33.0 ],
+					"text" : "Returns FrameID"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"annotation" : "",
+					"comment" : "bang",
+					"hint" : "bangs on new FrameID",
+					"id" : "obj-8",
+					"index" : 2,
+					"maxclass" : "outlet",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 278.0, 495.0, 30.0, 30.0 ],
+					"varname" : "BangOut"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "int", "bang" ],
+					"patching_rect" : [ 259.0, 423.0, 29.5, 22.0 ],
+					"text" : "t i b"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-59",
 					"maxclass" : "newobj",
@@ -70,7 +122,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 476.0, 114.0, 180.0, 20.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Observe is_playing state {0, 1}"
 				}
 
@@ -94,8 +145,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 296.0, 423.0, 50.0, 22.0 ],
-					"text" : "38"
+					"patching_rect" : [ 302.0, 423.0, 50.0, 22.0 ],
+					"text" : "13"
 				}
 
 			}
@@ -156,7 +207,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 196.0, 423.0, 50.0, 22.0 ],
-					"text" : "687"
+					"text" : "8460"
 				}
 
 			}
@@ -176,23 +227,26 @@
 , 			{
 				"box" : 				{
 					"comment" : "Frame ID",
+					"hint" : "returns FrameID",
 					"id" : "obj-1",
 					"index" : 1,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 259.0, 419.0, 30.0, 30.0 ]
+					"patching_rect" : [ 239.0, 495.0, 30.0, 30.0 ],
+					"varname" : "FrameID"
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"id" : "obj-15",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 147.0, 241.0, 155.0, 20.0 ],
-					"text" : "Convert to fram ID at 60 Hz"
+					"patching_rect" : [ 179.0, 241.0, 155.0, 33.0 ],
+					"text" : "Convert to fram ID at 60 Hz\n- delayed by half a frame"
 				}
 
 			}
@@ -217,8 +271,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 52.0, 240.0, 91.0, 22.0 ],
-					"text" : "expr int($f1*60)"
+					"patching_rect" : [ 52.0, 240.0, 118.0, 22.0 ],
+					"text" : "expr int($f1*60 - 0.5)"
 				}
 
 			}
@@ -257,16 +311,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"order" : 0,
+					"destination" : [ "obj-4", 1 ],
+					"order" : 1,
 					"source" : [ "obj-14", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-4", 1 ],
-					"order" : 1,
+					"destination" : [ "obj-7", 0 ],
+					"order" : 0,
 					"source" : [ "obj-14", 0 ]
 				}
 
@@ -301,16 +355,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"order" : 1,
+					"destination" : [ "obj-20", 1 ],
+					"order" : 0,
 					"source" : [ "obj-5", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-20", 1 ],
-					"order" : 0,
+					"destination" : [ "obj-7", 0 ],
+					"order" : 1,
 					"source" : [ "obj-5", 0 ]
 				}
 
@@ -333,6 +387,20 @@
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-7", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-8", 0 ],
+					"source" : [ "obj-7", 1 ]
 				}
 
 			}
