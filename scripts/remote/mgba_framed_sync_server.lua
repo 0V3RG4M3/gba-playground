@@ -14,10 +14,12 @@ COMMAND_CIRCULAR_BUFFER = {
     ["4"] = ""
 }
 CIRCULAR_BUFFER_SIZE = 5
+DESIRED_LAG_FRAMES = 2  -- We want CB_onFrame to stay 2 frames behind the receiver
 
 -- Current frame counter for CB_onFrame
-MGBA_FRAME_ID = -3
-REMOTE_FRAME_ID = -1
+MGBA_FRAME_ID = -3      -- Consumer (reader) frame counter
+REMOTE_FRAME_ID = -1    -- Producer (writer) frame counter
+INITIAL_SYNC = false    -- Flag to indicate if we've established the initial sync
 
 function ST_stop(id)
 	local sock = ST_sockets[id]
@@ -84,15 +86,25 @@ function process_command_block(data)
     local frame_id = tonumber(lines[1])
     if not frame_id then return end
     
+    -- Check if this is a frame from the past
+    if frame_id <= REMOTE_FRAME_ID then
+        console:log("Ignoring old frame " .. frame_id .. " (current: " .. REMOTE_FRAME_ID .. ")")
+        return
+    end
+    
     REMOTE_FRAME_ID = frame_id
-    console:log("MGBA_FRAME_ID: " .. MGBA_FRAME_ID .. ", REMOTE_FRAME_ID: " .. REMOTE_FRAME_ID .. "\n")
 
-    if REMOTE_FRAME_ID < MGBA_FRAME_ID then
-        MGBA_FRAME_ID = REMOTE_FRAME_ID - 1
+    -- Initialize sync if not done yet
+    if not INITIAL_SYNC then
+        MGBA_FRAME_ID = frame_id - DESIRED_LAG_FRAMES
+        INITIAL_SYNC = true
+        console:log("Initial sync - MGBA_FRAME_ID: " .. MGBA_FRAME_ID .. ", REMOTE_FRAME_ID: " .. REMOTE_FRAME_ID)
+    else
+        console:log("Received commands for frame " .. REMOTE_FRAME_ID)
     end
 
     -- Calculate slot based on frame_id
-    local slot = REMOTE_FRAME_ID % CIRCULAR_BUFFER_SIZE
+    local slot = frame_id % CIRCULAR_BUFFER_SIZE
 
     -- Store the remaining commands in the appropriate slot
     local commands = table.concat(table.move(lines, 2, #lines, 1, {}), "\n")
@@ -154,28 +166,27 @@ if server then
 end
 
 function CB_onFrame()
-    if REMOTE_FRAME_ID < 0 then
-        -- Wait until we receive the first command block
+    if not INITIAL_SYNC then
+        -- Wait until we receive the first command block and establish sync
         return
     end
 
     -- Increment frame counter
     MGBA_FRAME_ID = MGBA_FRAME_ID + 1
-
-    if  REMOTE_FRAME_ID < MGBA_FRAME_ID then
-        console:log("----" .. MGBA_FRAME_ID .. "...")
-        return
-    end
     
     -- Calculate which slot to use
     local slot = MGBA_FRAME_ID % CIRCULAR_BUFFER_SIZE
     
-    -- Write commands from the appropriate slot
-    console:log("----" .. MGBA_FRAME_ID .. " -> Slot " .. slot)
-    write_commands_block(COMMAND_CIRCULAR_BUFFER[tostring(slot)])
-    
-    -- Clear the slot after writing
-    COMMAND_CIRCULAR_BUFFER[tostring(slot)] = ""
+    -- If we have commands for this frame, execute them
+    local commands = COMMAND_CIRCULAR_BUFFER[tostring(slot)]
+    if commands and commands ~= "" then
+        console:log("----" .. MGBA_FRAME_ID .. " -> Executing commands in slot " .. slot)
+        write_commands_block(commands)
+        -- Clear the slot after writing
+        COMMAND_CIRCULAR_BUFFER[tostring(slot)] = ""
+    else
+        console:log("----" .. MGBA_FRAME_ID .. " -> No commands")
+    end
 end
 
 callbacks:add("frame", CB_onFrame)
