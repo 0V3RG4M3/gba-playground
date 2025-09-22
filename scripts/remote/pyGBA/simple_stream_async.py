@@ -1,4 +1,5 @@
 import asyncio
+import reg_tune_logger
 from typing import Optional
 
 
@@ -9,10 +10,10 @@ class ISimpleStreamAsync:
     async def read(self) -> bytes:
         raise NotImplementedError()
 
-    def __aenter__(self):
+    async def __aenter__(self):
         raise NotImplementedError()
 
-    def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(self, exc_type, exc_value, traceback):
         raise NotImplementedError()
 
 
@@ -53,6 +54,7 @@ class TCPSimpleStreamAsync(ISimpleStreamAsync):
         return b''
 
 class UDPProtocol(asyncio.DatagramProtocol):
+    """ Custom protocol to handle incoming UDP datagrams and store them in a queue. """
     def __init__(self, queue: asyncio.Queue):
         self.queue = queue
 
@@ -101,3 +103,31 @@ class UDPSimpleStreamAsync(ISimpleStreamAsync):
         data, addr = await self._protocol.queue.get()
         return data
 
+# wraps RegTuneLogReader to provide ISimpleStreamAsync interface
+class FileSimpleStreamAsync(ISimpleStreamAsync):
+    def __init__(self, filename: str):
+        self.reader = reg_tune_logger.RegTuneLogReaderAsync(filename, time_scale=1.0)
+        self._is_opened = False
+        self._iterator = None
+
+    def __enter__(self):
+        raise NotImplementedError("Use 'async with' statement to open/close the stream.")
+
+    async def __aenter__(self):
+        self._is_opened = True
+        self._iterator = self.reader.read()
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        self._is_opened = False
+        self._iterator = None
+
+    async def push(self, data: bytes) -> None:
+        raise NotImplementedError("FileSimpleStreamAsync does not support push operation.")
+
+    async def read(self) -> bytes:
+        assert self._is_opened, "Stream is not opened. Use 'async with' statement to open the stream."
+        try:
+            return await self._iterator.__anext__()
+        except StopIteration:
+            return b''
