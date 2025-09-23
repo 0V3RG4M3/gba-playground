@@ -13,5 +13,6 @@ dependencies = [
     "openai>=1.93.0",
     "opencv-python>=4.11.0.86",
     "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
     "toml>=0.10.2",
 ]
