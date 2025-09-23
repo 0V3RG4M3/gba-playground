@@ -12,5 +12,6 @@ dependencies = [
     "numpy>=2.3.0",
     "openai>=1.93.0",
     "opencv-python>=4.11.0.86",
+    "pytest>=8.4.2",
     "toml>=0.10.2",
 ]
