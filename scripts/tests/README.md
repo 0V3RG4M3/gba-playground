@@ -1,4 +1,4 @@
-# Testing Configuration for Remote Module
+# Testing Configuration
 
 This directory contains unit tests for the remote module components.
 
@@ -6,12 +6,14 @@ This directory contains unit tests for the remote module components.
 
 ```
 tests/
-├── __init__.py                 # Main tests package
-└── remote/                     # Tests for remote/ module
+├── __init__.py            # Main tests package
+└── remote/                # Tests for remote/ module
     ├── __init__.py            # Remote tests package
     └── pyGBA/                 # Tests for remote/pyGBA/ module
-        ├── __init__.py        # pyGBA tests package
-        └── test_simple_stream.py  # Tests for simple_stream.py
+        ├── __init__.py                  # pyGBA tests package
+        ├── test_reg_tune_logger.py      # Tests for reg_tune_logger.py
+        ├── test_simple_stream.py        # Tests for simple_stream.py
+        └── test_simple_stream_async.py  # Tests for simple_stream_async.py
 ```
 
 ## Running Tests

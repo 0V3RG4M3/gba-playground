@@ -350,16 +350,16 @@ class TestRegTuneLogReaderAsync(unittest.TestCase):
     def test_init_custom_time_scale(self):
         """Test RegTuneLogReaderAsync initialization with custom time scale."""
         time_scale = 2.0
-        reader = RegTuneLogReaderAsync(self.temp_filename, time_scale)
+        reader = RegTuneLogReaderAsync(self.temp_filename, time_scale=time_scale)
         self.assertEqual(reader.time_scale, time_scale)
 
     def test_init_invalid_time_scale(self):
         """Test RegTuneLogReaderAsync initialization with invalid time scale."""
         with self.assertRaises(AssertionError):
-            RegTuneLogReaderAsync(self.temp_filename, -1.0)
+            RegTuneLogReaderAsync(self.temp_filename, time_scale=-1.0)
 
         with self.assertRaises(AssertionError):
-            RegTuneLogReaderAsync(self.temp_filename, 0.0)
+            RegTuneLogReaderAsync(self.temp_filename, time_scale=0.0)
 
 
 # Pytest-style async tests for RegTuneLogReaderAsync
