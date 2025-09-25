@@ -1,4 +1,3 @@
-from typing import Optional
 import time
 import socket
 

@@ -29,6 +29,9 @@ class TCPSimpleStreamAsync(ISimpleStreamAsync):
     def __enter__(self):
         raise NotImplementedError("Use 'async with' statement to open/close the stream.")
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        raise NotImplementedError()
+
     async def __aenter__(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
         self._is_opened = True
@@ -79,6 +82,9 @@ class UDPSimpleStreamAsync(ISimpleStreamAsync):
     def __enter__(self):
         raise NotImplementedError("Use 'async with' statement to open/close the stream.")
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        raise NotImplementedError()
+
     async def __aenter__(self):
         loop = asyncio.get_running_loop()
         self._transport, protocol = await loop.create_datagram_endpoint(
@@ -105,13 +111,16 @@ class UDPSimpleStreamAsync(ISimpleStreamAsync):
 
 # wraps RegTuneLogReader to provide ISimpleStreamAsync interface
 class FileSimpleStreamAsync(ISimpleStreamAsync):
-    def __init__(self, filename: str):
-        self.reader = reg_tune_logger.RegTuneLogReaderAsync(filename, time_scale=1.0)
+    def __init__(self, filename: str, loop: bool = False, time_scale: Optional[float] = None):
+        self.reader = reg_tune_logger.RegTuneLogReaderAsync(filename, loop=loop, time_scale=time_scale)
         self._is_opened = False
         self._iterator = None
 
     def __enter__(self):
         raise NotImplementedError("Use 'async with' statement to open/close the stream.")
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        raise NotImplementedError()
 
     async def __aenter__(self):
         self._is_opened = True
@@ -129,5 +138,5 @@ class FileSimpleStreamAsync(ISimpleStreamAsync):
         assert self._is_opened, "Stream is not opened. Use 'async with' statement to open the stream."
         try:
             return await self._iterator.__anext__()
-        except StopIteration:
+        except StopAsyncIteration:
             return b''
