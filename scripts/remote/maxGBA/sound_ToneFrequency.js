@@ -30,7 +30,7 @@ function set_value(key, value){
 function bang(){
   if (!ctx.is_new)
     return;
-  
+
   sendRegData();
   ctx.is_new = false;
 }
