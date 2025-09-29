@@ -9,8 +9,26 @@ from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, FileSi
 import max4live_udp_cleaner
 
 
+def format_pretty_regstate(regstate, batch):
+    frame_id = -1
+    for cmd in batch:
+        items = cmd.split()
+        if len(items) != 4:
+            print(cmd)
+            continue
+        if len(items) == 4:
+            frame_id, cmd_type, addr_str, value_str = items
+            regstate.set_value(int(addr_str[2:], 16), int(value_str[2:], 16))
+    return f"{frame_id} {regstate.to_string()[1]}"
+
+
 async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event, simple_stream: ISimpleStreamAsync):
     print(f"CONSUMER: 🔌⏳ Connecting to simple stream...")
+
+    import pretty_registry
+    regstate = pretty_registry.RegistryState()
+    print("XXXX", regstate.to_string()[0])
+
     async with simple_stream as sstream:
         while not stop_event.is_set():
             # Wait for trigger (e.g., a line with 'TRIGGER\n')
@@ -23,31 +41,41 @@ async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asy
             while not queue.empty():
                 batch.append(queue.get_nowait())
 
-            if batch:
-                commands = ("\n".join(batch) + "\n").encode()
-                if len(commands) > 1024:
-                    print(f"CONSUMER: ⚠️ Warning: Sending a large batch of {len(commands)} bytes")
-                    continue
-                print(f"CONSUMER: sending {len(commands)} bytes")
-                print(f"CONSUMER: commands: {commands}")
-                await sstream.push(commands)
+            if not batch:
+                continue
 
-                print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
+
+            commands = ("\n".join(batch) + "\n").encode()
+            if len(commands) > 1024:
+                print(f"CONSUMER: ⚠️ Warning: Sending a large batch of {len(commands)} bytes")
+                continue
+            print(f"CONSUMER: sending {len(commands)} bytes")
+            print(f"CONSUMER: commands: {commands}")
+            print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
+            await sstream.push(commands)
+
+            print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
 
 
 async def start_null_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event):
     try:
+        import pretty_registry
+        regstate = pretty_registry.RegistryState()
+
         print("CONSUMER: Null consumer ready to discard all data...")
+        print("XXXX", regstate.to_string()[0])
         while not stop_event.is_set():
+            await asyncio.sleep(1 / 60)
 
             batch = []
             while not queue.empty():
-                batch += queue.get_nowait()
+                batch.append(queue.get_nowait())
 
-            if batch:
-                print(f"NULL CONSUMER: 📤 Discarded batch of {len(batch)} items")
+            if not batch:
+                continue
 
-            await asyncio.sleep(1 / 60)  # Simulate 60 fps
+            print(format_pretty_regstate(regstate, batch))
+
 
     except Exception as e:
         print(f"NULL CONSUMER: Unexpected error: {e}")
@@ -101,7 +129,7 @@ def main():
                 command_queue, stop_event,
                 simple_stream=UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port),
                 #simple_stream=FileSimpleStreamAsync("reg_tune6.bin.txt", loop=True, time_scale=1.0),
-                #reg_tune_logger=RegTuneLogWriter("reg_tune6.bin.txt")
+                #reg_tune_logger=RegTuneLogWriter("reg_tune7.bin.txt")
             ),
 
             start_socket_consumer_async(
