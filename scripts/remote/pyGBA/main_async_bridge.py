@@ -6,6 +6,7 @@ from typing import Optional
 
 MAX_BUFFER_SIZE = 1000
 
+
 class LogPlayer:
     def __init__(self):
         self.buffer = deque(maxlen=MAX_BUFFER_SIZE)
@@ -24,7 +25,7 @@ class LogPlayer:
             print(f"Error details: {e}")
             return None
 
-    async def read_log_file(self, log_file: str, timescale: float=1.0):
+    async def read_log_file(self, log_file: str, timescale: float = 1.0):
         """Read and replay log file with original timing."""
         try:
             with open(log_file, "r") as f:

@@ -16,7 +16,6 @@ class ISimpleStreamAsync:
     async def __aexit__(self, exc_type, exc_value, traceback):
         raise NotImplementedError()
 
-
 # TODO: test this class
 class TCPSimpleStreamAsync(ISimpleStreamAsync):
     def __init__(self, host: str, port: int):
