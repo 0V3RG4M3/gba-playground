@@ -1,3 +1,8 @@
+"""
+Records and replays register operations for the GBA sound system,
+enabling capture and playback of sound register sequences.
+"""
+
 import asyncio
 import time
 from typing import Optional

@@ -1,8 +1,12 @@
+"""
+Provides a human-readable visualization of GBA sound register states,
+used for debugging and monitoring register changes.
+"""
+
 import enum
 
-import mmio
-import sound
-import enum
+import gba_mmio
+import gba_sound
 
 
 class Color(enum.StrEnum):
@@ -24,10 +28,10 @@ def color_diff_values(old: str, new: str, sep:str, base_color: Color, diff_color
 class RegistryState:
     def __init__(self):
         self.registries: dict[int, int] = {
-            mmio.TONE1_PATTERN.ADDRESS: 0,
-            mmio.TONE1_FREQUENCY.ADDRESS: 0,
-            mmio.TONE2_PATTERN.ADDRESS: 0,
-            mmio.TONE2_FREQUENCY.ADDRESS: 0,
+            gba_mmio.TONE1_PATTERN.ADDRESS: 0,
+            gba_mmio.TONE1_FREQUENCY.ADDRESS: 0,
+            gba_mmio.TONE2_PATTERN.ADDRESS: 0,
+            gba_mmio.TONE2_FREQUENCY.ADDRESS: 0,
         }
         self.registries_old = self.registries.copy()
         self.updated_registries: set[int] = set(self.registries.keys())
@@ -45,11 +49,11 @@ class RegistryState:
         reg_data_str = reg_sep
 
         for addr, val in self.registries.items():
-            reg = mmio.addr2reg_map(hex(addr))
+            reg = gba_mmio.addr2reg_map(hex(addr))
 
             if reg is not None:
-                reg_data_old = sound.create_reg_data_from_value(reg.DATA_TYPE, self.registries_old[addr])
-                reg_data = sound.create_reg_data_from_value(reg.DATA_TYPE, val)
+                reg_data_old = gba_sound.create_reg_data_from_value(reg.DATA_TYPE, self.registries_old[addr])
+                reg_data = gba_sound.create_reg_data_from_value(reg.DATA_TYPE, val)
 
                 base_color = Color.GRAY if addr not in self.updated_registries else Color.BLACK
                 _, old_values_str = reg_data_old.to_string()
@@ -72,6 +76,7 @@ def main():
     regstate = RegistryState()
 
     commands = b'5325 WRITE16 0x400006c 0x563\n5325 WRITE16 0x4000068 0xf000\n5325 WRITE16 0x4000064 0x721\n5325 WRITE16 0x4000062 0x20c\n'.splitlines()
+    frame_id = ""
     for cmd in commands:
         frame_id, cmd_type, addr_str, value_str = cmd.decode().split()
         regstate.set_value(int(addr_str[2:], 16), int(value_str[2:], 16))

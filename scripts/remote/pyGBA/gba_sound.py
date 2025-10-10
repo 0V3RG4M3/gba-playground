@@ -1,5 +1,9 @@
+"""
+Defines data structures and types for GBA sound registers as in gba::sound.rs
+used to validate and format register values before sending them to the emulator.
+"""
+
 import dataclasses
-import abc
 
 
 @dataclasses.dataclass

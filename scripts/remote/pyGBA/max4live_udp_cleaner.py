@@ -1,5 +1,4 @@
 
-
 def clean_udp_message(data: bytes) -> bytes:
     """
     Cleans UDP messages by removing trailing null bytes and commas.

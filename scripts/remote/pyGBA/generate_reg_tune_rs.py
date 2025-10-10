@@ -1,8 +1,11 @@
-import numpy as np
-import os
+"""
+Converts recorded register tunes from Max4Live into Rust code for embedding into GBA ROMs,
+handling timing and register data extraction.
+"""
+
+import max4live_udp_cleaner
 import utils
 from reg_tune_logger import RegTuneLogReader
-import max4live_udp_cleaner
 
 
 def extract_data(reg_tune_file: str):

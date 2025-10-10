@@ -1,4 +1,6 @@
 """
+Same as gba::mmio.rs but in Python, to be used in pyGBA.
+
 def_mmio!(0x0400_0060 = TONE1_SWEEP/["SOUND1CNT_L","NR10"]: VolAddress<SweepControl, Safe, Safe>; "Tone 1 Sweep");
 def_mmio!(0x0400_0062 = TONE1_PATTERN/["SOUND1CNT_H","NR11","NR12"]: VolAddress<TonePattern, Safe, Safe>; "Tone 1 Duty/Len/Envelope");
 def_mmio!(0x0400_0064 = TONE1_FREQUENCY/["SOUND1CNT_X","NR13","NR14"]: VolAddress<ToneFrequency, Safe, Safe>; "Tone 1 Frequency/Control");
@@ -23,31 +25,31 @@ def_mmio!(0x0400_00A0 = FIFO_A/["FIFO_A_L", "FIFO_A_H"]: VolAddress<u32, (), Saf
 def_mmio!(0x0400_00A4 = FIFO_B/["FIFO_B_L", "FIFO_B_H"]: VolAddress<u32, (), Safe>; "Pushes 4 `i8` samples into the Sound B buffer.\n\nThe buffer is 32 bytes max, playback is LSB first.");
 """
 import dataclasses
-import sound
+import gba_sound
 
 @dataclasses.dataclass
 class Register:
     ADDRESS: int
     SIZE: int
-    DATA_TYPE: type[sound.RegData]
+    DATA_TYPE: type[gba_sound.RegData]
     NAME: str
     CNAME: str
     DESCRIPTION: str
 
-    def write_cmd(self, data: sound.RegData) -> str:
+    def write_cmd(self, data: gba_sound.RegData) -> str:
         return f"WRITE{self.SIZE*8} {hex(self.ADDRESS)} {hex(data.value())}"
 
-TONE1_SWEEP = Register(ADDRESS=0x04000060, SIZE=1, NAME="TONE1_SWEEP", CNAME="SOUND1CNT_L", DATA_TYPE=sound.SweepControl, DESCRIPTION="Tone 1 Sweep control")
-TONE1_PATTERN = Register(ADDRESS=0x04000062, SIZE=2, NAME="TONE1_PATTERN", CNAME="SOUND1CNT_H", DATA_TYPE=sound.TonePattern, DESCRIPTION="Tone 1 Duty/Length/Envelope")
-TONE1_FREQUENCY = Register(ADDRESS=0x04000064, SIZE=2, NAME="TONE1_FREQUENCY", CNAME="SOUND1CNT_X", DATA_TYPE=sound.ToneFrequency, DESCRIPTION="Tone 1 Frequency/Control")
+TONE1_SWEEP = Register(ADDRESS=0x04000060, SIZE=1, NAME="TONE1_SWEEP", CNAME="SOUND1CNT_L", DATA_TYPE=gba_sound.SweepControl, DESCRIPTION="Tone 1 Sweep control")
+TONE1_PATTERN = Register(ADDRESS=0x04000062, SIZE=2, NAME="TONE1_PATTERN", CNAME="SOUND1CNT_H", DATA_TYPE=gba_sound.TonePattern, DESCRIPTION="Tone 1 Duty/Length/Envelope")
+TONE1_FREQUENCY = Register(ADDRESS=0x04000064, SIZE=2, NAME="TONE1_FREQUENCY", CNAME="SOUND1CNT_X", DATA_TYPE=gba_sound.ToneFrequency, DESCRIPTION="Tone 1 Frequency/Control")
 
-TONE2_PATTERN = Register(ADDRESS=0x04000068, SIZE=2, NAME="TONE2_PATTERN", CNAME="SOUND2CNT_H", DATA_TYPE=sound.TonePattern, DESCRIPTION="Tone 2 Duty/Length/Envelope")
-TONE2_FREQUENCY = Register(ADDRESS=0x0400006C, SIZE=2, NAME="TONE2_FREQUENCY", CNAME="SOUND2CNT_H", DATA_TYPE=sound.ToneFrequency, DESCRIPTION="Tone 2 Frequency/Control")
+TONE2_PATTERN = Register(ADDRESS=0x04000068, SIZE=2, NAME="TONE2_PATTERN", CNAME="SOUND2CNT_H", DATA_TYPE=gba_sound.TonePattern, DESCRIPTION="Tone 2 Duty/Length/Envelope")
+TONE2_FREQUENCY = Register(ADDRESS=0x0400006C, SIZE=2, NAME="TONE2_FREQUENCY", CNAME="SOUND2CNT_H", DATA_TYPE=gba_sound.ToneFrequency, DESCRIPTION="Tone 2 Frequency/Control")
 
-LEFT_RIGHT_VOLUME = Register(ADDRESS=0x04000080, SIZE=2, NAME="LEFT_RIGHT_VOLUME", CNAME="SOUNDCNT_L", DATA_TYPE=sound.LeftRightVolume, DESCRIPTION="Left/Right sound control")
-SOUND_MIX = Register(ADDRESS=0x04000082, SIZE=2, NAME="SOUND_MIX", CNAME="SOUNDCNT_H", DATA_TYPE=sound.SoundMix, DESCRIPTION="Sound mix control")
-SOUND_ENABLED = Register(ADDRESS=0x04000084, SIZE=1, NAME="SOUND_ENABLED", CNAME="SOUNDCNT_X", DATA_TYPE=sound.SoundEnable, DESCRIPTION="Sound enable control")
-SOUNDBIAS = Register(ADDRESS=0x04000088, SIZE=2, NAME="SOUNDBIAS", CNAME="SOUNDBIAS", DATA_TYPE=sound.SoundBias, DESCRIPTION="Sound bias control")
+LEFT_RIGHT_VOLUME = Register(ADDRESS=0x04000080, SIZE=2, NAME="LEFT_RIGHT_VOLUME", CNAME="SOUNDCNT_L", DATA_TYPE=gba_sound.LeftRightVolume, DESCRIPTION="Left/Right sound control")
+SOUND_MIX = Register(ADDRESS=0x04000082, SIZE=2, NAME="SOUND_MIX", CNAME="SOUNDCNT_H", DATA_TYPE=gba_sound.SoundMix, DESCRIPTION="Sound mix control")
+SOUND_ENABLED = Register(ADDRESS=0x04000084, SIZE=1, NAME="SOUND_ENABLED", CNAME="SOUNDCNT_X", DATA_TYPE=gba_sound.SoundEnable, DESCRIPTION="Sound enable control")
+SOUNDBIAS = Register(ADDRESS=0x04000088, SIZE=2, NAME="SOUNDBIAS", CNAME="SOUNDBIAS", DATA_TYPE=gba_sound.SoundBias, DESCRIPTION="Sound bias control")
 
 def addr2reg_map(address):
     register_list = [

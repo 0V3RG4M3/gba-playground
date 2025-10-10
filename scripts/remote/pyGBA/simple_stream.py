@@ -1,5 +1,10 @@
-import time
+"""
+Base stream communication interface and implementations (TCP/UDP) for
+synchronous data transfer between Max4Live and mGBA.
+"""
+
 import socket
+import time
 
 from reg_tune_logger import RegTuneLogReader
 

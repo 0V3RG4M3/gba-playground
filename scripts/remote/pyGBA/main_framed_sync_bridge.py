@@ -1,12 +1,14 @@
+"""
+Main bridge module that handles real-time communication between Max4Live (UDP)
+and mGBA (TCP), synchronizing register writes via frames.
+"""
+
 import asyncio
-import time
 from typing import Optional
 
-# Local imports - back to absolute imports for direct execution
-from reg_tune_csv import RegTuneCsvWriter
-from reg_tune_logger import IRegTuneLogWriter, RegTuneLogWriter
-from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, FileSimpleStreamAsync, TCPSimpleStreamAsync
 import max4live_udp_cleaner
+from reg_tune_logger import IRegTuneLogWriter
+from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync
 
 
 def format_pretty_regstate(regstate, batch):
@@ -129,7 +131,7 @@ def main():
                 command_queue, stop_event,
                 simple_stream=UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port),
                 #simple_stream=FileSimpleStreamAsync("reg_tune6.bin.txt", loop=True, time_scale=1.0),
-                #reg_tune_logger=RegTuneLogWriter("reg_tune7.bin.txt")
+                #reg_tune_logger=RegTuneLogWriter("reg_tune.bin.txt")
             ),
 
             start_socket_consumer_async(

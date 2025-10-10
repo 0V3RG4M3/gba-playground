@@ -1,3 +1,7 @@
+"""
+Asynchronous stream interfaces and implementations (TCP/UDP) for non-blocking data transfer.
+"""
+
 import asyncio
 import reg_tune_logger
 from typing import Optional
