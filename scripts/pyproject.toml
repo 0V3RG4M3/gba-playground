@@ -5,14 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "dotenv>=0.9.9",
+    "diffusers>=0.24.0",
     "flashgbx>=4.4",
     "loguru>=0.7.3",
     "miditoolkit>=1.0.1",
     "numpy>=2.3.0",
     "openai>=1.109.1",
     "opencv-python>=4.11.0.86",
+    "pillow>=10.0.0",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
+    "python-dotenv>=1.0.0",
+    "rembg>=2.0.67",
+    "ruff>=0.14.0",
     "toml>=0.10.2",
+    "torch>=2.0.0",
 ]
