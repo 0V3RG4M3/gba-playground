@@ -85,6 +85,14 @@ class SweepControl(RegData):
     sweep_increasing: bool = False  # True if the sweep is increasing
     sweep_time: int = 0  # Sweep time in [0, 7]
 
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("sweep_num", 3),
+            Field("sweep_increasing", 1),
+            Field("sweep_time", 3),
+        ]
+
     def __post_init__(self):
         if not (0 <= self.sweep_num <= 7):
             raise ValueError("Sweep number must be between 0 and 7")

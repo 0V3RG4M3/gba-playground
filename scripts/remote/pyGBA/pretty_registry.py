@@ -28,6 +28,7 @@ def color_diff_values(old: str, new: str, sep:str, base_color: Color, diff_color
 class RegistryState:
     def __init__(self):
         self.registries: dict[int, int] = {
+            gba_mmio.TONE1_SWEEP.ADDRESS: 0,
             gba_mmio.TONE1_PATTERN.ADDRESS: 0,
             gba_mmio.TONE1_FREQUENCY.ADDRESS: 0,
             gba_mmio.TONE2_PATTERN.ADDRESS: 0,

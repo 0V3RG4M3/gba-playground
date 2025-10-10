@@ -20,14 +20,15 @@ function sendRegData(size, regData) {
         log("ERROR: regName is not set. Cannot send register data.");
         return
     }
+    
     const register = ctx.REGISTERS[ctx.regName];
-
+    
     // ensure the size is correct. This 
     if (size !== register.SIZE) {
         log("ERROR: Size mismatch. Expected", register.SIZE, ", got", size);
         return; 
     }
-
+    
     const cmd = "WRITE" + size*8 + " 0x" + register.ADDRESS.toString(16) + " 0x" + regData.toString(16);
     outlet(0, cmd);
 }
