@@ -25,7 +25,7 @@ def format_pretty_regstate(regstate, batch):
 
 
 async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event, simple_stream: ISimpleStreamAsync):
-    print(f"CONSUMER: 🔌⏳ Connecting to simple stream...")
+    print("CONSUMER: 🔌⏳ Connecting to simple stream...")
 
     import pretty_registry
     regstate = pretty_registry.RegistryState()
@@ -92,15 +92,15 @@ async def start_socket_bridge_async(
         reg_tune_logger: Optional[IRegTuneLogWriter] = None,
 ):
 
-    print(f"PRODUCER: 🔌⏳ Opening input stream...")
+    print("PRODUCER: 🔌⏳ Opening input stream...")
     async with simple_stream as sstream:
-        print(f"PRODUCER: 🔌✅ Input stream opened!")
+        print("PRODUCER: 🔌✅ Input stream opened!")
 
         while not stop_event.is_set():
             # print(f"PRODUCER: ⏳ Waiting for data...")
             data = await sstream.read()
             if data is None:
-                print(f"PRODUCER: 🔌❌ Connection closed by peer.")
+                print("PRODUCER: 🔌❌ Connection closed by peer.")
                 break
             # print(f"PRODUCER: 📥 Received {len(data)} bytes")
             if reg_tune_logger:

@@ -6,7 +6,7 @@ import tempfile
 import os
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 # Add the remote/pyGBA directory to sys.path for testing
 test_dir = Path(__file__).parent

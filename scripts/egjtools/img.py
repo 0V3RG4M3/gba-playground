@@ -1,4 +1,3 @@
-from email.mime import image
 from PIL import Image
 from sys import argv
 from os import path as file

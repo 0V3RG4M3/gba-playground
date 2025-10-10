@@ -35,7 +35,7 @@ def test_modular_system():
             test_sprite["output"]
         )
         
-        loguru.logger.info(f"✅ Modular system test completed!")
+        loguru.logger.info("✅ Modular system test completed!")
         loguru.logger.info(f"Target achieved: {report['target_achieved']}")
         loguru.logger.info(f"Total iterations: {report['iterations']}")
         

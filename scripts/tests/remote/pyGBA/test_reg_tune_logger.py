@@ -2,10 +2,9 @@ import unittest
 import asyncio
 import tempfile
 import os
-import time
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock, mock_open
+from unittest.mock import Mock, patch
 import pytest
 
 # Add the remote/pyGBA directory to sys.path for testing

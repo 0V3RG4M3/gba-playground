@@ -102,13 +102,13 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     im_width_u8 = 4 * im_width_u32  # pixels are grouped by 4
     block_width_u32 = block_width_u8 // 4
 
-    lines_func = f"\n\n"
+    lines_func = "\n\n"
     line_count = im_height_u8 * im_width_u8 // (block_height_u8 * block_width_u8)
     line_length = block_height_u8 * block_width_u32
     comment_line = f"// {filename} ({im_height_u8}x{im_width_u8} pixels) -> ({line_count}x{line_length} u32)\n"
     lines_func += f"    {comment_line}"
 
-    lines_const = f"\n"
+    lines_const = "\n"
     lines_const += f"{comment_line}"
     lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
     lines_const += f"pub const SIZE_{name}: usize = {line_count};\n"

@@ -6,19 +6,18 @@
 import os
 import sys
 from pathlib import Path
-from PIL import Image, ImageStat
+from PIL import Image
 import numpy as np
 import torch
 from diffusers import StableDiffusionPipeline, LCMScheduler
 from dotenv import load_dotenv
 import loguru
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Tuple
 import json
 import cv2
 import base64
 import io
 from transformers import BlipProcessor, BlipForConditionalGeneration
-import requests
 
 class SpriteGeneratorAgent:
     """Agent responsible for generating sprites based on prompts."""
