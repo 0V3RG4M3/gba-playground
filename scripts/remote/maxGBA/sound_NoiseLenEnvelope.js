@@ -1,0 +1,47 @@
+include("utils.js");
+
+log("sound_NoiseLenEnvelope.js: I N I T I A L I Z E");
+
+// same as TonePattern but without duty
+var ctx = {
+  length: 0,  // L in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
+  step_time: 0,  // setp_time: envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+  step_increasing: false,
+  volume: 0,  // Volume in [0, 15]
+
+  SIZE: 2, // Number of registers used by this object
+  is_new: false,
+}
+
+function sendRegData() {
+  if (ctx.length < 0 || ctx.frequency_rate > 63) {
+    throw new Error("Length must be between 0 and 63");
+  }
+  if (ctx.step_time < 0 || ctx.step_time > 7) {
+    throw new Error("Step time must be between 0 and 7");
+  }
+  if (ctx.volume < 0 || ctx.volume > 15) {
+    throw new Error("Volume must be between 0 and 15");
+  }
+
+  const regData = (ctx.length << 0) |  // 6 bits
+                  // 2 unused bits for missing duty 
+                  (ctx.step_time << 8) |  // 3 bits
+                  (ctx.step_increasing ? (1 << 11) : 0) |  // 1 bit
+                  (ctx.volume << 12);  // 4 unused bits
+
+  outlet(0, "reg_data", ctx.SIZE, regData);
+}
+
+function set_value(key, value){
+  ctx[key] = value;
+  ctx.is_new = true;
+}
+
+function bang(){
+  if (!ctx.is_new)
+    return;
+
+  sendRegData();
+  ctx.is_new = false;
+}

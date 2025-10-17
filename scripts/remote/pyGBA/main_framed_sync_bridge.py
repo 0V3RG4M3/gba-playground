@@ -53,7 +53,7 @@ async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asy
                 continue
             print(f"CONSUMER: sending {len(commands)} bytes")
             print(f"CONSUMER: commands: {commands}")
-            print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
+            #print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
             await sstream.push(commands)
 
             print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
@@ -76,7 +76,7 @@ async def start_null_consumer_async(queue: asyncio.Queue[str], stop_event: async
             if not batch:
                 continue
 
-            print(format_pretty_regstate(regstate, batch))
+            #print(format_pretty_regstate(regstate, batch))
 
 
     except Exception as e:

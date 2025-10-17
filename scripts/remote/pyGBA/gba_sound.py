@@ -17,6 +17,11 @@ class Field:
 
     def __repr__(self):
         return self.to_repr(self.value)
+    
+class FieldUnused(Field):
+    def __init__(self, size: int):
+        super().__init__(name="", size=size, value=0)
+
 
 class RegData:
     @classmethod
@@ -92,16 +97,6 @@ class SweepControl(RegData):
             Field("sweep_increasing", 1),
             Field("sweep_time", 3),
         ]
-
-    def __post_init__(self):
-        if not (0 <= self.sweep_num <= 7):
-            raise ValueError("Sweep number must be between 0 and 7")
-        if not (0 <= self.sweep_time <= 7):
-            raise ValueError("Sweep time must be between 0 and 7")
-
-    def value(self) -> int:
-        return (self.sweep_num << 0) | (self.sweep_increasing << 3) | (self.sweep_time << 4)
-
 
 @dataclasses.dataclass
 class TonePattern(RegData):
@@ -249,3 +244,56 @@ def create_reg_data_from_value(cls: RegData, val: int) -> RegData:
         bit_pos += field.size
 
     return cls(*fields)
+
+"""       NoiseLenEnvelope
+NR41 FF20 --LL LLLL Length load (64-L)
+NR42 FF21 VVVV APPP Starting volume, Envelope add mode, period
+
+"""
+
+@dataclasses.dataclass
+class NoiseLenEnvelope(RegData):
+    length: int = 0  # Length in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
+    step_time: int = 0  # envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+    step_increasing: int = 0  # True if the envelope is increasing
+    volume: int = 0  # Volume value in [0, 15]
+
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("length", 6),
+            FieldUnused(2),  # unused bits
+            Field("step_time", 3),
+            Field("step_increasing", 1),
+            Field("volume", 4),
+        ]
+    
+"""
+NR43 FF22 SSSS CRRR Clock shift, Width mode of LFSR, Rate
+NR44 FF23 TL-- ---- Trigger, Length enable
+
+Divisor code (3 bits)
+Width mode of LFSR (1 bit)
+Clock shift (4 bits)
+Length enable (1 bit)
+Trigger (1 bit)
+
+"""
+@dataclasses.dataclass
+class NoiseFreq(RegData):
+    rate: int = 0 # r in [0, 7] divisor code
+    counter7: int = 0 # 
+    shift: int = 0 # s in [0, 15] clock shift
+    stop_when_expired: int = 0 # True if the sound should stop when the length expires
+    enabled: int = 0 # True if the sound is enabled
+
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("rate", 3),
+            Field("counter7", 1),
+            Field("shift", 4),
+            FieldUnused(6),
+            Field("stop_when_expired", 1),
+            Field("enabled", 1),
+        ]
