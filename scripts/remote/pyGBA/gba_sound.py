@@ -245,12 +245,17 @@ def create_reg_data_from_value(cls: RegData, val: int) -> RegData:
 
     return cls(*fields)
 
-"""       NoiseLenEnvelope
-NR41 FF20 --LL LLLL Length load (64-L)
-NR42 FF21 VVVV APPP Starting volume, Envelope add mode, period
-
+""" 
+Rust code to translate to Python dataclass:
+pub struct NoiseLenEnvelope(u16);
+impl NoiseLenEnvelope {
+  pub_const_fn_new_zeroed!();
+  u16_int_field!(0 - 5, length, with_length);
+  u16_int_field!(8 - 10, step_time, with_step_time);
+  u16_bool_field!(11, step_increasing, with_step_increasing);
+  u16_int_field!(12 - 15, volume, with_volume);
+}
 """
-
 @dataclasses.dataclass
 class NoiseLenEnvelope(RegData):
     length: int = 0  # Length in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
@@ -269,18 +274,19 @@ class NoiseLenEnvelope(RegData):
         ]
     
 """
-NR43 FF22 SSSS CRRR Clock shift, Width mode of LFSR, Rate
-NR44 FF23 TL-- ---- Trigger, Length enable
-
-Divisor code (3 bits)
-Width mode of LFSR (1 bit)
-Clock shift (4 bits)
-Length enable (1 bit)
-Trigger (1 bit)
-
+Rust code to translate to Python dataclass:
+pub struct NoiseFrequency(u16);
+impl NoiseFrequency {
+  pub_const_fn_new_zeroed!();
+  u16_int_field!(0 - 2, r, with_r);
+  u16_bool_field!(3, counter7, with_counter7);
+  u16_int_field!(4 - 7, s, with_s);
+  u16_bool_field!(14, stop_when_expired, with_stop_when_expired);
+  u16_bool_field!(15, enabled, with_enabled);
+}
 """
 @dataclasses.dataclass
-class NoiseFreq(RegData):
+class NoiseFrequency(RegData):
     rate: int = 0 # r in [0, 7] divisor code
     counter7: int = 0 # 
     shift: int = 0 # s in [0, 15] clock shift

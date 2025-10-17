@@ -1,6 +1,6 @@
 include("utils.js");
 
-log("sound_NoiseFreq.js: I N I T I A L I Z E");
+log("sound_NoiseFrequency.js: I N I T I A L I Z E");
 
 var ctx = {
   rate: 0,  // r in [0, 7] divisor code
