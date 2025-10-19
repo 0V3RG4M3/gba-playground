@@ -9,11 +9,12 @@
  * @param {number} bitSize - Number of bits for this field
  * @param {number} min - Minimum value (default: 0)
  * @param {number} max - Maximum value (default: 2^bitSize - 1)
+ * @param {number} value - Initial value (default: 0)
  */
 function Field(bitSize, min, max) {
-  this.bitSize = bitSize;
-  this.min = (typeof min !== "undefined") ? min : 0;
-  this.max = (typeof max !== "undefined") ? max : (Math.pow(2, bitSize) - 1);
+    this.bitSize = bitSize;
+    this.min = (typeof min !== "undefined") ? min : 0;
+    this.max = (typeof max !== "undefined") ? max : (Math.pow(2, bitSize) - 1);
 }
 
 /**
@@ -25,121 +26,132 @@ function Field(bitSize, min, max) {
  *                          }
  *                          For unused bits, use: unused_X_Y: Field(bitSize)
  */
-function createRegisterController(size, fields) {
-  // Initialize context with defaults (all values start at 0)
-  var ctx = {
-    SIZE: size,
-    is_new: false
-  };
-  
-  // Compute bit positions and initialize fields
-  var bitPositions = {};
-  var currentPos = 0;
-  
-  for (var fieldName in fields) {
-    if (fields.hasOwnProperty(fieldName)) {
-      var field = fields[fieldName];
-      
-      // Store bit position for this field
-      bitPositions[fieldName] = currentPos;
-      
-      // Initialize non-unused fields to 0 in context
-      // Unused fields are identified by name starting with "unused_"
-      if (fieldName.indexOf("unused_") !== 0) {
-        ctx[fieldName] = 0;
-      }
-      
-      // Move position forward by this field's size
-      currentPos += field.bitSize;
-    }
-  }
-
-  /**
-   * Validates all context values according to validation rules
-   * @throws {Error} If any validation fails
-   */
-  function validate() {
+function createRegisterController(fields) {
+    // Compute register bit size by summing field bit sizes
+    var registerBitSize = 0;
     for (var fieldName in fields) {
-      if (fields.hasOwnProperty(fieldName)) {
-        // Skip validation for unused bits
-        if (fieldName.indexOf("unused_") === 0) {
-          continue;
+        if (fields.hasOwnProperty(fieldName)) {
+            var field = fields[fieldName];
+            registerBitSize += field.bitSize;
         }
-        
-        var field = fields[fieldName];
-        var value = ctx[fieldName];
-        
-        if (value < field.min || value > field.max) {
-          throw new Error(fieldName + " must be between " + field.min + " and " + field.max);
-        }
-      }
     }
-  }
+    // Convert bit size to byte size (rounding up)
+    // throw new Error if not multiple of 8
+    if (registerBitSize % 8 !== 0) {
+        throw new Error("Register bit size must be a multiple of 8. Got: " + registerBitSize);
+    }
 
-  /**
-   * Automatically packs register data based on field definitions
-   * @returns {number} The packed register data
-   */
-  function packRegData() {
-    var regData = 0;
-    
+    var registerByteSize = Math.ceil(registerBitSize / 8);
+
+
+    var state = {
+        SIZE: registerByteSize,  // to be computed
+        is_new: false,
+        values: {}
+    };
+
+    // Initialize field values
     for (var fieldName in fields) {
-      if (fields.hasOwnProperty(fieldName)) {
-        // Skip unused bits (they remain 0)
-        if (fieldName.indexOf("_") === 0) {
-          continue;
+        if (fields.hasOwnProperty(fieldName)) {
+            state.values[fieldName] = 0;
         }
-        
-        var value = ctx[fieldName];
-        var bitPos = bitPositions[fieldName];
-        
-        // Handle boolean values (convert true/false to 1/0)
-        if (typeof value === "boolean") {
-          value = value ? 1 : 0;
+    }
+
+
+    /**
+     * Validates all context values according to validation rules
+     * @throws {Error} If any validation fails
+     */
+    function validate() {
+        for (var fieldName in fields) {
+            if (fields.hasOwnProperty(fieldName)) {
+                var field = fields[fieldName];
+                var value = state.values[fieldName];
+                if (value < field.min || value > field.max) {
+                    throw new Error(fieldName + " must be between " + field.min + " and " + field.max + ". Got: " + value);
+                }
+            }
         }
-        
-        // Pack the value at the computed bit position
-        regData |= (value << bitPos);
-      }
     }
-    
-    return regData;
-  }
 
-  /**
-   * Sends register data to Max outlet
-   */
-  function sendRegData() {
-    validate();
-    var regData = packRegData();
-    outlet(0, "reg_data", ctx.SIZE, regData);
-  }
+    /**
+     * Automatically packs register data based on field definitions
+     * @returns {number} The packed register data
+     */
+    function packRegData() {
+        var regData = 0;
+        var bitPos = 0;
 
-  /**
-   * Sets a value in the context and marks it as new
-   * @param {string} key - The context key to set
-   * @param {*} value - The value to set
-   */
-  function set_value(key, value) {
-    ctx[key] = value;
-    ctx.is_new = true;
-  }
+        for (var fieldName in fields) {
+            if (!fields.hasOwnProperty(fieldName)) {
+                continue;
+            }
+            var field = fields[fieldName];
 
-  /**
-   * Sends register data if context has been updated
-   */
-  function bang() {
-    if (!ctx.is_new) {
-      return;
+            var value = state.values[fieldName];
+            // Handle boolean values (convert true/false to 1/0)
+            if (typeof value === "boolean") {
+                value = value ? 1 : 0;
+            }
+
+            // Pack the value at the computed bit position
+            regData |= (value << bitPos);
+
+            bitPos += field.bitSize;
+        }
+
+        return regData;
     }
-    
-    sendRegData();
-    ctx.is_new = false;
-  }
 
-  // Return the public interface
-  return {
-    set_value: set_value,
-    bang: bang
-  };
+    /**
+     * Sets a value in the context and marks it as new
+     * @param {string} key - The context key to set
+     * @param {*} value - The value to set
+     */
+    function set_value(key, value) {
+        state.values[key] = value;
+        state.is_new = true;
+    }
+
+    /**
+     * Sends register data if context has been updated
+     */
+    function get_reg_data() {
+        if (!state.is_new) {
+            return;
+        }
+
+        validate();
+        var regData = packRegData();
+        state.is_new = false;
+        return regData;
+    }
+
+    function help() {
+        // return list of field names (except "_" fields) and their min/max values
+        var helpText = "Register Controller Help:\n";
+        helpText += "Size: " + state.SIZE + " bytes\n";
+        helpText += "Fields:\n";
+        for (var fieldName in fields) {
+            if (!fields.hasOwnProperty(fieldName)) {
+                continue;
+            }
+            var field = fields[fieldName];
+            if (fieldName === "_") {
+                helpText += "- _unused_: " + field.bitSize + " bits\n";
+                continue;
+            }
+            helpText += "- " + fieldName + ": " + field.bitSize + " bits in [" + field.min + ", " + field.max + "]\n";
+
+        }
+        return helpText;
+    }
+
+    // Return the public interface
+    return {
+        help: help,
+        set_value: set_value,
+        get_reg_data: get_reg_data,
+        SIZE: state.SIZE
+    };
 }
