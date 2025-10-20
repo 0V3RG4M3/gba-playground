@@ -4,7 +4,7 @@ used to validate and format register values before sending them to the emulator.
 """
 
 import dataclasses
-
+import enum
 
 @dataclasses.dataclass
 class Field:
@@ -96,6 +96,7 @@ class SweepControl(RegData):
             Field("sweep_num", 3),
             Field("sweep_increasing", 1),
             Field("sweep_time", 3),
+            FieldUnused(1),  # unused bit
         ]
 
 @dataclasses.dataclass
@@ -126,7 +127,44 @@ class ToneFrequency(RegData):
     def empty_fields(cls) -> list[Field]:
         return [
             Field("frequency_rate", 11),
-            Field("stop_when_expired", 4),
+            FieldUnused(3),
+            Field("stop_when_expired", 1),
+            Field("enabled", 1),
+        ]
+
+@dataclasses.dataclass
+class NoiseLenEnvelope(RegData):
+    length: int = 0  # Length in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
+    step_time: int = 0  # envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
+    step_increasing: int = 0  # True if the envelope is increasing
+    volume: int = 0  # Volume value in [0, 15]
+
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("length", 6),
+            FieldUnused(2),  # unused bits
+            Field("step_time", 3),
+            Field("step_increasing", 1),
+            Field("volume", 4),
+        ]
+    
+@dataclasses.dataclass
+class NoiseFrequency(RegData):
+    rate: int = 0 # r in [0, 7] divisor code
+    counter7: int = 0 # 
+    shift: int = 0 # s in [0, 15] clock shift
+    stop_when_expired: int = 0 # True if the sound should stop when the length expires
+    enabled: int = 0 # True if the sound is enabled
+
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("rate", 3),
+            Field("counter7", 1),
+            Field("shift", 4),
+            FieldUnused(6),
+            Field("stop_when_expired", 1),
             Field("enabled", 1),
         ]
 
@@ -162,10 +200,6 @@ class LeftRightVolume(RegData):
             Field("noise_left", 1),
         ]
 
-
-import enum
-
-
 @dataclasses.dataclass
 class SoundMix(RegData):
     psg: int = 0  # PSG output level in (2bits). 0: 25%, 1: 50%, 2: 100%, 3: not used
@@ -182,6 +216,7 @@ class SoundMix(RegData):
     sound_b_timer: int = 0  # True if Sound B timer is enabled
     sound_b_reset: int = 0  # True if Sound B is reset
 
+    @classmethod
     def empty_fields(cls) -> list[Field]:
         return [
             Field("psg", 2),
@@ -197,7 +232,6 @@ class SoundMix(RegData):
             Field("sound_b_reset", 1),
         ]
 
-
 @dataclasses.dataclass
 class SoundEnable(RegData):
     tone1_playing: int = 0
@@ -205,35 +239,32 @@ class SoundEnable(RegData):
     wave_playing: int = 0
     noise_playing: int = 0
 
-    enabled: bool = False
+    enabled: int = 0
 
-    def value(self) -> int:
-        return (self.tone1_playing << 0) | (self.tone2_playing << 1) | \
-            (self.wave_playing << 2) | (self.noise_playing << 3) | \
-            (self.enabled << 7)
-
-
-class SampleCycle(enum.IntEnum):
-    _9bit = 0
-    _8bit = 1
-    _7bit = 2
-    _6bit = 3
-
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [
+            Field("tone1_playing", 1),
+            Field("tone2_playing", 1),
+            Field("wave_playing", 1),
+            Field("noise_playing", 1),
+            FieldUnused(3),  # unused bits
+            Field("enabled", 1),
+        ]
 
 @dataclasses.dataclass
 class SoundBias(RegData):  # u16
     bias_level: int = 0  # Bias level in [0, 511] (9bits).
-    sample_cycle: SampleCycle = 0  # Sample cycle in [0, 3] (2bits)
+    sample_cycle: int = 0  # Sample cycle in [0, 3] (2bits) - 0: 9bit, 1: 8bit, 2:7bit, 3:6bit
 
-    def __post_init__(self):
-        if not (1 <= self.bias_level <= 9):
-            raise ValueError("Bias level must be between 1 and 9")
-        if not (0 <= self.sample_cycle <= 3):
-            raise ValueError("Sample cycle must be between 0 and 3")
-
-    def value(self) -> int:
-        return (self.bias_level << 1) | (self.sample_cycle << 14)
-
+    @classmethod
+    def empty_fields(cls) -> list[Field]:
+        return [ 
+            FieldUnused(1),  # unused bit
+            Field("bias_level", 9),
+            FieldUnused(4),  # unused bit
+            Field("sample_cycle", 2),
+        ]
 
 def create_reg_data_from_value(cls: RegData, val: int) -> RegData:
     fields = []
@@ -244,62 +275,4 @@ def create_reg_data_from_value(cls: RegData, val: int) -> RegData:
         bit_pos += field.size
 
     return cls(*fields)
-
-""" 
-Rust code to translate to Python dataclass:
-pub struct NoiseLenEnvelope(u16);
-impl NoiseLenEnvelope {
-  pub_const_fn_new_zeroed!();
-  u16_int_field!(0 - 5, length, with_length);
-  u16_int_field!(8 - 10, step_time, with_step_time);
-  u16_bool_field!(11, step_increasing, with_step_increasing);
-  u16_int_field!(12 - 15, volume, with_volume);
-}
-"""
-@dataclasses.dataclass
-class NoiseLenEnvelope(RegData):
-    length: int = 0  # Length in [0, 63]. Resulting length is: (64−val)/256 second. So L=0 -> 250 ms, and L=63 -> 3.9 ms
-    step_time: int = 0  # envelope decay time in [0, 7]. 0: inf, 1: shortest 7: long
-    step_increasing: int = 0  # True if the envelope is increasing
-    volume: int = 0  # Volume value in [0, 15]
-
-    @classmethod
-    def empty_fields(cls) -> list[Field]:
-        return [
-            Field("length", 6),
-            FieldUnused(2),  # unused bits
-            Field("step_time", 3),
-            Field("step_increasing", 1),
-            Field("volume", 4),
-        ]
     
-"""
-Rust code to translate to Python dataclass:
-pub struct NoiseFrequency(u16);
-impl NoiseFrequency {
-  pub_const_fn_new_zeroed!();
-  u16_int_field!(0 - 2, r, with_r);
-  u16_bool_field!(3, counter7, with_counter7);
-  u16_int_field!(4 - 7, s, with_s);
-  u16_bool_field!(14, stop_when_expired, with_stop_when_expired);
-  u16_bool_field!(15, enabled, with_enabled);
-}
-"""
-@dataclasses.dataclass
-class NoiseFrequency(RegData):
-    rate: int = 0 # r in [0, 7] divisor code
-    counter7: int = 0 # 
-    shift: int = 0 # s in [0, 15] clock shift
-    stop_when_expired: int = 0 # True if the sound should stop when the length expires
-    enabled: int = 0 # True if the sound is enabled
-
-    @classmethod
-    def empty_fields(cls) -> list[Field]:
-        return [
-            Field("rate", 3),
-            Field("counter7", 1),
-            Field("shift", 4),
-            FieldUnused(6),
-            Field("stop_when_expired", 1),
-            Field("enabled", 1),
-        ]
