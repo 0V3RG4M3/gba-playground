@@ -46,27 +46,24 @@ TONE1_FREQUENCY = Register(ADDRESS=0x04000064, SIZE=2, NAME="TONE1_FREQUENCY", C
 TONE2_PATTERN = Register(ADDRESS=0x04000068, SIZE=2, NAME="TONE2_PATTERN", CNAME="SOUND2CNT_H", DATA_TYPE=gba_sound.TonePattern, DESCRIPTION="Tone 2 Duty/Length/Envelope")
 TONE2_FREQUENCY = Register(ADDRESS=0x0400006C, SIZE=2, NAME="TONE2_FREQUENCY", CNAME="SOUND2CNT_H", DATA_TYPE=gba_sound.ToneFrequency, DESCRIPTION="Tone 2 Frequency/Control")
 
+NOISE_LEN_ENV = Register(ADDRESS=0x04000078, SIZE=2, NAME="NOISE_LEN_ENV", CNAME="SOUND4CNT_L", DATA_TYPE=gba_sound.NoiseLenEnvelope, DESCRIPTION="Noise Length/Envelope")
+NOISE_FREQ = Register(ADDRESS=0x0400007C, SIZE=2, NAME="NOISE_FREQ", CNAME="SOUND4CNT_H", DATA_TYPE=gba_sound.NoiseFrequency, DESCRIPTION="Noise Frequency/Control")
+
 LEFT_RIGHT_VOLUME = Register(ADDRESS=0x04000080, SIZE=2, NAME="LEFT_RIGHT_VOLUME", CNAME="SOUNDCNT_L", DATA_TYPE=gba_sound.LeftRightVolume, DESCRIPTION="Left/Right sound control")
 SOUND_MIX = Register(ADDRESS=0x04000082, SIZE=2, NAME="SOUND_MIX", CNAME="SOUNDCNT_H", DATA_TYPE=gba_sound.SoundMix, DESCRIPTION="Sound mix control")
 SOUND_ENABLED = Register(ADDRESS=0x04000084, SIZE=1, NAME="SOUND_ENABLED", CNAME="SOUNDCNT_X", DATA_TYPE=gba_sound.SoundEnable, DESCRIPTION="Sound enable control")
 SOUNDBIAS = Register(ADDRESS=0x04000088, SIZE=2, NAME="SOUNDBIAS", CNAME="SOUNDBIAS", DATA_TYPE=gba_sound.SoundBias, DESCRIPTION="Sound bias control")
 
-def addr2reg_map(address):
-    register_list = [
-        TONE1_SWEEP,
-        TONE1_PATTERN,
-        TONE1_FREQUENCY,
-        TONE2_PATTERN,
-        TONE2_FREQUENCY,
-        LEFT_RIGHT_VOLUME,
-        SOUND_MIX,
-        SOUND_ENABLED,
-        SOUNDBIAS,
-    ]
-    if address == "-1":
-        return None  # used for STOP command at the end of csv file
-    addr_int = int(address[2:], 16)
-    match = [reg for reg in register_list if reg.ADDRESS == addr_int]
-    if len(match) == 0:
-        return None
-    return match[0]
+registers = [
+    TONE1_SWEEP,
+    TONE1_PATTERN,
+    TONE1_FREQUENCY,
+    TONE2_PATTERN,
+    TONE2_FREQUENCY,
+    NOISE_LEN_ENV,
+    NOISE_FREQ,
+    LEFT_RIGHT_VOLUME,
+    SOUND_MIX,
+    SOUND_ENABLED,
+    SOUNDBIAS,
+]

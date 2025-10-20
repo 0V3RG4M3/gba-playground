@@ -4,27 +4,15 @@ include("utils.js");
 // Register definitions - all available register types
 var registerDefinitions = {
     "SweepControl": {
-        size: 1,
         fields: {
             sweep_num: new Field(3),         // Sweep number in [0, 7]
             sweep_increasing: new Field(1),  // 1 bit: 0-1
-            sweep_time: new Field(3),         // Sweep time in [0, 7]
+            sweep_time: new Field(3),        // Sweep time in [0, 7]
             _: new Field(1)                  // 1 unused bit
         }
     },
 
-    "ToneFrequency": {
-        size: 2,
-        fields: {
-            frequency_rate: new Field(11),   // 11 bits: 0-2047
-            _: new Field(3),                 // 3 unused bits
-            stop_when_expired: new Field(1), // 1 bit: 0-1
-            enabled: new Field(1)            // 1 bit: 0-1
-        }
-    },
-
     "TonePattern": {
-        size: 2,
         fields: {
             length: new Field(6),            // L in [0, 63]. Resulting length is: (64−val)/256 second
             duty: new Field(2),              // duty (Duty cycle) 0: 12.5%, 1: 25%, 2: 50%, 3: 75%
@@ -34,20 +22,16 @@ var registerDefinitions = {
         }
     },
 
-    "NoiseFrequency": {
-        size: 2,
+    "ToneFrequency": {
         fields: {
-            rate: new Field(3),              // 3 bits: 0-7 (default min=0, max=7)
-            counter7: new Field(1),          // 1 bit: 0-1 (default min=0, max=1)
-            shift: new Field(4),             // 4 bits: 0-15 (default min=0, max=15)
-            _: new Field(6),                 // 6 unused bits
+            frequency_rate: new Field(11),   // 11 bits: 0-2047
+            _: new Field(3),                 // 3 unused bits
             stop_when_expired: new Field(1), // 1 bit: 0-1
             enabled: new Field(1)            // 1 bit: 0-1
         }
     },
 
     "NoiseLenEnvelope": {
-        size: 2,
         fields: {
             length: new Field(6),            // L in [0, 63]. Resulting length is: (64−val)/256 second
             _: new Field(2),                 // 2 unused bits (for missing duty)
@@ -56,6 +40,70 @@ var registerDefinitions = {
             volume: new Field(4)             // Volume in [0, 15]
         }
     },
+
+    "NoiseFrequency": {
+        fields: {
+            rate: new Field(3),              // r in [0, 7] divisor code
+            counter7: new Field(1),          // 1 bit: 0-1
+            shift: new Field(4),             // s in [0, 15] clock shift
+            _: new Field(6),                 // 6 unused bits
+            stop_when_expired: new Field(1), // 1 bit: 0-1
+            enabled: new Field(1)            // 1 bit: 0-1
+        }
+    },
+
+    "LeftRightVolume": {
+        fields: {
+            right_volume: new Field(3),      // Right volume in [0, 7]
+            _unused_3: new Field(1),         // 1 unused bit
+            left_volume: new Field(3),       // Left volume in [0, 7]
+            _unused_7: new Field(1),         // 1 unused bit
+            tone1_right: new Field(1),       // True if Tone 1 is enabled on the right channel
+            tone2_right: new Field(1),       // True if Tone 2 is enabled on the right channel
+            wave_right: new Field(1),        // True if Wave is enabled on the right channel
+            noise_right: new Field(1),       // True if Noise is enabled on the right channel
+            tone1_left: new Field(1),        // True if Tone 1 is enabled on the left channel
+            tone2_left: new Field(1),        // True if Tone 2 is enabled on the left channel
+            wave_left: new Field(1),         // True if Wave is enabled on the left channel
+            noise_left: new Field(1)         // True if Noise is enabled on the left channel
+        }
+    },
+
+    "SoundMix": {
+        fields: {
+            psg: new Field(2),               // PSG output level. 0: 25%, 1: 50%, 2: 100%, 3: not used
+            sound_a_full: new Field(1),      // True if Sound A buffer is full
+            sound_b_full: new Field(1),      // True if Sound B buffer is full
+            sound_a_right: new Field(1),     // True if Sound A is enabled on the right channel
+            sound_a_left: new Field(1),      // True if Sound A is enabled on the left channel
+            sound_a_timer: new Field(1),     // True if Sound A timer is enabled
+            sound_a_reset: new Field(1),     // True if Sound A is reset
+            sound_b_right: new Field(1),     // True if Sound B is enabled on the right channel
+            sound_b_left: new Field(1),      // True if Sound B is enabled on the left channel
+            sound_b_timer: new Field(1),     // True if Sound B timer is enabled
+            sound_b_reset: new Field(1)      // True if Sound B is reset
+        }
+    },
+
+    "SoundEnable": {
+        fields: {
+            tone1_playing: new Field(1),
+            tone2_playing: new Field(1),
+            wave_playing: new Field(1),
+            noise_playing: new Field(1),
+            _: new Field(3),                 // 3 unused bits
+            enabled: new Field(1)            // 1 bit: 0-1
+        }
+    },
+
+    "SoundBias": {
+        fields: {
+            _unused_0: new Field(1),         // 1 unused bit
+            bias_level: new Field(9),        // Bias level in [0, 511]
+            _unused_10_13: new Field(4),     // 4 unused bits
+            sample_cycle: new Field(2)       // Sample cycle in [0, 3] - 0: 9bit, 1: 8bit, 2: 7bit, 3: 6bit
+        }
+    }
 };
 
 // Global controller variable

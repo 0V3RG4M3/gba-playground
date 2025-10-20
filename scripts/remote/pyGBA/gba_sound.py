@@ -187,9 +187,9 @@ class LeftRightVolume(RegData):
     def empty_fields(cls) -> list[Field]:
         return [
             Field("right_volume", 3),
-            Field("", 1),  # unused bit
+            FieldUnused(1),  # unused bit
             Field("left_volume", 3),
-            Field("", 1),  # unused bit
+            FieldUnused(1),  # unused bit
             Field("tone1_right", 1),
             Field("tone2_right", 1),
             Field("wave_right", 1),

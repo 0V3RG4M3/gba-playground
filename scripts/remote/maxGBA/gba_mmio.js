@@ -25,9 +25,9 @@ var ctx = {
         //def_mmio!(0x0400_0080 = LEFT_RIGHT_VOLUME/["SOUNDCNT_L","NR50","NR51"]: VolAddress<LeftRightVolume, Safe, Safe>;"Left/Right sound control (but GBAs only have one speaker each).");
         LEFT_RIGHT_VOLUME: {ADDRESS:0x04000080, SIZE:2, CNAME:"SOUNDCNT_L", DATA_TYPE:"LeftRightVolume", DESCRIPTION:"Left/Right sound control (but GBAs only have one speaker each)."},
         //def_mmio!(0x0400_0082 = SOUND_MIX/["SOUNDCNT_H"]: VolAddress<SoundMix, Safe, Safe>;"Mixes sound sources out to the left and right");
-        SOUND_MIX: {ADDRESS:0x04000082, SIZE:1, CNAME:"SOUNDCNT_H", DATA_TYPE:"SoundMix", DESCRIPTION:"Mixes sound sources out to the left and right"},
+        SOUND_MIX: {ADDRESS:0x04000082, SIZE:2, CNAME:"SOUNDCNT_H", DATA_TYPE:"SoundMix", DESCRIPTION:"Mixes sound sources out to the left and right"},
         //def_mmio!(0x0400_0084 = SOUND_ENABLED/["SOUNDCNT_X"]: VolAddress<SoundEnable, Safe, Safe>;"Sound active flags (r), as well as the sound primary enable (rw).");
-        SOUND_ENABLED: {ADDRESS:0x04000084, SIZE:2, CNAME:"SOUNDCNT_X", DATA_TYPE:"SoundEnable", DESCRIPTION:"Sound active flags (r), as well as the sound primary enable (rw)."},
+        SOUND_ENABLED: {ADDRESS:0x04000084, SIZE:1, CNAME:"SOUNDCNT_X", DATA_TYPE:"SoundEnable", DESCRIPTION:"Sound active flags (r), as well as the sound primary enable (rw)."},
         //def_mmio!(0x0400_0088 = SOUNDBIAS: VolAddress<SoundBias, Safe, Safe>;"Provides a bias to set the 'middle point' of sound output.");
         SOUNDBIAS: {ADDRESS:0x04000088, SIZE:2, CNAME:"SOUNDBIAS", DATA_TYPE:"SoundBias", DESCRIPTION:"Provides a bias to set the 'middle point' of sound output."},
 
@@ -56,12 +56,13 @@ function sendRegData(size, regData) {
 
 
 function reg_data(size, regData){
+    log("gba_mmio.js:", "reg_data called with size =", size, "regData =", regData);
     sendRegData(size, regData);
 }
 
 function initialize(){
     // initialization
-    log("mmio.js:", "I N I T I A L I Z E");
+    log("gba_mmio.js:", "I N I T I A L I Z E");
     if (jsarguments.length>1)
         ctx.regName = jsarguments[1];
 }
