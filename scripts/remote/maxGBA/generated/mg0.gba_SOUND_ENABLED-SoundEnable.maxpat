@@ -1,0 +1,1170 @@
+{
+    "patcher": {
+        "fileversion": 1,
+        "appversion": {
+            "major": 8,
+            "minor": 6,
+            "revision": 0,
+            "architecture": "x64",
+            "modernui": 1
+        },
+        "classnamespace": "box",
+        "rect": [
+            50.0,
+            50.0,
+            900.0,
+            600.0
+        ],
+        "bglocked": 0,
+        "openinpresentation": 0,
+        "default_fontsize": 12.0,
+        "default_fontface": 0,
+        "default_fontname": "Arial",
+        "gridonopen": 1,
+        "gridsize": [
+            15.0,
+            15.0
+        ],
+        "gridsnaponopen": 1,
+        "objectsnaponopen": 1,
+        "statusbarvisible": 2,
+        "toolbarvisible": 1,
+        "lefttoolbarpinned": 0,
+        "toptoolbarpinned": 0,
+        "righttoolbarpinned": 0,
+        "bottomtoolbarpinned": 0,
+        "toolbars_unpinned_last_save": 0,
+        "tallnewobj": 0,
+        "boxanimatetime": 200,
+        "enablehscroll": 1,
+        "enablevscroll": 1,
+        "devicewidth": 0.0,
+        "description": "",
+        "digest": "",
+        "tags": "",
+        "style": "",
+        "subpatcher_template": "",
+        "assistshowspatchername": 0,
+        "boxes": [
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "SOUND_ENABLED",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-77",
+                    "patching_rect": [
+                        10.0,
+                        42.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "toggle",
+                    "varname": "SOUND_ENABLED-tone1_playing",
+                    "presentation_rect": [
+                        176.5,
+                        61.0,
+                        24.0,
+                        24.0
+                    ],
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "parameter_enable": 1,
+                    "outlettype": [
+                        "int"
+                    ],
+                    "id": "ToggleBox-30",
+                    "patching_rect": [
+                        330.0,
+                        74.0,
+                        24.0,
+                        24.0
+                    ],
+                    "saved_attribute_attributes": {
+                        "valueof": {
+                            "parameter_enum": [
+                                "off",
+                                "on"
+                            ],
+                            "parameter_initial": [
+                                0.0
+                            ],
+                            "parameter_initial_enable": 1,
+                            "parameter_linknames": 1,
+                            "parameter_longname": "SOUND_ENABLED-tone1_playing",
+                            "parameter_mmax": 1,
+                            "parameter_shortname": "tone1_playing",
+                            "parameter_type": 2
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "tone1_playing",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-78",
+                    "patching_rect": [
+                        10.0,
+                        74.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "toggle",
+                    "varname": "SOUND_ENABLED-tone2_playing",
+                    "presentation_rect": [
+                        176.5,
+                        61.0,
+                        24.0,
+                        24.0
+                    ],
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "parameter_enable": 1,
+                    "outlettype": [
+                        "int"
+                    ],
+                    "id": "ToggleBox-31",
+                    "patching_rect": [
+                        298.0,
+                        106.0,
+                        24.0,
+                        24.0
+                    ],
+                    "saved_attribute_attributes": {
+                        "valueof": {
+                            "parameter_enum": [
+                                "off",
+                                "on"
+                            ],
+                            "parameter_initial": [
+                                0.0
+                            ],
+                            "parameter_initial_enable": 1,
+                            "parameter_linknames": 1,
+                            "parameter_longname": "SOUND_ENABLED-tone2_playing",
+                            "parameter_mmax": 1,
+                            "parameter_shortname": "tone2_playing",
+                            "parameter_type": 2
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "tone2_playing",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-79",
+                    "patching_rect": [
+                        10.0,
+                        106.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "toggle",
+                    "varname": "SOUND_ENABLED-wave_playing",
+                    "presentation_rect": [
+                        176.5,
+                        61.0,
+                        24.0,
+                        24.0
+                    ],
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "parameter_enable": 1,
+                    "outlettype": [
+                        "int"
+                    ],
+                    "id": "ToggleBox-32",
+                    "patching_rect": [
+                        266.0,
+                        138.0,
+                        24.0,
+                        24.0
+                    ],
+                    "saved_attribute_attributes": {
+                        "valueof": {
+                            "parameter_enum": [
+                                "off",
+                                "on"
+                            ],
+                            "parameter_initial": [
+                                0.0
+                            ],
+                            "parameter_initial_enable": 1,
+                            "parameter_linknames": 1,
+                            "parameter_longname": "SOUND_ENABLED-wave_playing",
+                            "parameter_mmax": 1,
+                            "parameter_shortname": "wave_playing",
+                            "parameter_type": 2
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "wave_playing",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-80",
+                    "patching_rect": [
+                        10.0,
+                        138.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "toggle",
+                    "varname": "SOUND_ENABLED-noise_playing",
+                    "presentation_rect": [
+                        176.5,
+                        61.0,
+                        24.0,
+                        24.0
+                    ],
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "parameter_enable": 1,
+                    "outlettype": [
+                        "int"
+                    ],
+                    "id": "ToggleBox-33",
+                    "patching_rect": [
+                        234.0,
+                        170.0,
+                        24.0,
+                        24.0
+                    ],
+                    "saved_attribute_attributes": {
+                        "valueof": {
+                            "parameter_enum": [
+                                "off",
+                                "on"
+                            ],
+                            "parameter_initial": [
+                                0.0
+                            ],
+                            "parameter_initial_enable": 1,
+                            "parameter_linknames": 1,
+                            "parameter_longname": "SOUND_ENABLED-noise_playing",
+                            "parameter_mmax": 1,
+                            "parameter_shortname": "noise_playing",
+                            "parameter_type": 2
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "noise_playing",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-81",
+                    "patching_rect": [
+                        10.0,
+                        170.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "toggle",
+                    "varname": "SOUND_ENABLED-enabled",
+                    "presentation_rect": [
+                        176.5,
+                        61.0,
+                        24.0,
+                        24.0
+                    ],
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "parameter_enable": 1,
+                    "outlettype": [
+                        "int"
+                    ],
+                    "id": "ToggleBox-34",
+                    "patching_rect": [
+                        202.0,
+                        202.0,
+                        24.0,
+                        24.0
+                    ],
+                    "saved_attribute_attributes": {
+                        "valueof": {
+                            "parameter_enum": [
+                                "off",
+                                "on"
+                            ],
+                            "parameter_initial": [
+                                0.0
+                            ],
+                            "parameter_initial_enable": 1,
+                            "parameter_linknames": 1,
+                            "parameter_longname": "SOUND_ENABLED-enabled",
+                            "parameter_mmax": 1,
+                            "parameter_shortname": "enabled",
+                            "parameter_type": 2
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "enabled",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-82",
+                    "patching_rect": [
+                        10.0,
+                        202.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "newobj",
+                    "text": "p SoundEnable",
+                    "numinlets": 6,
+                    "numoutlets": 1,
+                    "id": "SubPatchBox-10",
+                    "patching_rect": [
+                        170.0,
+                        266.0,
+                        35.0,
+                        20.0
+                    ],
+                    "patcher": {
+                        "patcher": {
+                            "fileversion": 1,
+                            "appversion": {
+                                "major": 8,
+                                "minor": 6,
+                                "revision": 0,
+                                "architecture": "x64",
+                                "modernui": 1
+                            },
+                            "classnamespace": "box",
+                            "rect": [
+                                50.0,
+                                50.0,
+                                900.0,
+                                600.0
+                            ],
+                            "bglocked": 0,
+                            "openinpresentation": 0,
+                            "default_fontsize": 12.0,
+                            "default_fontface": 0,
+                            "default_fontname": "Arial",
+                            "gridonopen": 1,
+                            "gridsize": [
+                                15.0,
+                                15.0
+                            ],
+                            "gridsnaponopen": 1,
+                            "objectsnaponopen": 1,
+                            "statusbarvisible": 2,
+                            "toolbarvisible": 1,
+                            "lefttoolbarpinned": 0,
+                            "toptoolbarpinned": 0,
+                            "righttoolbarpinned": 0,
+                            "bottomtoolbarpinned": 0,
+                            "toolbars_unpinned_last_save": 0,
+                            "tallnewobj": 0,
+                            "boxanimatetime": 200,
+                            "enablehscroll": 1,
+                            "enablevscroll": 1,
+                            "devicewidth": 0.0,
+                            "description": "",
+                            "digest": "",
+                            "tags": "",
+                            "style": "",
+                            "subpatcher_template": "",
+                            "assistshowspatchername": 0,
+                            "boxes": [
+                                {
+                                    "box": {
+                                        "annotation": "commands",
+                                        "comment": "js script commands",
+                                        "hint": "commands",
+                                        "id": "InletBox-1",
+                                        "index": 1,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            10.0,
+                                            10.0,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "annotation": "tone1_playing",
+                                        "comment": "tone1_playing in [0, 1]",
+                                        "hint": "tone1_playing",
+                                        "id": "InletBox-6",
+                                        "index": 6,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            410.0,
+                                            143.33333333333334,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-59",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            410.0,
+                                            223.33333333333337,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend tone1_playing"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "annotation": "tone2_playing",
+                                        "comment": "tone2_playing in [0, 1]",
+                                        "hint": "tone2_playing",
+                                        "id": "InletBox-5",
+                                        "index": 5,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            330.0,
+                                            116.66666666666666,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-60",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            330.0,
+                                            196.66666666666663,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend tone2_playing"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "annotation": "wave_playing",
+                                        "comment": "wave_playing in [0, 1]",
+                                        "hint": "wave_playing",
+                                        "id": "InletBox-4",
+                                        "index": 4,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            250.0,
+                                            90.0,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-61",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            250.0,
+                                            170.0,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend wave_playing"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "annotation": "noise_playing",
+                                        "comment": "noise_playing in [0, 1]",
+                                        "hint": "noise_playing",
+                                        "id": "InletBox-3",
+                                        "index": 3,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            170.0,
+                                            63.33333333333333,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-62",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            170.0,
+                                            143.33333333333331,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend noise_playing"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "annotation": "enabled",
+                                        "comment": "enabled in [0, 1]",
+                                        "hint": "enabled",
+                                        "id": "InletBox-2",
+                                        "index": 2,
+                                        "maxclass": "inlet",
+                                        "numinlets": 0,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            90.0,
+                                            36.666666666666664,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-63",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            90.0,
+                                            116.66666666666666,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend enabled"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "id": "PrependBox-64",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 1,
+                                        "outlettype": [
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            290.0,
+                                            263.33333333333337,
+                                            80.0,
+                                            22.0
+                                        ],
+                                        "text": "prepend set_value"
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "color": [
+                                            1.0,
+                                            0.588235294117647,
+                                            0.317647058823529,
+                                            1.0
+                                        ],
+                                        "id": "JsBox-19",
+                                        "maxclass": "newobj",
+                                        "numinlets": 1,
+                                        "numoutlets": 2,
+                                        "outlettype": [
+                                            "",
+                                            ""
+                                        ],
+                                        "patching_rect": [
+                                            290.0,
+                                            343.33333333333337,
+                                            100.0,
+                                            22.0
+                                        ],
+                                        "saved_object_attributes": {
+                                            "filename": "gba_sound.js",
+                                            "parameter_enable": 0
+                                        },
+                                        "text": "js gba_sound.js SoundEnable",
+                                        "textcolor": [
+                                            1.0,
+                                            0.588235294117647,
+                                            0.317647058823529,
+                                            1.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "box": {
+                                        "comment": "current register value",
+                                        "id": "OutletBox-1",
+                                        "index": 1,
+                                        "maxclass": "outlet",
+                                        "numinlets": 1,
+                                        "numoutlets": 0,
+                                        "patching_rect": [
+                                            290.0,
+                                            423.33333333333337,
+                                            30.0,
+                                            30.0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "lines": [
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-6",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-59",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-5",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-60",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-4",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-61",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-3",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-62",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-2",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-63",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-59",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-64",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-60",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-64",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-61",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-64",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-62",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-64",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-63",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "PrependBox-64",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "InletBox-1",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "JsBox-19",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "PrependBox-64",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "JsBox-19",
+                                            0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "patchline": {
+                                        "source": [
+                                            "JsBox-19",
+                                            0
+                                        ],
+                                        "destination": [
+                                            "OutletBox-1",
+                                            0
+                                        ]
+                                    }
+                                }
+                            ],
+                            "saved_attribute_attributes": {
+                                "default_plcolor": {
+                                    "expression": ""
+                                }
+                            }
+                        }
+                    },
+                    "saved_object_attributes": {
+                        "description": "",
+                        "digest": "",
+                        "globalpatchername": "",
+                        "tags": ""
+                    },
+                    "saved_attribute_attributes": {
+                        "default_plcolor": {
+                            "expression": ""
+                        }
+                    }
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "compile",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-83",
+                    "patching_rect": [
+                        10.0,
+                        266.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "color": [
+                        1.0,
+                        0.588235294117647,
+                        0.317647058823529,
+                        1.0
+                    ],
+                    "id": "JsBox-20",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 2,
+                    "outlettype": [
+                        "",
+                        ""
+                    ],
+                    "patching_rect": [
+                        170.0,
+                        330.0,
+                        100.0,
+                        22.0
+                    ],
+                    "saved_object_attributes": {
+                        "filename": "gba_mmio.js",
+                        "parameter_enable": 0
+                    },
+                    "text": "js gba_mmio.js SOUND_ENABLED",
+                    "textcolor": [
+                        1.0,
+                        0.588235294117647,
+                        0.317647058823529,
+                        1.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "newobj",
+                    "text": "t b",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        "bang"
+                    ],
+                    "id": "TriggerBox-10",
+                    "patching_rect": [
+                        170.0,
+                        10.0,
+                        20.0,
+                        20.0
+                    ]
+                }
+            },
+            {
+                "box": {
+                    "maxclass": "message",
+                    "text": "outputvalue",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [
+                        ""
+                    ],
+                    "id": "MessageBox-84",
+                    "patching_rect": [
+                        202.0,
+                        10.0,
+                        89.0,
+                        20.0
+                    ]
+                }
+            }
+        ],
+        "lines": [
+            {
+                "patchline": {
+                    "source": [
+                        "ToggleBox-30",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        5
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "ToggleBox-31",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        4
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "ToggleBox-32",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        3
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "ToggleBox-33",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        2
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "ToggleBox-34",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        1
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "SubPatchBox-10",
+                        0
+                    ],
+                    "destination": [
+                        "JsBox-20",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-83",
+                        0
+                    ],
+                    "destination": [
+                        "SubPatchBox-10",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-83",
+                        0
+                    ],
+                    "destination": [
+                        "JsBox-20",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-84",
+                        0
+                    ],
+                    "destination": [
+                        "ToggleBox-30",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-84",
+                        0
+                    ],
+                    "destination": [
+                        "ToggleBox-31",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-84",
+                        0
+                    ],
+                    "destination": [
+                        "ToggleBox-32",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-84",
+                        0
+                    ],
+                    "destination": [
+                        "ToggleBox-33",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "MessageBox-84",
+                        0
+                    ],
+                    "destination": [
+                        "ToggleBox-34",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "TriggerBox-10",
+                        0
+                    ],
+                    "destination": [
+                        "MessageBox-83",
+                        0
+                    ]
+                }
+            },
+            {
+                "patchline": {
+                    "source": [
+                        "TriggerBox-10",
+                        0
+                    ],
+                    "destination": [
+                        "MessageBox-84",
+                        0
+                    ]
+                }
+            }
+        ],
+        "saved_attribute_attributes": {
+            "default_plcolor": {
+                "expression": ""
+            }
+        }
+    }
+}
