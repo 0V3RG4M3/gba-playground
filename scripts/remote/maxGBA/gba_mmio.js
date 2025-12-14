@@ -56,7 +56,7 @@ function sendRegData(size, regData) {
 
 
 function reg_data(size, regData){
-    log("gba_mmio.js:", "reg_data called with size =", size, "regData =", regData);
+    // log("gba_mmio.js:", "reg_data called with size =", size, "regData =", regData);
     sendRegData(size, regData);
 }
 

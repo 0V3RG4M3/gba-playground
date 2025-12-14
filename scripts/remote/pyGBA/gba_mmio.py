@@ -67,3 +67,12 @@ registers = [
     SOUND_ENABLED,
     SOUNDBIAS,
 ]
+
+def addr2reg_map(address: hex) -> Register | None:
+    if address == "-1":
+        return None  # used for STOP command at the end of csv file
+    addr_int = int(address[2:], 16)
+    match = [reg for reg in registers if reg.ADDRESS == addr_int]
+    if len(match) == 0:
+        return None
+    return match[0]

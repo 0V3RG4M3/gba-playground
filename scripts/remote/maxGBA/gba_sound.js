@@ -74,6 +74,7 @@ var registerDefinitions = {
             psg: new Field(2),               // PSG output level. 0: 25%, 1: 50%, 2: 100%, 3: not used
             sound_a_full: new Field(1),      // True if Sound A buffer is full
             sound_b_full: new Field(1),      // True if Sound B buffer is full
+            _unused_4: new Field(4),         // 4 unused bits
             sound_a_right: new Field(1),     // True if Sound A is enabled on the right channel
             sound_a_left: new Field(1),      // True if Sound A is enabled on the left channel
             sound_a_timer: new Field(1),     // True if Sound A timer is enabled

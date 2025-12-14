@@ -205,7 +205,7 @@ class SoundMix(RegData):
     psg: int = 0  # PSG output level in (2bits). 0: 25%, 1: 50%, 2: 100%, 3: not used
     sound_a_full: int = 0  # True if Sound A buffer is full
     sound_b_full: int = 0  # True if Sound B buffer is full
-
+    
     sound_a_right: int = 0  # True if Sound A is enabled on the right channel
     sound_a_left: int = 0  # True if Sound A is enabled on the left channel
     sound_a_timer: int = 0  # True if Sound A timer is enabled
@@ -222,6 +222,7 @@ class SoundMix(RegData):
             Field("psg", 2),
             Field("sound_a_full", 1),
             Field("sound_b_full", 1),
+            FieldUnused(4),  # unused bits
             Field("sound_a_right", 1),
             Field("sound_a_left", 1),
             Field("sound_a_timer", 1),
