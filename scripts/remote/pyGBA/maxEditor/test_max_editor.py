@@ -74,16 +74,16 @@ class TestMaxEditor(unittest.TestCase):
     def test_edit_field(self):
         editor = MaxEditor(str(self.test_file))
 
-        new_id = "TEST_ID_123"
+        new_id = b"TEST_ID_123"
         # ensure the new_id does not already exist in the file
-        with open(self.test_file, 'r', encoding='utf-8') as f:
+        with open(self.test_file, 'rb') as f:
             content = f.read()
             self.assertNotIn(new_id, content, f"Test ID '{new_id}' should not already exist in the test file")
 
         # Modify all id of toggles boxes
         is_toggle = lambda box: box.get('maxclass') == 'toggle'
         has_id = lambda box: 'id' in box
-        edit_id = lambda box: box.update({'id': 'TEST_ID_123'})
+        edit_id = lambda box: box.update({'id': new_id.decode('utf-8')})
 
         editor\
             .filter(is_toggle)\
@@ -94,9 +94,9 @@ class TestMaxEditor(unittest.TestCase):
         editor.save(str(self.output_file))
 
         # Verify some lines where the id was changed
-        with open(str(self.test_file)) as f:
+        with open(str(self.test_file), 'rb') as f:
             content_in = f.read().splitlines()
-        with open(str(self.output_file)) as f:
+        with open(str(self.output_file), 'rb') as f:
             content_out = f.read().splitlines()
 
         new_id_found = False
