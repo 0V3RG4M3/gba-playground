@@ -51,10 +51,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_ENABLED-tone1_playing",
                     "presentation_rect": [
-                        135.0,
-                        60.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        62.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -119,10 +119,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_ENABLED-tone2_playing",
                     "presentation_rect": [
-                        135.0,
-                        85.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        87.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -187,10 +187,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_ENABLED-wave_playing",
                     "presentation_rect": [
-                        135.0,
-                        110.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        112.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -255,10 +255,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_ENABLED-noise_playing",
                     "presentation_rect": [
-                        135.0,
-                        135.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        137.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -323,10 +323,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_ENABLED-enabled",
                     "presentation_rect": [
-                        135.0,
-                        160.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        162.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,

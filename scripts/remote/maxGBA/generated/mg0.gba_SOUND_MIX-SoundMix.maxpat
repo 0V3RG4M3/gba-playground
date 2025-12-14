@@ -115,10 +115,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_a_full",
                     "presentation_rect": [
-                        135.0,
-                        85.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        87.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -183,10 +183,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_b_full",
                     "presentation_rect": [
-                        135.0,
-                        110.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        112.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -251,10 +251,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_a_right",
                     "presentation_rect": [
-                        135.0,
-                        135.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        137.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -319,10 +319,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_a_left",
                     "presentation_rect": [
-                        135.0,
-                        160.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        162.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -387,10 +387,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_a_timer",
                     "presentation_rect": [
-                        135.0,
-                        185.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        187.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -455,10 +455,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_a_reset",
                     "presentation_rect": [
-                        135.0,
-                        210.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        212.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -523,10 +523,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_b_right",
                     "presentation_rect": [
-                        135.0,
-                        235.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        237.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -591,10 +591,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_b_left",
                     "presentation_rect": [
-                        135.0,
-                        260.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        262.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -659,10 +659,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_b_timer",
                     "presentation_rect": [
-                        135.0,
-                        285.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        287.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
@@ -727,10 +727,10 @@
                     "maxclass": "toggle",
                     "varname": "SOUND_MIX-sound_b_reset",
                     "presentation_rect": [
-                        135.0,
-                        310.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        312.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,

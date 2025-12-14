@@ -243,10 +243,10 @@
                     "maxclass": "toggle",
                     "varname": "TONE2_PATTERN-step_increasing",
                     "presentation_rect": [
-                        135.0,
-                        135.0,
-                        24.0,
-                        24.0
+                        137.0,
+                        137.0,
+                        20.0,
+                        20.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
