@@ -1,9 +1,10 @@
-import gba_sound
-import gba_mmio
 import json
+import os.path
+
+import gba_mmio
+import gba_sound
+from py2maxGBA import DialBox, MessageBox, NumberBox, JsBox, PrependBox, InletBox, OutletBox, SubPatchBox, ToggleBox, TriggerBox
 from py2maxGBA import IGridSpace, MaxLine, Patch
-from py2maxGBA import DialBox, MessageBox, NumberBox, JsBox, PrependBox, InletBox, OutletBox, SubPatchBox, ToggleBox, \
-    TriggerBox
 
 
 class GridSpace(IGridSpace):
@@ -186,6 +187,8 @@ def generate_mmio_patch(reg: gba_mmio.Register, subpatch: SubPatchBox) -> Patch:
 
 
 def generate_all_sound_maxpat() -> None:
+    HERE = os.path.abspath(__file__)
+
     for register in gba_mmio.registers:
         register_name = register.NAME
         sound_type = register.DATA_TYPE
@@ -194,7 +197,8 @@ def generate_all_sound_maxpat() -> None:
         subpatch: SubPatchBox = generate_sound_type_subpatch(sound_type)
         patch: Patch = generate_mmio_patch(register, subpatch)
 
-        with open(f"..\\maxGBA\\generated\\mg0.gba_{register_name}-{type_name}.maxpat", "w", encoding="utf-8") as f:
+        target_file = os.path.normpath(os.path.join(HERE,f"..\\..\\maxGBA\\generated\\mg0.gba_{register_name}-{type_name}.maxpat"))
+        with open(target_file, "w", encoding="utf-8") as f:
             json.dump(patch.dict, f, indent=4)
 
         print(json.dumps(patch.dict, indent=4))
