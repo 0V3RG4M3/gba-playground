@@ -63,3 +63,22 @@ def resize_rect_to_20x20(box):
     y += (h - 20) // 2
     box['presentation_rect'] = [x, y, 20, 20]
     return True
+
+def main():
+
+    target_folder = '../../maxGBA'
+    # recuresively list all .amxd and maxpat files in the target_folder
+    import os
+    maxfiles = []
+    for root, dirs, files in os.walk(target_folder):
+        for file in files:
+            if file.endswith('.amxd') or file.endswith('.maxpat'):
+                maxfiles.append(os.path.join(root, file))
+
+    print(f"Found {len(maxfiles)} max files to process.")
+    for maxfile in maxfiles:
+        editor = MaxEditor(maxfile)
+        editor.save(maxfile)
+
+if __name__ == "__main__":
+    main()
