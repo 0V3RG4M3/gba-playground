@@ -179,10 +179,10 @@
                     "maxclass": "toggle",
                     "varname": "NOISE_LEN_ENV-step_increasing",
                     "presentation_rect": [
-                        137.0,
-                        112.0,
-                        20.0,
-                        20.0
+                        135.0,
+                        110.0,
+                        24.0,
+                        24.0
                     ],
                     "numinlets": 1,
                     "numoutlets": 1,
