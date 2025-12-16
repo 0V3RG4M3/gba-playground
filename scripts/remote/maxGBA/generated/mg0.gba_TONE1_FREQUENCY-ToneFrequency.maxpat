@@ -83,7 +83,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "TONE1_FREQUENCY-stop_when_expired",
-					"presentation_rect" : [ 135.0, 85.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 87.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -126,7 +126,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "TONE1_FREQUENCY-enabled",
-					"presentation_rect" : [ 135.0, 110.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 112.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,

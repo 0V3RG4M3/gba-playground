@@ -128,7 +128,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-tone1_right",
-					"presentation_rect" : [ 135.0, 110.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 112.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -171,7 +171,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-tone2_right",
-					"presentation_rect" : [ 135.0, 135.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 137.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -214,7 +214,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-wave_right",
-					"presentation_rect" : [ 135.0, 160.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 162.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -257,7 +257,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-noise_right",
-					"presentation_rect" : [ 135.0, 185.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 187.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -300,7 +300,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-tone1_left",
-					"presentation_rect" : [ 135.0, 210.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 212.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -343,7 +343,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-tone2_left",
-					"presentation_rect" : [ 135.0, 235.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 237.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -386,7 +386,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-wave_left",
-					"presentation_rect" : [ 135.0, 260.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 262.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -429,7 +429,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "LEFT_RIGHT_VOLUME-noise_left",
-					"presentation_rect" : [ 135.0, 285.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 287.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,

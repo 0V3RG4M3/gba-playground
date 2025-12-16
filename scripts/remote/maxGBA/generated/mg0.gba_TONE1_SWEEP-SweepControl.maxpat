@@ -85,7 +85,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "TONE1_SWEEP-sweep_increasing",
-					"presentation_rect" : [ 135.0, 85.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 87.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,

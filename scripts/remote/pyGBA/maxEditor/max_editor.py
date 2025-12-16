@@ -205,8 +205,8 @@ def main():
 
     print(f"Found {len(maxfiles)} max files to process.")
     for maxfile in maxfiles:
-        format_file(maxfile)
-        # resize_toggle_rect(maxfile)
+        #format_file(maxfile)
+        resize_toggle_rect(maxfile)
 
 def format_file(maxfile: str, output_file: str = None):
     if output_file is None:

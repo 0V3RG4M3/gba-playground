@@ -85,7 +85,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "NOISE_FREQ-counter7",
-					"presentation_rect" : [ 135.0, 85.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 87.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -171,7 +171,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "NOISE_FREQ-stop_when_expired",
-					"presentation_rect" : [ 135.0, 135.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 137.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
@@ -214,7 +214,7 @@
 				"box" : 				{
 					"maxclass" : "toggle",
 					"varname" : "NOISE_FREQ-enabled",
-					"presentation_rect" : [ 135.0, 160.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 137.0, 162.0, 20.0, 20.0 ],
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"parameter_enable" : 1,
