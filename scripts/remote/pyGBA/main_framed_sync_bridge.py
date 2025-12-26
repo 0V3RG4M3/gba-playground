@@ -8,7 +8,7 @@ from typing import Optional
 
 import max4live_udp_cleaner
 from reg_tune_logger import IRegTuneLogWriter
-from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync
+from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync, FileSimpleStreamAsync
 
 
 def format_pretty_regstate(regstate, batch):
@@ -51,12 +51,12 @@ async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asy
             if len(commands) > 1024:
                 print(f"CONSUMER: ⚠️ Warning: Sending a large batch of {len(commands)} bytes")
                 continue
-            print(f"CONSUMER: sending {len(commands)} bytes")
-            print(f"CONSUMER: commands: {commands}")
-            #print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
+            # print(f"CONSUMER: sending {len(commands)} bytes")
+            # print(f"CONSUMER: commands: {commands}")
+            print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
             await sstream.push(commands)
 
-            print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
+            # print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
 
 
 async def start_null_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event):
@@ -76,7 +76,7 @@ async def start_null_consumer_async(queue: asyncio.Queue[str], stop_event: async
             if not batch:
                 continue
 
-            #print(format_pretty_regstate(regstate, batch))
+            print(format_pretty_regstate(regstate, batch))
 
 
     except Exception as e:
@@ -130,7 +130,7 @@ def main():
             start_socket_bridge_async(
                 command_queue, stop_event,
                 simple_stream=UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port),
-                #simple_stream=FileSimpleStreamAsync("reg_tune6.bin.txt", loop=True, time_scale=1.0),
+                # simple_stream=FileSimpleStreamAsync("reg_tune.bin.txt", loop=True, time_scale=1.0),
                 #reg_tune_logger=RegTuneLogWriter("reg_tune.bin.txt")
             ),
 
@@ -138,7 +138,7 @@ def main():
                 command_queue, stop_event,
                 simple_stream=TCPSimpleStreamAsync(host="localhost", port=lua_tcp_port),
             )
-            #start_null_consumer_async(command_queue, stop_event)
+            # start_null_consumer_async(command_queue, stop_event)
         )
     )
     try:

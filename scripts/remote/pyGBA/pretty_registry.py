@@ -32,17 +32,18 @@ class RegistryState:
             gba_mmio.TONE1_PATTERN.ADDRESS: 0,
             gba_mmio.TONE1_FREQUENCY.ADDRESS: 0,
             gba_mmio.TONE2_PATTERN.ADDRESS: 0,
-            gba_mmio.TONE2_FREQUENCY.ADDRESS: 0,
+            gba_mmio.TONE2_FREQUENCY.ADDRESS: 0
         }
         self.registries_old = self.registries.copy()
         self.updated_registries: set[int] = set(self.registries.keys())
 
     def set_value(self, address: int, value: int):
-        if address in self.registries:
-            self.registries[address] = value
-            self.updated_registries.add(address)
-        else:
-            raise ValueError(f"Address {hex(address)} not in registries")
+        if address not in self.registries:
+            return
+
+        self.registries[address] = value
+        self.updated_registries.add(address)
+
 
     def to_string(self):
         reg_sep = "   "
@@ -52,7 +53,7 @@ class RegistryState:
         for addr, val in self.registries.items():
             reg = gba_mmio.addr2reg_map(hex(addr))
 
-            if reg is not None:
+            if reg is not None and addr in self.registries:
                 reg_data_old = gba_sound.create_reg_data_from_value(reg.DATA_TYPE, self.registries_old[addr])
                 reg_data = gba_sound.create_reg_data_from_value(reg.DATA_TYPE, val)
 

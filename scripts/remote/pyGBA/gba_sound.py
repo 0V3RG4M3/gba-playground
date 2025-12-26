@@ -43,6 +43,8 @@ class RegData:
     def fields(self) -> list[Field]:
         filled_fields = []
         for field in self.empty_fields():
+            if field.name == "":
+                continue
             field.value = self.__dict__[field.name]
             filled_fields.append(field)
         return filled_fields
@@ -271,6 +273,10 @@ def create_reg_data_from_value(cls: RegData, val: int) -> RegData:
     fields = []
     bit_pos = 0
     for field in cls.empty_fields():
+        if field.name == "":
+            # unused field
+            bit_pos += field.size
+            continue
         field_value = (val >> bit_pos) & ((1 << field.size) - 1)
         fields.append(field_value)
         bit_pos += field.size
