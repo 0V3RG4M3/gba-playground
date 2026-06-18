@@ -1,4 +1,5 @@
 import json
+from re import match
 from typing import Any
 
 class MaxJSONEncoder:
@@ -71,7 +72,19 @@ class MaxJSONEncoder:
 
         indent = self.indent_str * (level + 1)
         lines = []
-        items = list(obj.items())
+
+        sort_needed = False
+        maxclass = obj.get("maxclass")
+        if isinstance(maxclass, str):
+            sort_needed = maxclass in ["live.dial", "message", "toggle", "newobj"]
+
+        # sort_needed = "classnamespace" not in obj.keys()
+
+        items: list
+        if sort_needed:
+            items = list({key: obj[key] for key in sorted(obj)}.items())
+        else:
+            items = list(obj.items())
 
         for i, (key, value) in enumerate(items):
             encoded_value = self._encode_value(value, level + 1)

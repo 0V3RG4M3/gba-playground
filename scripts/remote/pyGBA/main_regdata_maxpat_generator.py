@@ -5,6 +5,7 @@ import gba_mmio
 import gba_sound
 from py2maxGBA import DialBox, MessageBox, NumberBox, JsBox, PrependBox, InletBox, OutletBox, SubPatchBox, ToggleBox, TriggerBox
 from py2maxGBA import IGridSpace, MaxLine, Patch
+from maxEditor.max_json_encoder import MaxJSONEncoder
 
 
 class GridSpace(IGridSpace):
@@ -198,8 +199,10 @@ def generate_all_sound_maxpat() -> None:
         patch: Patch = generate_mmio_patch(register, subpatch)
 
         target_file = os.path.normpath(os.path.join(HERE,f"..\\..\\maxGBA\\generated\\mg0.gba_{register_name}-{type_name}.maxpat"))
-        with open(target_file, "w", encoding="utf-8") as f:
-            json.dump(patch.dict, f, indent=4)
+        
+        encoded = MaxJSONEncoder().encode(patch.dict)
+        with open(target_file, "wb") as f:
+            f.write(encoded.encode('utf-8'))
 
         print(json.dumps(patch.dict, indent=4))
 
