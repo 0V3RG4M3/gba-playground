@@ -1,0 +1,41 @@
+digraph G {
+    rankdir=LR;
+    nodesep=0.5;
+    
+    subgraph cluster_ableton {
+        label = "Ableton Live";
+        style = "rounded,filled";
+        fillcolor = "#e1f5ff";
+        
+        midi [label = "MIDI Notes", shape = box];
+        amxd [label = "Max4Live Devices\n(MASTER, TONE1, TONE2, NOISE)", shape = box];
+        
+        midi -> amxd;
+    }
+    
+    bridge [label = "Bridge Python\nmain_framed_sync_bridge.py", shape = box, style = "rounded,filled", fillcolor = "#f3e5f5"];
+    
+    subgraph cluster_mgba {
+        label = "mGBA\ndummy.gba";
+        style = "rounded,filled";
+        fillcolor = "#fff3e0";
+        
+        lua [label = "mgba_framed_sync_server.lua", shape = box];
+        
+        subgraph cluster_emulator {
+            label = "Emulator";
+            style = "rounded,filled";
+            fillcolor = "#ffe0b2";
+            
+            emu [label = "GBA", shape = box];
+        }
+        
+        lua -> emu;
+    }
+    
+    audio [label = "Audio GBA", shape = plaintext];
+    
+    amxd -> bridge [label = "UDP\n127.0.0.1:9999"];
+    bridge -> lua [label = "TCP\n127.0.0.1:8888"];
+    emu -> audio;
+}
