@@ -10,6 +10,7 @@ var ctx = {
   volume: 0,  // Volume in [0, 15]
 
   SIZE: 2, // Number of registers used by this object
+  is_new: false,
 }
 
 function sendRegData() {
@@ -37,5 +38,13 @@ function sendRegData() {
 
 function set_value(key, value){
   ctx[key] = value;
+  ctx.is_new = true;
+}
+
+function bang(){
+  if (!ctx.is_new)
+    return;
+
   sendRegData();
+  ctx.is_new = false;
 }

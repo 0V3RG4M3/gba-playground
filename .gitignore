@@ -4,3 +4,5 @@
 scripts/__pycache__
 src/assets/graphics/example
 __pycache__
+.env
+activate.sh

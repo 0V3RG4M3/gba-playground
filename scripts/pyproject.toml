@@ -3,14 +3,16 @@ name = "scripts"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "dotenv>=0.9.9",
     "flashgbx>=4.4",
     "loguru>=0.7.3",
     "miditoolkit>=1.0.1",
     "numpy>=2.3.0",
-    "openai>=1.93.0",
+    "openai>=1.109.1",
     "opencv-python>=4.11.0.86",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
     "toml>=0.10.2",
 ]

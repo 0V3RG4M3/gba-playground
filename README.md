@@ -12,19 +12,14 @@ exposé via la bibliothèque située dans `src/`.
 ## Préparation
 
 Certaines ressources sont générées à l'aide de scripts Python disponibles dans
-le dossier `scripts`. Ces scripts nécessitent un environnement virtuel créé avec
-[Poetry](https://python-poetry.org/).
+le dossier `scripts`. Ces scripts python peuvent être directement executés avec [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 Depuis `scripts/` :
-
-```bash
-poetry install --no-root
-```
 
 Générez ensuite les données musicales utilisées par la bibliothèque :
 
 ```bash
-poetry run main_generate_tune_rs.py
+uv run main_generate_tune_rs.py
 ```
 
 Des utilitaires supplémentaires, comme `main_convert_sprites.py`, permettent de
@@ -56,6 +51,24 @@ l'exécutable par défaut (`egj2025`) directement dans l'émulateur :
 cargo run
 ```
 
+Pour exécuter un autre binaire, par exemple celui de `src/bin/egj2024.rs`, utilisez :
+```bash
+cargo run --bin egj2024
+```
+
+Pour exécuter en release :
+```bash
+cargo run --bin egj2024 --release
+```
+
+Pour générer un fichier `.gba` exécutable, utilisez :
+
+```bash
+cargo build --release
+cp target/thumbv4t-none-eabi/release/egj2025 egj2025.gba
+mgba egj2025.gba
+```
+
 ## Tests
 
 Des tests unitaires existent pour la partie bibliothèque. Ils s'exécutent sur la
@@ -65,7 +78,7 @@ cible `x86_64-unknown-linux-gnu` :
 cargo test --lib --target=x86_64-unknown-linux-gnu
 ```
 
-## Journalisation
+## Logging
 
 Le module `log4gba` offre des macros simples pour afficher des messages dans la
 console de l'émulateur :
@@ -76,7 +89,7 @@ log4gba::debug("Hello world!")
 
 Les logs apparaissent dans la fenêtre *Logs* de mGBA (`Tools > View Logs…`).
 
-# Le jeu epj 2025
+# Le jeu egj2025
 Le jeu `egj2025` est un jeu d'aventure où le joueur doit résoudre
 des énigmes en jouant avec des malentendus. le scénario est décrit dans
 `story-board.md`. 

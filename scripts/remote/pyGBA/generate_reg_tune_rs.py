@@ -1,31 +1,74 @@
-import numpy as np
-import os
+"""
+Converts recorded register tunes from Max4Live into Rust code for embedding into GBA ROMs,
+handling timing and register data extraction.
+"""
+
+import max4live_udp_cleaner
 import utils
+from reg_tune_logger import RegTuneLogReader
 
-def parse_file(csv_path: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
-    """Parse a CSV file containing MIDI data and convert it to a list of tuples representing the track. """    
-    result = []
-    loop_size: int = 0  # important to know when the loop must start over
-    with open(csv_path, 'r') as csvfile:
 
-        header = csvfile.readline()
-        assert header =='time,cmd,address,value\n', "CSV file must start with 'time,cmd,addr,value' header"
-        fps = 60
-        for line in csvfile:
-            if len(line) < 2:
-                continue
+def extract_data(reg_tune_file: str):
+    result: list[tuple[int, int, int, int]] = []
+    loop_size: int = 0
+    frame_id0 = -1
 
-            time, cmd, addr, value = line.strip().split(',')
-            frame = int(round(float(time) * fps / bpm_gain))
+    tune_reader = RegTuneLogReader(reg_tune_file, time_scale=None)
 
-            if cmd == "STOP":
-                loop_size = frame
-                break
 
-            size = int(cmd[len('WRITE'):]) // 8
-            addr = int(addr, 16)
-            value = int(value, 16)
-            result.append((frame, size, addr, value))
+    for data in tune_reader.read():
+        print(data)
+
+        if len(data) < 2:
+            continue
+
+        items = max4live_udp_cleaner.clean_udp_message(data).decode("utf-8").split()
+        frame_id, command = int(items[0]), items[1:]
+
+        if "REC" in command[0]:
+            frame_id0 = frame_id
+            continue
+
+        if "STOP" in command[0]:
+            loop_size = frame_id - frame_id0
+            break
+
+        assert len(command) == 3, f"Unexpected command length: {command}"
+
+        cmd, addr, value = command
+
+        frame_id_k = frame_id - frame_id0
+        size = int(cmd[len('WRITE'):]) // 8
+        addr = int(addr, 16)
+        value = int(value, 16)
+        result.append((frame_id_k, size, addr, value))
+
+    return result, loop_size
+
+
+def parse_file(reg_tune_file: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
+    """
+    Parse a text file containing register writes and return a list of tuples (frame_id, size, address, value) as well as the loop size.
+
+    Expected file format:
+    b"'4258 REC\x00\x00\x00\x00,\x00\x00\x00'"
+    b"'4268 WRITE16 0x4000062 0xf143\x00\x00\x00,\x00\x00\x00'"
+    b"'4268 WRITE16 0x4000064 0x8689\x00\x00\x00,\x00\x00\x00'"
+    b"'4274 WRITE16 0x4000062 0x143\x00\x00\x00\x00,\x00\x00\x00'"
+    b"'4274 WRITE16 0x4000064 0x8689\x00\x00\x00,\x00\x00\x00'"
+    b"'4282 WRITE16 0x4000062 0xf143\x00\x00\x00,\x00\x00\x00'"
+    b"'4282 WRITE16 0x4000064 0x8689\x00\x00\x00,\x00\x00\x00'"
+    b"'4289 WRITE16 0x4000062 0xf143\x00\x00\x00,\x00\x00\x00'"
+    b"'4289 WRITE16 0x4000064 0x86b2\x00\x00\x00,\x00\x00\x00'"
+    b"'4296 WRITE16 0x4000062 0x143\x00\x00\x00\x00,\x00\x00\x00'"
+    ...
+    b"'5698 STOP\x00\x00\x00,\x00\x00\x00'"
+
+    """
+    result: list[tuple[int, int, int, int]]
+    loop_size: int  # important to know when the loop must start over
+
+    result, loop_size = extract_data(reg_tune_file)
 
     # Sort by frame (just in case)
     result.sort(key=lambda x: x[0])
@@ -52,9 +95,9 @@ pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 
 def main_tune():
     # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    tune, frame_count = parse_file('reg_tune.csv', bpm_gain=1)
-    write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
+    tune, frame_count = parse_file('reg_tune.bin.txt', bpm_gain=1)
 
+    write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
     utils.format_rust_file('../../../src/reg_tune.rs')
 
 
