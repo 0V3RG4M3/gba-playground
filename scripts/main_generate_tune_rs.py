@@ -1,7 +1,5 @@
-import numpy as np
 import os
 from miditoolkit.midi import parser as mid_parser
-from miditoolkit.midi import containers as ct
 import utils
 
 BAR_COUNT = 8
@@ -69,7 +67,7 @@ def main_tune():
 
 def main_sfx():
     dst_filename = "../src/sfx.rs"
-    txt = f"// This file has been automatically generated\n\n"
+    txt = "// This file has been automatically generated\n\n"
 
     midi_files = utils.find_all_by_extension('../src/assets/sfx_225bpm', ".mid")
     for filename in midi_files:
@@ -80,7 +78,7 @@ def main_sfx():
         midi_array = parse_file(filename, bpm_gain=2)
         # midi_array = trim_00(midi_array, margin=16)
         midi_array = midi_array[:30]  # force length to 30 because gba_synth doesn't support multiple length yet
-        txt += f"\n"
+        txt += "\n"
         txt += f"pub const {name}_STEP_COUNT: u16 = {len(midi_array)};\n"
         txt += f"pub const {name}: [(u8, u8); {name}_STEP_COUNT as usize] = {midi_array};\n"
 

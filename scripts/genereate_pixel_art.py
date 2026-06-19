@@ -1,7 +1,6 @@
 # use stable diffusion to generate pixel art images from nerijs/pixel-art-3.5L huggingface.co
-from diffusers import DiffusionPipeline, LCMScheduler, StableDiffusionPipeline
+from diffusers import LCMScheduler, StableDiffusionPipeline
 import torch    
-import gc
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -160,7 +159,7 @@ def create_sprite(prompt, size=(32, 32), target_filename=None):
     model_path = get_model_path()
     
     # Load model
-    loguru.logger.info(f"Loading model for sprite generation...")
+    loguru.logger.info("Loading model for sprite generation...")
     pipe = load_model_from_single_file(model_path)
     
     if pipe is None:

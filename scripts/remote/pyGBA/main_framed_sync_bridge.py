@@ -8,7 +8,7 @@ from typing import Optional
 
 import max4live_udp_cleaner
 from reg_tune_logger import IRegTuneLogWriter
-from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync
+from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync, FileSimpleStreamAsync
 
 
 def format_pretty_regstate(regstate, batch):
@@ -25,7 +25,7 @@ def format_pretty_regstate(regstate, batch):
 
 
 async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event, simple_stream: ISimpleStreamAsync):
-    print(f"CONSUMER: 🔌⏳ Connecting to simple stream...")
+    print("CONSUMER: 🔌⏳ Connecting to simple stream...")
 
     import pretty_registry
     regstate = pretty_registry.RegistryState()
@@ -51,12 +51,12 @@ async def start_socket_consumer_async(queue: asyncio.Queue[str], stop_event: asy
             if len(commands) > 1024:
                 print(f"CONSUMER: ⚠️ Warning: Sending a large batch of {len(commands)} bytes")
                 continue
-            print(f"CONSUMER: sending {len(commands)} bytes")
-            print(f"CONSUMER: commands: {commands}")
+            # print(f"CONSUMER: sending {len(commands)} bytes")
+            # print(f"CONSUMER: commands: {commands}")
             print(f"CONSUMER: {format_pretty_regstate(regstate, batch)}")
             await sstream.push(commands)
 
-            print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
+            # print(f"CONSUMER: 📤 Sent {len(commands)} bytes after trigger")
 
 
 async def start_null_consumer_async(queue: asyncio.Queue[str], stop_event: asyncio.Event):
@@ -92,15 +92,15 @@ async def start_socket_bridge_async(
         reg_tune_logger: Optional[IRegTuneLogWriter] = None,
 ):
 
-    print(f"PRODUCER: 🔌⏳ Opening input stream...")
+    print("PRODUCER: 🔌⏳ Opening input stream...")
     async with simple_stream as sstream:
-        print(f"PRODUCER: 🔌✅ Input stream opened!")
+        print("PRODUCER: 🔌✅ Input stream opened!")
 
         while not stop_event.is_set():
             # print(f"PRODUCER: ⏳ Waiting for data...")
             data = await sstream.read()
             if data is None:
-                print(f"PRODUCER: 🔌❌ Connection closed by peer.")
+                print("PRODUCER: 🔌❌ Connection closed by peer.")
                 break
             # print(f"PRODUCER: 📥 Received {len(data)} bytes")
             if reg_tune_logger:
@@ -130,7 +130,7 @@ def main():
             start_socket_bridge_async(
                 command_queue, stop_event,
                 simple_stream=UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port),
-                #simple_stream=FileSimpleStreamAsync("reg_tune6.bin.txt", loop=True, time_scale=1.0),
+                # simple_stream=FileSimpleStreamAsync("reg_tune.bin.txt", loop=True, time_scale=1.0),
                 #reg_tune_logger=RegTuneLogWriter("reg_tune.bin.txt")
             ),
 
@@ -138,7 +138,7 @@ def main():
                 command_queue, stop_event,
                 simple_stream=TCPSimpleStreamAsync(host="localhost", port=lua_tcp_port),
             )
-            #start_null_consumer_async(command_queue, stop_event)
+            # start_null_consumer_async(command_queue, stop_event)
         )
     )
     try:

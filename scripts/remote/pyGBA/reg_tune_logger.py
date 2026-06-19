@@ -31,7 +31,7 @@ class RegTuneLogWriter(IRegTuneLogWriter):
         self.is_recording = False
 
     def newlogfile(self):
-        with open(self.filename, "wb") as file:
+        with open(self.filename, "wb"):
             pass
 
     def log(self, data: bytes) -> None:

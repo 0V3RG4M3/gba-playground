@@ -37,7 +37,7 @@ def test_enhanced_agents():
             test_sprite["output"]
         )
         
-        loguru.logger.info(f"Test completed!")
+        loguru.logger.info("Test completed!")
         loguru.logger.info(f"Target achieved: {report['target_achieved']}")
         loguru.logger.info(f"Total iterations: {report['iterations']}")
         

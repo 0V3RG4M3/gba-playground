@@ -1,7 +1,4 @@
-import os 
 import toml
-import openai
-import dotenv
 import loguru
 
 
