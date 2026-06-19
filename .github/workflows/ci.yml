@@ -12,7 +12,7 @@ jobs:
       - name: Install rust-src
         run: rustup component add rust-src
       - name: Build
-        run: cargo build --release --out-dir=out -Z unstable-options
+        run: cargo build --release --artifact-dir=out -Z unstable-options
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
