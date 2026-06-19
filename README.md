@@ -7,7 +7,9 @@ Advance en Rust. La compilation cible l'architecture `thumbv4t-none-eabi` et
 `mgba` est utilisé comme émulateur par défaut (voir `.cargo/config.toml`). Les
 exécutables principaux se trouvent dans `src/bin/` et incluent différents tests
 ou prototypes (`egj2024`, `egj2025`, `platformer`, etc.). Le code commun est
-exposé via la bibliothèque située dans `src/`.
+exposé via la bibliothèque située dans `src/`.  
+
+En cas de problèmes, consultez le fichier [TROUBLESHOOT.md](TROUBLESHOOT.md)
 
 ## Préparation
 
@@ -71,9 +73,11 @@ mgba egj2025.gba
 
 ## Tests
 
-Des tests unitaires existent pour la partie bibliothèque. Ils s'exécutent sur la
-cible `x86_64-unknown-linux-gnu` :
+Des tests unitaires existent pour la partie bibliothèque. Ils s'exécutent sur l'une des cibles suivantes:
+- Linux: `x86_64-unknown-linux-gnu`
+- Windows: `x86_64-pc-windows-msvc`
 
+Sur linux:
 ```bash
 cargo test --lib --target=x86_64-unknown-linux-gnu
 ```
