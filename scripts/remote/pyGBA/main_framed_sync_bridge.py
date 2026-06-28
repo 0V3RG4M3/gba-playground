@@ -5,9 +5,10 @@ and mGBA (TCP), synchronizing register writes via frames.
 
 import asyncio
 from typing import Optional
+from pathlib import Path
 
 import max4live_udp_cleaner
-from reg_tune_logger import IRegTuneLogWriter
+from reg_tune_logger import IRegTuneLogWriter, RegTuneLogWriter
 from simple_stream_async import ISimpleStreamAsync, UDPSimpleStreamAsync, TCPSimpleStreamAsync, FileSimpleStreamAsync
 
 
@@ -117,10 +118,10 @@ async def run_producer_consumer_tasks(producer_task, consumer_task):
     await asyncio.gather(producer_task, consumer_task)
 
 
-def main():
-    lua_tcp_port = 8888
-    max4live_udp_port = 9999
-
+def run_bridge(
+        source_stream: ISimpleStreamAsync,
+        dest_stream: ISimpleStreamAsync,
+        reg_tune_logger: Optional[IRegTuneLogWriter]=None):
 
     command_queue: asyncio.Queue[str] = asyncio.Queue(maxsize=1000)
     stop_event = asyncio.Event()
@@ -129,14 +130,13 @@ def main():
         run_producer_consumer_tasks(
             start_socket_bridge_async(
                 command_queue, stop_event,
-                simple_stream=UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port),
-                # simple_stream=FileSimpleStreamAsync("reg_tune.bin.txt", loop=True, time_scale=1.0),
-                #reg_tune_logger=RegTuneLogWriter("reg_tune.bin.txt")
+                simple_stream=source_stream,
+                reg_tune_logger=reg_tune_logger
             ),
 
             start_socket_consumer_async(
                 command_queue, stop_event,
-                simple_stream=TCPSimpleStreamAsync(host="localhost", port=lua_tcp_port),
+                simple_stream=dest_stream,
             )
             # start_null_consumer_async(command_queue, stop_event)
         )
@@ -150,6 +150,26 @@ def main():
     finally:
         print("👋 Exiting...")
 
+def main_max_to_mgba(dst_logfile:Optional[Path]=None):
+    lua_tcp_port = 8888
+    max4live_udp_port = 9999
+
+    max_stream = UDPSimpleStreamAsync(host="127.0.0.1", port=max4live_udp_port)
+    mgba_stream = TCPSimpleStreamAsync(host="localhost", port=lua_tcp_port)
+
+    reg_tune_logger = None if dst_logfile is None else RegTuneLogWriter(dst_logfile)
+
+    run_bridge(max_stream, mgba_stream, reg_tune_logger)
+
+def main_logfile_to_mgba(src_logfile:str):
+    lua_tcp_port = 8888
+
+    logfile_stream=FileSimpleStreamAsync(src_logfile, loop=True, time_scale=1.0)
+    mgba_stream = TCPSimpleStreamAsync(host="localhost", port=lua_tcp_port)
+
+    run_bridge(logfile_stream, mgba_stream)
+
 
 if __name__ == "__main__":
-    main()
+    main_max_to_mgba(Path("reg_tunes/tmp.bin.txt"))
+    # main_logfile_to_mgba("reg_tunes/tmp.bin.txt")
