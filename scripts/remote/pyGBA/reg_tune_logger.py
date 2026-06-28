@@ -6,6 +6,7 @@ enabling capture and playback of sound register sequences.
 import asyncio
 import time
 from typing import Optional
+from pathlib import Path
 
 import max4live_udp_cleaner
 
@@ -26,7 +27,7 @@ class IRegTuneLogWriter:
 
 
 class RegTuneLogWriter(IRegTuneLogWriter):
-    def __init__(self, filename: str):
+    def __init__(self, filename: Path):
         self.filename = filename
         self.is_recording = False
 
@@ -37,6 +38,7 @@ class RegTuneLogWriter(IRegTuneLogWriter):
     def log(self, data: bytes) -> None:
         items = max4live_udp_cleaner.clean_udp_message(data).decode("utf-8").strip().split()
 
+        # print(items)
         if len(items) == 0:
             return
 

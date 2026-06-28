@@ -6,6 +6,7 @@ handling timing and register data extraction.
 import max4live_udp_cleaner
 import utils
 from reg_tune_logger import RegTuneLogReader
+from pathlib import Path
 
 
 def extract_data(reg_tune_file: str):
@@ -46,7 +47,7 @@ def extract_data(reg_tune_file: str):
     return result, loop_size
 
 
-def parse_file(reg_tune_file: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
+def parse_file(reg_tune_file: Path, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
     """
     Parse a text file containing register writes and return a list of tuples (frame_id, size, address, value) as well as the loop size.
 
@@ -95,10 +96,22 @@ pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 
 def main_tune():
     # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    tune, frame_count = parse_file('reg_tune.bin.txt', bpm_gain=1)
 
-    write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
-    utils.format_rust_file('../../../src/reg_tune.rs')
+    here = Path(__file__).parent
+    reg_tune_src_folder = here / "reg_tunes"
+    src_ext = ".bin.txt"
+
+    reg_tune_dst_folder = here / '../../../'
+    dst_ext = ".rs"
+
+    reg_tune_file_subpath =  Path("src/egj2025/reg_tune")
+
+    src_file = (reg_tune_src_folder / reg_tune_file_subpath).with_suffix(src_ext)
+    tune, frame_count = parse_file(src_file, bpm_gain=1)
+
+    dst_rsfile = (reg_tune_dst_folder / reg_tune_file_subpath).with_suffix(dst_ext)
+    write_reg_tune_rs_file(dst_rsfile, tune, frame_count)
+    utils.format_rust_file(dst_rsfile)
 
 
 if __name__ == '__main__':
