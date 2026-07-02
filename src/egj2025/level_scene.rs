@@ -39,6 +39,7 @@ impl<L: Level> LevelScene<L> {
         loop {
             bios::VBlankIntrWait();
             gba_synth2::play_step();
+            gba_synth2::write_to_registers();
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {
