@@ -16,15 +16,15 @@ checksum = "00248d542917c4ef013367c0907300e9befbbc1f99b12938c9e5a356ab50582d"
 
 [[package]]
 name = "bytemuck"
-version = "1.23.1"
+version = "1.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c76a5792e44e4abe34d3abf15636779261d45a7450612059293d1d2cfc63422"
+checksum = "c8efb64bd706a16a1bdde310ae86b351e4d21550d98d056f22f8a7f7a2183fec"
 
 [[package]]
 name = "gba"
-version = "0.14.1"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dff72a04df599de9991069ab6807f00e02dc24840e13d16f92dfa2929c4e6950"
+checksum = "ac02b8ad7f55105b09968a2e6e39099d9fb746a2d6abc97985e5bc13e8faba81"
 dependencies = [
  "bitfrob",
  "bracer",

@@ -9,7 +9,7 @@ use gba::interrupts::IrqBits;
 use gba::keys::KeyInput;
 use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::mmio;
-use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjDisplayStyle};
+use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjAttrWriteExt, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, TextEntry};
 
 use gba_playground::gba_synth2;

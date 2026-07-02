@@ -4,7 +4,7 @@ use gba;
 use gba::bios;
 use gba::interrupts::IrqBits;
 use gba::mmio;
-use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
+use gba::video::obj::{ObjAttr0, ObjAttrWriteExt, ObjDisplayStyle};
 use gba::video::{BackgroundControl, DisplayControl, DisplayStatus, VideoMode};
 
 use crate::egj2025::backgrounds;

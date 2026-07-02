@@ -17,7 +17,7 @@ use gba::bios;
 use gba::fixed::i16fx8;
 use gba::interrupts::IrqBits;
 use gba::mmio;
-use gba::video::obj::{ObjAttr0, ObjDisplayStyle};
+use gba::video::obj::{ObjAttr0, ObjAttrWriteExt, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, VideoMode};
 
 pub struct GameScene {}
