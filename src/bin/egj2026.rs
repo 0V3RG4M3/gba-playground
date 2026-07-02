@@ -22,7 +22,7 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn main() -> ! {
     let mut scene_runner = SceneRunner::<()>::new::<ScreenSplashScene>();
     loop {

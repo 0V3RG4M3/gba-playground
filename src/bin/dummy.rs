@@ -33,7 +33,7 @@ fn enable_sound() {
     mmio::SOUND_MIX.write(sound::SoundMix::new().with_psg(sound::PsgMix::_50));
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn main() -> ! {
     enable_sound();
     loop {}

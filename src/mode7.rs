@@ -1,8 +1,8 @@
 use gba::fixed::{i16fx8, i32fx8};
 use gba::gba_cell::GbaCell;
 use gba::mmio;
-use gba::video::obj::{ObjAttr, ObjDisplayStyle, ObjShape};
 use gba::video::BackgroundControl;
+use gba::video::obj::{ObjAttr, ObjDisplayStyle, ObjShape};
 
 use crate::fixed::Fixed;
 use crate::math;
@@ -207,11 +207,7 @@ pub fn prepare_frame(size: u16, camera: &Camera) {
     CAM_PITCH_SIN.write(camera.pitch_sin);
     CAM_PITCH_COS.write(camera.pitch_cos);
     let horizon = if camera.pitch_cos().into_raw() == 0 {
-        if camera.pitch_sin().into_raw() > 0 {
-            0
-        } else {
-            160
-        }
+        if camera.pitch_sin().into_raw() > 0 { 0 } else { 160 }
     } else {
         let n =
             (FAR * camera.pitch_sin().into_raw() - (camera.pos.y.into_raw() >> 12)) * FOCAL_LENGTH;
@@ -221,7 +217,7 @@ pub fn prepare_frame(size: u16, camera: &Camera) {
     HORIZON.write(horizon);
 }
 
-#[link_section = ".iwram"]
+#[unsafe(link_section = ".iwram")]
 pub fn process_line(line: i32) {
     if line < HORIZON.read() || line >= 160 {
         return;

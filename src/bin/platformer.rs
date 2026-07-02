@@ -22,7 +22,7 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn main() -> ! {
     mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
     mmio::IE.write(IrqBits::VBLANK);

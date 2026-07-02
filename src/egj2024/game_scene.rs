@@ -180,7 +180,7 @@ impl Scene for GameScene {
     }
 }
 
-#[link_section = ".iwram"]
+#[unsafe(link_section = ".iwram")]
 extern "C" fn irq_handler(irq_bits: IrqBits) {
     if !irq_bits.hblank() {
         return;

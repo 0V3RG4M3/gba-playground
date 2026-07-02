@@ -112,7 +112,7 @@ impl<L: Level> Scene for LevelScene<L> {
     }
 }
 
-#[link_section = ".iwram"]
+#[unsafe(link_section = ".iwram")]
 extern "C" fn irq_handler(irq_bits: IrqBits) {
     if !irq_bits.hblank() {
         return;
