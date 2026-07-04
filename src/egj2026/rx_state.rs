@@ -20,9 +20,9 @@ impl RxState {
         self
     }
 
-    /*pub fn parent(self) -> bool {
+    pub fn parent(self) -> bool {
         self.0 >> 1 & 1 != 0
-    }*/
+    }
 
     pub fn with_parent(mut self, parent: bool) -> Self {
         self.0 &= !(1 << 1);

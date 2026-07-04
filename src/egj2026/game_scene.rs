@@ -1,4 +1,5 @@
 use core::cmp;
+use core::iter;
 
 use gba::bios;
 use gba::interrupts::IrqBits;
@@ -34,7 +35,7 @@ impl Scene for GameScene {
         let screenblock = mmio::TEXT_SCREENBLOCKS.get_frame(1).unwrap();
         for y in 0..32 {
             for x in 0..32 {
-                let tile = if y < 16 { 0 } else { 1 };
+                let tile = if y < 10 { 0 } else { 1 };
                 screenblock.index(x, y).write(TextEntry::new().with_tile(tile));
             }
         }
@@ -42,20 +43,23 @@ impl Scene for GameScene {
 
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
         mmio::OBJ_TILES.index(1).write([0x01010101; 8]);
-        for i in 1..128 {
+        for i in 2..128 {
             let va = mmio::OBJ_ATTR0.index(i);
             va.write(ObjAttr0::new().with_style(ObjDisplayStyle::NotDisplayed));
         }
 
-        let mut vy = 0;
-        let (mut px, mut py): (i16, i16) = (32, 128);
+        let mut players = [Player { px: 32, py: 0, vy: 0 }, Player { px: 32, py: 0, vy: 0 }];
+        let mut parent = true;
 
         loop {
-            let mut obj_attr = ObjAttr::new();
-            obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);
-            obj_attr.1 = ObjAttr1::new().with_x(px as u16);
-            obj_attr.2 = ObjAttr2::new();
-            mmio::OBJ_ATTR_ALL.index(0).write(obj_attr);
+            for (i, player) in players.iter().enumerate() {
+                let py = if parent == (i == 0) { 72 - player.py } else { 80 + player.py };
+                let mut obj_attr = ObjAttr::new();
+                obj_attr.0 = ObjAttr0::new().with_y(py as u16).with_bpp8(true);
+                obj_attr.1 = ObjAttr1::new().with_x(player.px as u16);
+                obj_attr.2 = ObjAttr2::new();
+                mmio::OBJ_ATTR_ALL.index(i).write(obj_attr);
+            }
 
             mmio::DISPCNT.write(DisplayControl::new().with_show_bg0(true).with_show_obj(true));
 
@@ -74,24 +78,33 @@ impl Scene for GameScene {
                 continue;
             }
 
-            let key_input = rx_state.key_inputs()[0];
+            parent = rx_state.parent();
 
-            let mut vx = 0;
-            if key_input.left() {
-                vx -= 8;
-            }
-            if key_input.right() {
-                vx += 8;
-            }
+            let key_inputs = rx_state.key_inputs();
+            for (key_input, Player { px, py, vy }) in iter::zip(&key_inputs, &mut players) {
+                let mut vx = 0;
+                if key_input.left() {
+                    vx -= 8;
+                }
+                if key_input.right() {
+                    vx += 8;
+                }
 
-            if py == 128 {
-                vy = if key_input.up() { -8 } else { 0 };
-            } else {
-                vy += 1;
-            }
+                if *py == 0 {
+                    *vy = if key_input.up() { 8 } else { 0 };
+                } else {
+                    *vy -= 1;
+                }
 
-            px = cmp::min(cmp::max(0, px + vx), 232);
-            py = cmp::min(cmp::max(8, py + vy), 128);
+                *px = cmp::min(cmp::max(0, *px + vx), 232);
+                *py = cmp::min(cmp::max(0, *py + *vy), 72);
+            }
         }
     }
+}
+
+struct Player {
+    px: i16,
+    py: i16,
+    vy: i16,
 }
