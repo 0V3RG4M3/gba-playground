@@ -3,6 +3,7 @@ use gba::mmio::DISPCNT;
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
+use crate::egj2026::context::Context;
 use crate::egj2026::link;
 use crate::egj2026::ready_scene::ReadyScene;
 use crate::egj2026::screens;
@@ -12,10 +13,10 @@ use crate::scene::{Scene, SceneRunner};
 pub struct WaitScene;
 
 impl Scene for WaitScene {
-    type C = ();
+    type C = Context;
 
-    fn new(_: &mut ()) -> WaitScene {
-        WaitScene {}
+    fn new(_: &mut Self::C) -> Self {
+        Self
     }
 
     fn run(&mut self, _: &mut Self::C) -> SceneRunner<Self::C> {
@@ -36,7 +37,7 @@ impl Scene for WaitScene {
 
             let rx_state = link::read();
             if rx_state.connected() {
-                break SceneRunner::<()>::new::<ReadyScene>();
+                break SceneRunner::<Self::C>::new::<ReadyScene>();
             }
         }
     }

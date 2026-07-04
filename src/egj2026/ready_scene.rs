@@ -3,22 +3,23 @@ use gba::mmio::DISPCNT;
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
+use crate::egj2026::context::Context;
+use crate::egj2026::game_scene::GameScene;
 use crate::egj2026::link;
 use crate::egj2026::screens;
 use crate::egj2026::tx_state::TxState;
-use crate::egj2026::wait_scene::WaitScene;
 use crate::scene::{Scene, SceneRunner};
 
-pub struct ReadyScene {}
+pub struct ReadyScene;
 
 impl Scene for ReadyScene {
-    type C = ();
+    type C = Context;
 
-    fn new(_: &mut ()) -> ReadyScene {
-        ReadyScene {}
+    fn new(_: &mut Self::C) -> Self {
+        Self
     }
 
-    fn run(&mut self, _: &mut Self::C) -> SceneRunner<Self::C> {
+    fn run(&mut self, context: &mut Self::C) -> SceneRunner<Self::C> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true).with_serial(true));
         mmio::IME.write(true);
@@ -26,11 +27,9 @@ impl Scene for ReadyScene {
         video::video3_set_bitmap(&screens::SCREEN_YOUWIN);
         DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
 
-        let mut frame = 1;
-
         loop {
             let key_input = mmio::KEYINPUT.read();
-            let tx_state = TxState::new().with_frame(frame).with_key_input(key_input);
+            let tx_state = TxState::new().with_frame(context.frame).with_key_input(key_input);
             link::write(tx_state);
 
             bios::VBlankIntrWait();
@@ -40,15 +39,15 @@ impl Scene for ReadyScene {
                 continue;
             }
 
-            if rx_state.frame() != frame {
+            if rx_state.frame() != context.frame {
                 continue;
             }
 
             if rx_state.key_inputs()[0].start() {
-                break SceneRunner::<()>::new::<WaitScene>();
+                break SceneRunner::<Self::C>::new::<GameScene>();
             }
 
-            frame = (frame + 1) % 16;
+            context.frame = (context.frame + 1) % 16;
         }
     }
 }
