@@ -10,9 +10,10 @@ from pathlib import Path
 
 
 def extract_data(reg_tune_file: str):
-    result: list[tuple[int, int, int, int]] = []
+    lines: list[tuple[int, int, int, int]] = []
     loop_size: int = 0
-    frame_id0 = -1
+    frame_start = -1
+    frame_stop = -1
 
     tune_reader = RegTuneLogReader(reg_tune_file, time_scale=None)
 
@@ -26,23 +27,41 @@ def extract_data(reg_tune_file: str):
         items = max4live_udp_cleaner.clean_udp_message(data).decode("utf-8").split()
         frame_id, command = int(items[0]), items[1:]
 
-        if "REC" in command[0]:
-            frame_id0 = frame_id
+        if "OPEN" in command[0]:
+            continue
+
+        if "START" in command[0]:
+            frame_start = frame_id
             continue
 
         if "STOP" in command[0]:
-            loop_size = frame_id - frame_id0
+            frame_stop = frame_id
+            loop_size = frame_id - frame_start
+            continue
+
+        if "CLOSE" in command[0]:
             break
 
         assert len(command) == 3, f"Unexpected command length: {command}"
 
         cmd, addr, value = command
 
-        frame_id_k = frame_id - frame_id0
+        # frame_id_k = frame_id - frame_id0
         size = int(cmd[len('WRITE'):]) // 8
         addr = int(addr, 16)
         value = int(value, 16)
-        result.append((frame_id_k, size, addr, value))
+        lines.append((frame_id, size, addr, value))
+
+    # Subtract frame offset. Negative frame_id values are for initial register state before the first note is played
+    result: list[tuple[int, int, int, int]] = []
+    for frame_id, size, addr, value in lines:
+        if frame_id < frame_start:
+            frame_id = 0
+        elif frame_id >= frame_stop:
+            frame_id = loop_size
+        else:
+            frame_id = frame_id -frame_start + 1  # plus 1 so that the initial register state is at frame 0 and doesnt mix up with the first note played
+        result.append((frame_id, size, addr, value))
 
     return result, loop_size
 
@@ -104,7 +123,7 @@ def main_tune():
     reg_tune_dst_folder = here / '../../../'
     dst_ext = ".rs"
 
-    reg_tune_file_subpath =  Path("src/egj2025/reg_tune")
+    reg_tune_file_subpath =  Path("src/egj2026/sfx_jump")
 
     src_file = (reg_tune_src_folder / reg_tune_file_subpath).with_suffix(src_ext)
     tune, frame_count = parse_file(src_file, bpm_gain=1)

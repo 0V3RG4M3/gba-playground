@@ -42,7 +42,7 @@ class RegTuneLogWriter(IRegTuneLogWriter):
         if len(items) == 0:
             return
 
-        if items[1] == "REC":  # empty line
+        if items[1] == "OPEN":  # empty line
             self.newlogfile()
             self.is_recording = True
 
@@ -52,9 +52,9 @@ class RegTuneLogWriter(IRegTuneLogWriter):
             with open(self.filename, "a", encoding="utf-8") as f:
                 f.write(line + "\n")
 
-        if items[1] == "STOP":
+        if items[1] == "CLOSE":
             self.is_recording = False
-            print("STOP")
+            print("CLOSE")
             return
 
 
