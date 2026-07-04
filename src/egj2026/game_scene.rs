@@ -42,11 +42,26 @@ impl Scene for GameScene {
                 screenblock.index(x, y).write(TextEntry::new().with_tile(tile));
             }
         }*/
-        let bg0cnt = BackgroundControl::new().with_priority(2).with_charblock(0).with_bpp8(true).with_screenblock(24).with_size(1);
+        let bg0cnt = BackgroundControl::new()
+            .with_priority(2)
+            .with_charblock(0)
+            .with_bpp8(true)
+            .with_screenblock(24)
+            .with_size(1);
         mmio::BG0CNT.write(bg0cnt);
-        let bg1cnt = BackgroundControl::new().with_priority(1).with_charblock(1).with_bpp8(true).with_screenblock(26).with_size(1);
+        let bg1cnt = BackgroundControl::new()
+            .with_priority(1)
+            .with_charblock(1)
+            .with_bpp8(true)
+            .with_screenblock(26)
+            .with_size(1);
         mmio::BG1CNT.write(bg1cnt);
-        let bg2cnt = BackgroundControl::new().with_priority(0).with_charblock(2).with_bpp8(true).with_screenblock(28).with_size(1);
+        let bg2cnt = BackgroundControl::new()
+            .with_priority(0)
+            .with_charblock(2)
+            .with_bpp8(true)
+            .with_screenblock(28)
+            .with_size(1);
         mmio::BG2CNT.write(bg2cnt);
 
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
