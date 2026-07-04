@@ -11,7 +11,7 @@ use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::mmio;
 use gba::video::DisplayStatus;
 
-use gba_playground::egj2026::screen_splash_scene::ScreenSplashScene;
+use gba_playground::egj2026::wait_scene::WaitScene;
 use gba_playground::scene::SceneRunner;
 
 #[panic_handler]
@@ -24,7 +24,7 @@ fn panic_handler(info: &core::panic::PanicInfo) -> ! {
 
 #[unsafe(no_mangle)]
 extern "C" fn main() -> ! {
-    let mut scene_runner = SceneRunner::<()>::new::<ScreenSplashScene>();
+    let mut scene_runner = SceneRunner::<()>::new::<WaitScene>();
     loop {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
         mmio::IE.write(IrqBits::new().with_vblank(true));
