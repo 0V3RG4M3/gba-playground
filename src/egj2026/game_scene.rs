@@ -113,6 +113,8 @@ impl Scene for GameScene {
                 .with_show_obj(true);
             mmio::DISPCNT.write(dispcnt);
 
+            gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
+
             let key_input = mmio::KEYINPUT.read();
             let tx_state = TxState::new().with_frame(context.frame).with_key_input(key_input);
             link::write(tx_state);
@@ -238,4 +240,11 @@ enum Animation {
     Run(u8),
     Jump,
     Fall,
+}
+
+#[unsafe(link_section = ".iwram")]
+extern "C" fn irq_handler(irq_bits: IrqBits) {
+    if irq_bits.serial() {
+        link::process();
+    }
 }

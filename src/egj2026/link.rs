@@ -1,5 +1,4 @@
 use gba::gba_cell::GbaCell;
-use gba::interrupts::IrqBits;
 use gba::keys::KeyInput;
 use gba::mmio;
 
@@ -20,8 +19,6 @@ pub fn init() {
 }
 
 pub fn write(tx_state: TxState) {
-    gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
-
     let mut siocnt = mmio::SIOCNT.read();
     let parent = (siocnt >> 2) & 1 == 0;
     let ready = (siocnt >> 3) & 1 != 0;
@@ -42,12 +39,7 @@ pub fn read() -> RxState {
     RX_STATE.read()
 }
 
-#[unsafe(link_section = ".iwram")]
-extern "C" fn irq_handler(irq_bits: IrqBits) {
-    if !irq_bits.serial() {
-        return;
-    }
-
+pub fn process() {
     let siocnt = mmio::SIOCNT.read();
     let parent = (siocnt >> 2) & 1 == 0;
     let ready = (siocnt >> 3) & 1 != 0;

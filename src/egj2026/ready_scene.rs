@@ -28,6 +28,8 @@ impl Scene for ReadyScene {
         DISPCNT.write(DisplayControl::new().with_video_mode(VideoMode::_3).with_show_bg2(true));
 
         loop {
+            gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
+
             let key_input = mmio::KEYINPUT.read();
             let tx_state = TxState::new().with_frame(context.frame).with_key_input(key_input);
             link::write(tx_state);
@@ -49,5 +51,12 @@ impl Scene for ReadyScene {
 
             context.frame = (context.frame + 1) % 16;
         }
+    }
+}
+
+#[unsafe(link_section = ".iwram")]
+extern "C" fn irq_handler(irq_bits: IrqBits) {
+    if irq_bits.serial() {
+        link::process();
     }
 }

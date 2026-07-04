@@ -30,6 +30,8 @@ impl Scene for WaitScene {
         link::init();
 
         loop {
+            gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
+
             let tx_state = TxState::new();
             link::write(tx_state);
 
@@ -40,5 +42,12 @@ impl Scene for WaitScene {
                 break SceneRunner::<Self::C>::new::<ReadyScene>();
             }
         }
+    }
+}
+
+#[unsafe(link_section = ".iwram")]
+extern "C" fn irq_handler(irq_bits: IrqBits) {
+    if irq_bits.serial() {
+        link::process();
     }
 }
