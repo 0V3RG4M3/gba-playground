@@ -34,14 +34,14 @@ impl Scene for GameScene {
             .with_priority(0)
             .with_charblock(2)
             .with_bpp8(true)
-            .with_screenblock(28)
+            .with_screenblock(27)
             .with_size(1);
         mmio::BG0CNT.write(bg0cnt);
         let bg1cnt = BackgroundControl::new()
             .with_priority(1)
             .with_charblock(1)
             .with_bpp8(true)
-            .with_screenblock(26)
+            .with_screenblock(25)
             .with_size(1);
         mmio::BG1CNT.write(bg1cnt);
         let bg2cnt = BackgroundControl::new()
@@ -93,7 +93,6 @@ impl Scene for GameScene {
                 if !vflip {
                     mmio::BG0HOFS.write(player.px as u16 / 4);
                     mmio::BG1HOFS.write(player.px as u16 / 8);
-                    mmio::BG2HOFS.write(player.px as u16 / 16);
                 }
             }
 
