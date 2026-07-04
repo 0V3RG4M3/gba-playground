@@ -1,3 +1,4 @@
+mod backgrounds;
 pub mod context;
 mod game_scene;
 mod link;
