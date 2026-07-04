@@ -20,7 +20,7 @@ impl Scene for WaitScene {
 
     fn run(&mut self, _: &mut Self::C) -> SceneRunner<Self::C> {
         mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
-        mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true).with_serial(true));
+        mmio::IE.write(IrqBits::new().with_vblank(true).with_serial(true));
         mmio::IME.write(true);
 
         video::video3_set_bitmap(&screens::SCREEN_SPLASH);
@@ -29,15 +29,15 @@ impl Scene for WaitScene {
         link::init();
 
         loop {
+            let tx_state = TxState::new();
+            link::write(tx_state);
+
             bios::VBlankIntrWait();
 
             let rx_state = link::read();
             if rx_state.connected() {
                 break SceneRunner::<()>::new::<ReadyScene>();
             }
-
-            let tx_state = TxState::new();
-            link::write(tx_state);
         }
     }
 }

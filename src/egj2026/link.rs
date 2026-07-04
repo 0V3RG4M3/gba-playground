@@ -17,11 +17,11 @@ pub fn init() {
     siocnt |= 1 << 13;
     siocnt |= 1 << 14;
     mmio::SIOCNT.write(siocnt);
-
-    gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
 }
 
 pub fn write(tx_state: TxState) {
+    gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
+
     let mut siocnt = mmio::SIOCNT.read();
     let parent = (siocnt >> 2) & 1 == 0;
     let ready = (siocnt >> 3) & 1 != 0;

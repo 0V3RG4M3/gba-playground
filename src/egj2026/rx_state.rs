@@ -1,8 +1,8 @@
 use gba::gba_cell::GbaCellSafe;
 use gba::keys::KeyInput;
 
-#[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
+#[repr(transparent)]
 pub struct RxState(u32);
 
 impl RxState {
@@ -11,7 +11,7 @@ impl RxState {
     }
 
     pub fn connected(self) -> bool {
-        self.0 >> 0 & 1 != 0
+        ((self.0 >> 0) & 1) != 0
     }
 
     pub fn with_connected(mut self, connected: bool) -> Self {
@@ -30,9 +30,9 @@ impl RxState {
         self
     }
 
-    /*pub fn frame(self) -> u8 {
-        (self.0 >> 2 & 0xf) as u8
-    }*/
+    pub fn frame(self) -> u8 {
+        ((self.0 >> 2) & 0xf) as u8
+    }
 
     pub fn with_frame(mut self, frame: u8) -> Self {
         self.0 &= !(0xf << 2);
@@ -40,11 +40,11 @@ impl RxState {
         self
     }
 
-    /*pub fn key_inputs(self) -> [KeyInput; 2] {
-        let ki0 = (self.0 >> 6 & 0x3ff) as u16;
-        let ki1 = (self.0 >> 16 & 0x3ff) as u16;
+    pub fn key_inputs(self) -> [KeyInput; 2] {
+        let ki0 = ((self.0 >> 6) & 0x3ff) as u16;
+        let ki1 = ((self.0 >> 16) & 0x3ff) as u16;
         [ki0.into(), ki1.into()]
-    }*/
+    }
 
     pub fn with_key_inputs(mut self, key_inputs: [KeyInput; 2]) -> Self {
         self.0 &= !(0x3ff << 6);

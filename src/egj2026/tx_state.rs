@@ -7,12 +7,12 @@ pub struct TxState(u16);
 
 impl TxState {
     pub const fn new() -> Self {
-        TxState(0)
+        TxState(0x3ff << 4)
     }
 
-    pub fn frame(self) -> u8 {
+    /*pub fn frame(self) -> u8 {
         (self.0 >> 0 & 0xf) as u8
-    }
+    }*/
 
     pub fn with_frame(mut self, frame: u8) -> Self {
         self.0 &= !(0xf << 0);
@@ -20,12 +20,12 @@ impl TxState {
         self
     }
 
-    pub fn key_input(self) -> KeyInput {
+    /*pub fn key_input(self) -> KeyInput {
         let ki = self.0 >> 4 & 0x3ff;
         ki.into()
-    }
+    }*/
 
-    pub fn with_key_inputs(mut self, key_input: KeyInput) -> Self {
+    pub fn with_key_input(mut self, key_input: KeyInput) -> Self {
         self.0 &= !(0x3ff << 4);
         self.0 |= u16::from(key_input) << 4;
         self
