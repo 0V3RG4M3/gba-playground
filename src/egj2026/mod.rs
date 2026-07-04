@@ -4,5 +4,6 @@ mod link;
 mod ready_scene;
 mod rx_state;
 mod screens;
+mod sprites;
 mod tx_state;
 pub mod wait_scene;
