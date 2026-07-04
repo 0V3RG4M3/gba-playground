@@ -5,7 +5,7 @@ use gba::bios;
 use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjAttrWriteExt, ObjDisplayStyle};
-use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, TextEntry};
+use gba::video::{BackgroundControl, DisplayControl, DisplayStatus};
 
 use crate::egj2026::backgrounds;
 use crate::egj2026::context::Context;
@@ -30,23 +30,11 @@ impl Scene for GameScene {
 
         mmio::DISPCNT.write(DisplayControl::new());
 
-        mmio::BG_PALETTE.index(1).write(Color::BLACK);
-        mmio::BG_PALETTE.index(2).write(Color::WHITE);
-
-        mmio::CHARBLOCK0_8BPP.index(0).write([0x01010101; 16]);
-        mmio::CHARBLOCK0_8BPP.index(1).write([0x02020202; 16]);
-        /*let screenblock = mmio::TEXT_SCREENBLOCKS.get_frame(24).unwrap();
-        for y in 0..32 {
-            for x in 0..32 {
-                let tile = if y < 10 { 1 } else { 0 };
-                screenblock.index(x, y).write(TextEntry::new().with_tile(tile));
-            }
-        }*/
         let bg0cnt = BackgroundControl::new()
-            .with_priority(2)
-            .with_charblock(0)
+            .with_priority(0)
+            .with_charblock(2)
             .with_bpp8(true)
-            .with_screenblock(24)
+            .with_screenblock(28)
             .with_size(1);
         mmio::BG0CNT.write(bg0cnt);
         let bg1cnt = BackgroundControl::new()
@@ -57,10 +45,10 @@ impl Scene for GameScene {
             .with_size(1);
         mmio::BG1CNT.write(bg1cnt);
         let bg2cnt = BackgroundControl::new()
-            .with_priority(0)
-            .with_charblock(2)
+            .with_priority(2)
+            .with_charblock(0)
             .with_bpp8(true)
-            .with_screenblock(28)
+            .with_screenblock(24)
             .with_size(1);
         mmio::BG2CNT.write(bg2cnt);
 
@@ -81,16 +69,32 @@ impl Scene for GameScene {
         loop {
             for (i, player) in players.iter().enumerate() {
                 let vflip = parent != (i == 0);
+                let px = if vflip {
+                    let px = 104 + player.px - players[i ^ 1].px;
+                    match px {
+                        -255..=-1 => (px + 512) as u16,
+                        0..=255 => px as u16,
+                        _ => 384,
+                    }
+                } else {
+                    104
+                };
                 let py = if vflip { 80 + player.py } else { 48 - player.py };
                 let mut obj_attr = ObjAttr::new();
                 obj_attr.0 = ObjAttr0::new().with_y(py as u16).with_bpp8(true);
                 obj_attr.1 = ObjAttr1::new()
-                    .with_x(player.px as u16)
+                    .with_x(px)
                     .with_hflip(player.hflip)
                     .with_vflip(vflip)
                     .with_size(2);
                 obj_attr.2 = ObjAttr2::new().with_tile_id(player.tile_id());
                 mmio::OBJ_ATTR_ALL.index(i).write(obj_attr);
+
+                if !vflip {
+                    mmio::BG0HOFS.write(player.px as u16 / 4);
+                    mmio::BG1HOFS.write(player.px as u16 / 8);
+                    mmio::BG2HOFS.write(player.px as u16 / 16);
+                }
             }
 
             let dispcnt = DisplayControl::new()
@@ -142,7 +146,7 @@ impl Scene for GameScene {
                     *vy -= 1;
                 }
 
-                *px = cmp::min(cmp::max(0, *px + vx), 232);
+                *px = cmp::min(cmp::max(0, *px + vx), 4096);
                 *py = cmp::min(cmp::max(0, *py + *vy), 72);
 
                 *animation = match (py, vx, vy, *animation) {
