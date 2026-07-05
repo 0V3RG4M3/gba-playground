@@ -123,14 +123,17 @@ def main_tune():
     reg_tune_dst_folder = here / '../../../'
     dst_ext = ".rs"
 
-    reg_tune_file_subpath =  Path("src/egj2026/tune")
+    reg_tune_file_subpaths = [
+        Path("src/egj2026/tune"),
+        Path("src/egj2026/sfx_jump"),
+    ]
+    for subpath in reg_tune_file_subpaths:
+        src_file = (reg_tune_src_folder / subpath).with_suffix(src_ext)
+        tune, frame_count = parse_file(src_file, bpm_gain=1)
 
-    src_file = (reg_tune_src_folder / reg_tune_file_subpath).with_suffix(src_ext)
-    tune, frame_count = parse_file(src_file, bpm_gain=1)
-
-    dst_rsfile = (reg_tune_dst_folder / reg_tune_file_subpath).with_suffix(dst_ext)
-    write_reg_tune_rs_file(dst_rsfile, tune, frame_count)
-    utils.format_rust_file(dst_rsfile)
+        dst_rsfile = (reg_tune_dst_folder / subpath).with_suffix(dst_ext)
+        write_reg_tune_rs_file(dst_rsfile, tune, frame_count)
+        utils.format_rust_file(dst_rsfile)
 
 
 if __name__ == '__main__':
