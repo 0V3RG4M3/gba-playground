@@ -13,7 +13,8 @@ use crate::egj2026::context::Context;
 use crate::egj2026::link;
 use crate::egj2026::sfx_jump;
 use crate::egj2026::sprites;
-use crate::egj2026::tune;
+use crate::egj2026::tune0;
+use crate::egj2026::tune1;
 use crate::egj2026::tx_state::TxState;
 use crate::gba_synth2;
 use crate::math;
@@ -67,11 +68,13 @@ impl Scene for GameScene {
         backgrounds::load();
         sprites::load();
 
-        gba_synth2::init_synth(&tune::TUNE_TRACK1, tune::TUNE_SIZE, tune::TUNE_LOOP_SIZE);
-
+        
         let player = Player { px: 32, py: 0, vy: 0, hflip: false, animation: Animation::Idle(0) };
         let mut players = [player; 2];
         let mut parent = true;
+
+        let mut is_synth_initialized = false;
+        
 
         loop {
             for (i, player) in players.iter().enumerate() {
@@ -148,7 +151,15 @@ impl Scene for GameScene {
             }
 
             parent = rx_state.parent();
-
+            if !is_synth_initialized {
+                is_synth_initialized = true;
+                if parent {
+                    gba_synth2::init_synth(&tune0::TUNE_TRACK1, tune0::TUNE_SIZE, tune0::TUNE_LOOP_SIZE);
+                } else {
+                    gba_synth2::init_synth(&tune1::TUNE_TRACK1, tune1::TUNE_SIZE, tune1::TUNE_LOOP_SIZE);
+                }
+            }
+            
             let key_inputs = rx_state.key_inputs();
             for (key_input, player) in iter::zip(&key_inputs, &mut players) {
                 let Player { px, py, vy, hflip, animation } = player;

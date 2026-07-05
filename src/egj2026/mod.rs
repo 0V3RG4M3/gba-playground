@@ -7,6 +7,7 @@ mod rx_state;
 mod screens;
 pub mod sfx_jump;
 mod sprites;
-pub mod tune;
+pub mod tune0;
+pub mod tune1;
 mod tx_state;
 pub mod wait_scene;

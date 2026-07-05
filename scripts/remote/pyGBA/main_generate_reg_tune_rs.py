@@ -124,8 +124,9 @@ def main_tune():
     dst_ext = ".rs"
 
     reg_tune_file_subpaths = [
-        Path("src/egj2026/tune"),
-        Path("src/egj2026/sfx_jump"),
+        Path("src/egj2026/tune0"),
+        Path("src/egj2026/tune1"),
+        # Path("src/egj2026/sfx_jump"),
     ]
     for subpath in reg_tune_file_subpaths:
         src_file = (reg_tune_src_folder / subpath).with_suffix(src_ext)
