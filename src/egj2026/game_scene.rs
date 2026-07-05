@@ -13,6 +13,7 @@ use crate::egj2026::link;
 use crate::egj2026::sprites;
 use crate::egj2026::tx_state::TxState;
 use crate::egj2026::tune;
+use crate::egj2026::sfx_jump;
 use crate::gba_synth2;
 use crate::scene::{Scene, SceneRunner};
 
@@ -148,7 +149,16 @@ impl Scene for GameScene {
                 };
 
                 if *py == 0 {
-                    *vy = if key_input.up() { 8 } else { 0 };
+                    if key_input.up() {
+                        *vy = 8;
+                        gba_synth2::trigger_sfx(
+                            &sfx_jump::TUNE_TRACK1,
+                            sfx_jump::TUNE_SIZE,
+                            sfx_jump::TUNE_LOOP_SIZE,
+                        );
+                    } else {
+                        *vy = 0;
+                    }
                 } else {
                     *vy -= 1;
                 }
@@ -175,6 +185,7 @@ impl Scene for GameScene {
             }
 
             gba_synth2::play_step();
+            gba_synth2::play_sound_effect();
             gba_synth2::write_to_registers();
         }
     }
