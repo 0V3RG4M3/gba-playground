@@ -12,6 +12,9 @@ use crate::egj2026::context::Context;
 use crate::egj2026::link;
 use crate::egj2026::sprites;
 use crate::egj2026::tx_state::TxState;
+use crate::egj2026::tune;
+use crate::egj2026::sfx_jump;
+use crate::gba_synth2;
 use crate::scene::{Scene, SceneRunner};
 
 pub struct GameScene;
@@ -61,6 +64,12 @@ impl Scene for GameScene {
 
         backgrounds::load();
         sprites::load();
+
+        gba_synth2::init_synth(
+            &tune::TUNE_TRACK1,
+            tune::TUNE_SIZE,
+            tune::TUNE_LOOP_SIZE,
+        );
 
         let player = Player { px: 32, py: 0, vy: 0, hflip: false, animation: Animation::Idle(0) };
         let mut players = [player; 2];
@@ -140,7 +149,16 @@ impl Scene for GameScene {
                 };
 
                 if *py == 0 {
-                    *vy = if key_input.up() { 8 } else { 0 };
+                    if key_input.up() {
+                        *vy = 8;
+                        gba_synth2::trigger_sfx(
+                            &sfx_jump::TUNE_TRACK1,
+                            sfx_jump::TUNE_SIZE,
+                            sfx_jump::TUNE_LOOP_SIZE,
+                        );
+                    } else {
+                        *vy = 0;
+                    }
                 } else {
                     *vy -= 1;
                 }
@@ -165,6 +183,10 @@ impl Scene for GameScene {
                     (_, _, _, _) => Animation::Fall,
                 };
             }
+
+            gba_synth2::play_step();
+            gba_synth2::play_sound_effect();
+            gba_synth2::write_to_registers();
         }
     }
 }

@@ -8,3 +8,5 @@ mod screens;
 mod sprites;
 mod tx_state;
 pub mod wait_scene;
+pub mod tune;
+pub mod sfx_jump;
