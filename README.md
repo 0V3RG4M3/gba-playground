@@ -73,13 +73,15 @@ mgba egj2025.gba
 
 ## Tests
 
-Des tests unitaires existent pour la partie bibliothèque. Ils s'exécutent sur l'une des cibles suivantes:
-- Linux: `x86_64-unknown-linux-gnu`
-- Windows: `x86_64-pc-windows-msvc`
-
+Des tests unitaires existent pour la partie bibliothèque. 
 Sur linux:
 ```bash
 cargo test --lib --target=x86_64-unknown-linux-gnu
+```
+
+Sur Windows:
+```bash
+cargo test --lib --target=x86_64-pc-windows-msvc
 ```
 
 ## Logging

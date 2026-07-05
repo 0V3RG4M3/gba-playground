@@ -6,12 +6,14 @@ handling timing and register data extraction.
 import max4live_udp_cleaner
 import utils
 from reg_tune_logger import RegTuneLogReader
+from pathlib import Path
 
 
 def extract_data(reg_tune_file: str):
-    result: list[tuple[int, int, int, int]] = []
+    lines: list[tuple[int, int, int, int]] = []
     loop_size: int = 0
-    frame_id0 = -1
+    frame_start = -1
+    frame_stop = -1
 
     tune_reader = RegTuneLogReader(reg_tune_file, time_scale=None)
 
@@ -25,28 +27,46 @@ def extract_data(reg_tune_file: str):
         items = max4live_udp_cleaner.clean_udp_message(data).decode("utf-8").split()
         frame_id, command = int(items[0]), items[1:]
 
-        if "REC" in command[0]:
-            frame_id0 = frame_id
+        if "OPEN" in command[0]:
+            continue
+
+        if "START" in command[0]:
+            frame_start = frame_id
             continue
 
         if "STOP" in command[0]:
-            loop_size = frame_id - frame_id0
+            frame_stop = frame_id
+            loop_size = frame_id - frame_start
+            continue
+
+        if "CLOSE" in command[0]:
             break
 
         assert len(command) == 3, f"Unexpected command length: {command}"
 
         cmd, addr, value = command
 
-        frame_id_k = frame_id - frame_id0
+        # frame_id_k = frame_id - frame_id0
         size = int(cmd[len('WRITE'):]) // 8
         addr = int(addr, 16)
         value = int(value, 16)
-        result.append((frame_id_k, size, addr, value))
+        lines.append((frame_id, size, addr, value))
+
+    # Subtract frame offset. Negative frame_id values are for initial register state before the first note is played
+    result: list[tuple[int, int, int, int]] = []
+    for frame_id, size, addr, value in lines:
+        if frame_id < frame_start:
+            frame_id = 0
+        elif frame_id >= frame_stop:
+            frame_id = loop_size
+        else:
+            frame_id = frame_id -frame_start + 1  # plus 1 so that the initial register state is at frame 0 and doesnt mix up with the first note played
+        result.append((frame_id, size, addr, value))
 
     return result, loop_size
 
 
-def parse_file(reg_tune_file: str, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
+def parse_file(reg_tune_file: Path, bpm_gain: float = 1) -> tuple[list[tuple[int, int, int, int]], int]:
     """
     Parse a text file containing register writes and return a list of tuples (frame_id, size, address, value) as well as the loop size.
 
@@ -85,7 +105,7 @@ def write_reg_tune_rs_file(filename, regs, frame_count):
 
 pub const TUNE_LOOP_SIZE: u16 = {frame_count};
 pub const TUNE_SIZE: u16 = {len(regs)};
-#[link_section =".rodata"]
+#[unsafe(link_section = ".rodata")]
 pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 """
     print(txt)
@@ -95,10 +115,22 @@ pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
 
 def main_tune():
     # tune, frame_count = parse_file('../src/assets/reg_tunes/reg_tune1.csv')
-    tune, frame_count = parse_file('reg_tune.bin.txt', bpm_gain=1)
 
-    write_reg_tune_rs_file('../../../src/reg_tune.rs', tune, frame_count)
-    utils.format_rust_file('../../../src/reg_tune.rs')
+    here = Path(__file__).parent
+    reg_tune_src_folder = here / "reg_tunes"
+    src_ext = ".bin.txt"
+
+    reg_tune_dst_folder = here / '../../../'
+    dst_ext = ".rs"
+
+    reg_tune_file_subpath =  Path("src/egj2026/tune")
+
+    src_file = (reg_tune_src_folder / reg_tune_file_subpath).with_suffix(src_ext)
+    tune, frame_count = parse_file(src_file, bpm_gain=1)
+
+    dst_rsfile = (reg_tune_dst_folder / reg_tune_file_subpath).with_suffix(dst_ext)
+    write_reg_tune_rs_file(dst_rsfile, tune, frame_count)
+    utils.format_rust_file(dst_rsfile)
 
 
 if __name__ == '__main__':
