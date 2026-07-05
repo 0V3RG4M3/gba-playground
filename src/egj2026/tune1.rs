@@ -1,13 +1,12 @@
 // This file has been automatically generated
 
 pub const TUNE_LOOP_SIZE: u16 = 901;
-pub const TUNE_SIZE: u16 = 1511;
+pub const TUNE_SIZE: u16 = 1510;
 #[unsafe(link_section = ".rodata")]
 pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = [
     (0, 2, 67108984, 61),
     (0, 2, 67108988, 32802),
     (0, 2, 67108972, 33814),
-    (0, 2, 67109000, 512),
     (0, 1, 67108996, 143),
     (0, 2, 67108962, 658),
     (0, 2, 67108964, 34566),
