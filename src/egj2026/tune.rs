@@ -2,7 +2,7 @@
 
 pub const TUNE_LOOP_SIZE: u16 = 901;
 pub const TUNE_SIZE: u16 = 1434;
-#[link_section = ".rodata"]
+#[unsafe(link_section = ".rodata")]
 pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = [
     (0, 2, 67108962, 658),
     (0, 2, 67108964, 34649),
