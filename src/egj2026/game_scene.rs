@@ -11,10 +11,10 @@ use gba::video::{BackgroundControl, DisplayControl, DisplayStatus};
 use crate::egj2026::backgrounds;
 use crate::egj2026::context::Context;
 use crate::egj2026::link;
-use crate::egj2026::sprites;
-use crate::egj2026::tx_state::TxState;
-use crate::egj2026::tune;
 use crate::egj2026::sfx_jump;
+use crate::egj2026::sprites;
+use crate::egj2026::tune;
+use crate::egj2026::tx_state::TxState;
 use crate::gba_synth2;
 use crate::math;
 use crate::scene::{Scene, SceneRunner};
@@ -67,11 +67,7 @@ impl Scene for GameScene {
         backgrounds::load();
         sprites::load();
 
-        gba_synth2::init_synth(
-            &tune::TUNE_TRACK1,
-            tune::TUNE_SIZE,
-            tune::TUNE_LOOP_SIZE,
-        );
+        gba_synth2::init_synth(&tune::TUNE_TRACK1, tune::TUNE_SIZE, tune::TUNE_LOOP_SIZE);
 
         let player = Player { px: 32, py: 0, vy: 0, hflip: false, animation: Animation::Idle(0) };
         let mut players = [player; 2];
