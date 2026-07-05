@@ -34,7 +34,11 @@ impl<L: Level> LevelScene<L> {
         camera.pos.z = Fixed::from_int(128);
         camera.set_pitch_angle(16);
 
-        gba_synth2::init_synth(&reg_tune::TUNE_TRACK1, reg_tune::TUNE_SIZE, reg_tune::TUNE_LOOP_SIZE);
+        gba_synth2::init_synth(
+            &reg_tune::TUNE_TRACK1,
+            reg_tune::TUNE_SIZE,
+            reg_tune::TUNE_LOOP_SIZE,
+        );
 
         loop {
             bios::VBlankIntrWait();

@@ -19,11 +19,7 @@ pub struct SoundRegisters {
 
 impl SoundRegisters {
     pub const fn new() -> Self {
-        Self {
-            entries: [(0, 0, 0); 16],
-            count: 0,
-            dirty_mask: 0,
-        }
+        Self { entries: [(0, 0, 0); 16], count: 0, dirty_mask: 0 }
     }
 
     /// Upsert by address and mark the entry dirty.
@@ -182,11 +178,8 @@ pub fn write_to_registers() {
             for i in 0..SFX_REGISTERS.count {
                 let (addr, _, _) = SFX_REGISTERS.entries[i];
                 if let Some((size, value)) = MUSIC_REGISTERS.get(addr) {
-                    let restore_value = if is_trigger_register(addr) {
-                        value & !0x8000u32
-                    } else {
-                        value
-                    };
+                    let restore_value =
+                        if is_trigger_register(addr) { value & !0x8000u32 } else { value };
                     write(size, addr, restore_value);
                 }
             }
@@ -268,5 +261,3 @@ pub fn play_sound_effect() {
         }
     }
 }
-
-
