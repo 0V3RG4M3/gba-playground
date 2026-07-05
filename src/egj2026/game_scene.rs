@@ -123,6 +123,17 @@ impl Scene for GameScene {
             let frame = (frame + 1) % 512;
             FRAME.write(frame);
 
+            for (i, offset) in OFFSETS.iter().enumerate() {
+                let u = US[i];
+                let a0 = u as u16 + FRAME.read();
+                let a1 = (u as u16 >> 8) + (FRAME.read() / 2);
+                let sum = math::fast_sin(a0 as u8) + math::fast_sin(a1 as u8);
+                let off = sum.into_raw() >> 16;
+                let off = off * (i as i32 + 1);
+                let off = off >> 16;
+                offset.write(off as u16);
+            }
+
             gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
 
             let key_input = mmio::KEYINPUT.read();
@@ -262,27 +273,35 @@ extern "C" fn irq_handler(irq_bits: IrqBits) {
         return;
     }
 
-    let line = mmio::VCOUNT.read();
+    let line = mmio::VCOUNT.read() + 1;
     if line < 80 || line >= 160 {
         return;
     }
 
-    let u = math::fast_recip(line as u8 - 79).into_raw() >> 16;
-    let u = (u * 160) >> 6;
-    let a0 = u + FRAME.read() as i32;
-    let a1 = (u >> 8) + (FRAME.read() as i32 / 2);
-    let sum = math::fast_sin(a0 as u8) + math::fast_sin(a1 as u8);
-    let offset = sum.into_raw() >> 16;
-    let offset = offset * (line as i32 - 79);
-    let offset = offset >> 16;
-    mmio::BG0HOFS.write(BG_OFFSET.read() / 4 + offset as u16);
-    mmio::BG1HOFS.write(BG_OFFSET.read() / 8 + offset as u16);
+    let offset = OFFSETS[line as usize - 80].read();
+    mmio::BG0HOFS.write(BG_OFFSET.read() / 4 + offset);
+    mmio::BG1HOFS.write(BG_OFFSET.read() / 8 + offset);
     mmio::BG2HOFS.write((offset % 256) as u16);
     let obj_attr1 = mmio::OBJ_ATTR1.index(1).read();
     let obj_attr1 = obj_attr1.with_x(PLAYER_OFFSET.read() + offset as u16);
     mmio::OBJ_ATTR1.index(1).write(obj_attr1);
 }
 
+const fn us() -> [u16; 80] {
+    let mut us = [0; _];
+    let mut line = 0;
+    while line < us.len() {
+        let u = math::fast_recip(line as u8 + 1).into_raw() >> 16;
+        let u = (u * 160) >> 6;
+        us[line] = u as u16;
+        line += 1;
+    }
+    us
+}
+
 static BG_OFFSET: GbaCell<u16> = GbaCell::new(0);
 static PLAYER_OFFSET: GbaCell<u16> = GbaCell::new(0);
 static FRAME: GbaCell<u16> = GbaCell::new(0);
+static OFFSETS: [GbaCell<u16>; 80] = [const { GbaCell::new(0) }; 80];
+
+const US: [u16; 80] = us();

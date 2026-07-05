@@ -12,12 +12,12 @@ pub struct Fixed<I: Int, const B: u8> {
     raw: I,
 }
 
-impl<I: Int, const B: u8> Fixed<I, B> {
+impl<I: Copy + Int, const B: u8> Fixed<I, B> {
     pub const fn from_raw(raw: I) -> Fixed<I, B> {
         Fixed { raw }
     }
 
-    pub fn into_raw(self) -> I {
+    pub const fn into_raw(self) -> I {
         self.raw
     }
 

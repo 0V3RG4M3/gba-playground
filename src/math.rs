@@ -1,6 +1,6 @@
 use crate::fixed::Fixed;
 
-pub fn fast_recip(v: u8) -> Fixed<i32, 30> {
+pub const fn fast_recip(v: u8) -> Fixed<i32, 30> {
     let raw = match v {
         0 => panic!("attempt to divide by zero"),
         1 => 1073741824,
@@ -262,7 +262,7 @@ pub fn fast_recip(v: u8) -> Fixed<i32, 30> {
     Fixed::from_raw(raw)
 }
 
-pub fn fast_sin(angle: u8) -> Fixed<i32, 30> {
+pub const fn fast_sin(angle: u8) -> Fixed<i32, 30> {
     let raw = match angle {
         0 => 0,
         1 => 26350943,
