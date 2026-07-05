@@ -68,13 +68,11 @@ impl Scene for GameScene {
         backgrounds::load();
         sprites::load();
 
-        
         let player = Player { px: 32, py: 0, vy: 0, hflip: false, animation: Animation::Idle(0) };
         let mut players = [player; 2];
         let mut parent = true;
 
         let mut is_synth_initialized = false;
-        
 
         loop {
             for (i, player) in players.iter().enumerate() {
@@ -154,12 +152,20 @@ impl Scene for GameScene {
             if !is_synth_initialized {
                 is_synth_initialized = true;
                 if parent {
-                    gba_synth2::init_synth(&tune0::TUNE_TRACK1, tune0::TUNE_SIZE, tune0::TUNE_LOOP_SIZE);
+                    gba_synth2::init_synth(
+                        &tune0::TUNE_TRACK1,
+                        tune0::TUNE_SIZE,
+                        tune0::TUNE_LOOP_SIZE,
+                    );
                 } else {
-                    gba_synth2::init_synth(&tune1::TUNE_TRACK1, tune1::TUNE_SIZE, tune1::TUNE_LOOP_SIZE);
+                    gba_synth2::init_synth(
+                        &tune1::TUNE_TRACK1,
+                        tune1::TUNE_SIZE,
+                        tune1::TUNE_LOOP_SIZE,
+                    );
                 }
             }
-            
+
             let key_inputs = rx_state.key_inputs();
             for (key_input, player) in iter::zip(&key_inputs, &mut players) {
                 let Player { px, py, vy, hflip, animation } = player;
