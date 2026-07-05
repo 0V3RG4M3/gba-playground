@@ -39,6 +39,7 @@ pub fn read() -> RxState {
     RX_STATE.read()
 }
 
+#[unsafe(link_section = ".iwram")]
 pub fn process() {
     let siocnt = mmio::SIOCNT.read();
     let parent = (siocnt >> 2) & 1 == 0;

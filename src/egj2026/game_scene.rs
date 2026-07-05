@@ -2,6 +2,7 @@ use core::cmp;
 use core::iter;
 
 use gba::bios;
+use gba::gba_cell::GbaCell;
 use gba::interrupts::IrqBits;
 use gba::mmio;
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjAttrWriteExt, ObjDisplayStyle};
@@ -15,6 +16,7 @@ use crate::egj2026::tx_state::TxState;
 use crate::egj2026::tune;
 use crate::egj2026::sfx_jump;
 use crate::gba_synth2;
+use crate::math;
 use crate::scene::{Scene, SceneRunner};
 
 pub struct GameScene;
@@ -27,8 +29,8 @@ impl Scene for GameScene {
     }
 
     fn run(&mut self, context: &mut Self::C) -> SceneRunner<Self::C> {
-        mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true));
-        mmio::IE.write(IrqBits::new().with_vblank(true).with_serial(true));
+        mmio::DISPSTAT.write(DisplayStatus::new().with_irq_vblank(true).with_irq_hblank(true));
+        mmio::IE.write(IrqBits::new().with_vblank(true).with_hblank(true).with_serial(true));
         mmio::IME.write(true);
 
         mmio::DISPCNT.write(DisplayControl::new());
@@ -52,7 +54,7 @@ impl Scene for GameScene {
             .with_charblock(0)
             .with_bpp8(true)
             .with_screenblock(24)
-            .with_size(1);
+            .with_size(0);
         mmio::BG2CNT.write(bg2cnt);
 
         mmio::OBJ_TILES.index(0).write([0x01010101; 8]);
@@ -97,11 +99,15 @@ impl Scene for GameScene {
                     .with_vflip(vflip)
                     .with_size(2);
                 obj_attr.2 = ObjAttr2::new().with_tile_id(player.tile_id());
-                mmio::OBJ_ATTR_ALL.index(i).write(obj_attr);
+                mmio::OBJ_ATTR_ALL.index(vflip.into()).write(obj_attr);
 
-                if !vflip {
+                if vflip {
+                    PLAYER_OFFSET.write(px);
+                } else {
                     mmio::BG0HOFS.write(player.px as u16 / 4);
                     mmio::BG1HOFS.write(player.px as u16 / 8);
+                    mmio::BG2HOFS.write(0);
+                    BG_OFFSET.write(player.px as u16);
                 }
             }
 
@@ -112,6 +118,10 @@ impl Scene for GameScene {
                 .with_show_bg2(true)
                 .with_show_obj(true);
             mmio::DISPCNT.write(dispcnt);
+
+            let frame = FRAME.read();
+            let frame = (frame + 1) % 512;
+            FRAME.write(frame);
 
             gba::RUST_IRQ_HANDLER.write(Some(irq_handler));
 
@@ -247,4 +257,32 @@ extern "C" fn irq_handler(irq_bits: IrqBits) {
     if irq_bits.serial() {
         link::process();
     }
+
+    if !irq_bits.hblank() {
+        return;
+    }
+
+    let line = mmio::VCOUNT.read();
+    if line < 80 || line >= 160 {
+        return;
+    }
+
+    let u = math::fast_recip(line as u8 - 79).into_raw() >> 16;
+    let u = (u * 160) >> 6;
+    let a0 = u + FRAME.read() as i32;
+    let a1 = (u >> 8) + (FRAME.read() as i32 / 2);
+    let sum = math::fast_sin(a0 as u8) + math::fast_sin(a1 as u8);
+    let offset = sum.into_raw() >> 16;
+    let offset = offset * (line as i32 - 79);
+    let offset = offset >> 16;
+    mmio::BG0HOFS.write(BG_OFFSET.read() / 4 + offset as u16);
+    mmio::BG1HOFS.write(BG_OFFSET.read() / 8 + offset as u16);
+    mmio::BG2HOFS.write((offset % 256) as u16);
+    let obj_attr1 = mmio::OBJ_ATTR1.index(1).read();
+    let obj_attr1 = obj_attr1.with_x(PLAYER_OFFSET.read() + offset as u16);
+    mmio::OBJ_ATTR1.index(1).write(obj_attr1);
 }
+
+static BG_OFFSET: GbaCell<u16> = GbaCell::new(0);
+static PLAYER_OFFSET: GbaCell<u16> = GbaCell::new(0);
+static FRAME: GbaCell<u16> = GbaCell::new(0);
