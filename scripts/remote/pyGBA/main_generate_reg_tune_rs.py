@@ -123,7 +123,7 @@ def main_tune():
     reg_tune_dst_folder = here / '../../../'
     dst_ext = ".rs"
 
-    reg_tune_file_subpath =  Path("src/egj2026/sfx_jump")
+    reg_tune_file_subpath =  Path("src/egj2026/tune")
 
     src_file = (reg_tune_src_folder / reg_tune_file_subpath).with_suffix(src_ext)
     tune, frame_count = parse_file(src_file, bpm_gain=1)
