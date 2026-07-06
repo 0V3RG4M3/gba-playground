@@ -16,7 +16,7 @@ use crate::egj2026::sprites;
 use crate::egj2026::tune0;
 use crate::egj2026::tune1;
 use crate::egj2026::tx_state::TxState;
-use crate::gba_synth2;
+use crate::gba_synth2::GbaSynth2;
 use crate::math;
 use crate::scene::{Scene, SceneRunner};
 
@@ -72,6 +72,7 @@ impl Scene for GameScene {
         let mut players = [player; 2];
         let mut parent = true;
 
+        let mut synth = GbaSynth2::new();
         let mut is_synth_initialized = false;
 
         loop {
@@ -152,13 +153,13 @@ impl Scene for GameScene {
             if !is_synth_initialized {
                 is_synth_initialized = true;
                 if parent {
-                    gba_synth2::init_synth(
+                    synth.init_synth(
                         &tune0::TUNE_TRACK1,
                         tune0::TUNE_SIZE,
                         tune0::TUNE_LOOP_SIZE,
                     );
                 } else {
-                    gba_synth2::init_synth(
+                    synth.init_synth(
                         &tune1::TUNE_TRACK1,
                         tune1::TUNE_SIZE,
                         tune1::TUNE_LOOP_SIZE,
@@ -187,7 +188,7 @@ impl Scene for GameScene {
                 if *py == 0 {
                     if key_input.up() {
                         *vy = 8;
-                        gba_synth2::trigger_sfx(
+                        synth.trigger_sfx(
                             &sfx_jump::TUNE_TRACK1,
                             sfx_jump::TUNE_SIZE,
                             sfx_jump::TUNE_LOOP_SIZE,
@@ -220,9 +221,9 @@ impl Scene for GameScene {
                 };
             }
 
-            gba_synth2::play_step();
-            gba_synth2::play_sound_effect();
-            gba_synth2::write_to_registers();
+            synth.play_step();
+            synth.play_sound_effect();
+            synth.write_to_registers();
         }
     }
 }
