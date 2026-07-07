@@ -1,5 +1,5 @@
-use crate::gba_synth;
-use crate::sfx;
+use super::sound::simple_gba_synth;
+use crate::egj2024::sound::sfx;
 use gba::keys::KeyInput;
 use gba::video::obj::ObjDisplayStyle;
 
@@ -64,18 +64,18 @@ impl Player {
                         item.state = ItemState::ConsumedByPlayer;
                         if item.kind != recipe_items[self.index] {
                             // Player places bad item in cauldron
-                            gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_FAIL);
+                            simple_gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_FAIL);
                             return Err(());
                         }
                         // Player successfully places item in cauldron
-                        gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_SUCCESS);
+                        simple_gba_synth::play_sfx(sfx::ITEM_DROPPED_IN_CAULDRON_SUCCESS);
                         self.index += 1;
                     }
                 }
             }
             if key_input.b() && !self.key_was_pressed.b() {
                 // Player drops item on the floor
-                gba_synth::play_sfx(sfx::ITEM_DROPPED);
+                simple_gba_synth::play_sfx(sfx::ITEM_DROPPED);
 
                 let item = &mut items[equipped_item_index];
                 let pos = &mut item.sprite.pos;
@@ -97,12 +97,12 @@ impl Player {
                     let sq_dist = pos.dot(pos);
                     if sq_dist.into_int() < 32 * 32 {
                         // Player successfully collected an item
-                        gba_synth::play_sfx(sfx::ITEM_COLLECTED);
+                        simple_gba_synth::play_sfx(sfx::ITEM_COLLECTED);
                         item.state = ItemState::EquippedByPlayer;
                         break;
                     } else {
                         // No item close enough to be taken by the user
-                        gba_synth::play_sfx(sfx::CANT_TAKE);
+                        simple_gba_synth::play_sfx(sfx::CANT_TAKE);
                     }
                 }
             }

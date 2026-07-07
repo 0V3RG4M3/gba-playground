@@ -6,8 +6,8 @@ use gba::sound::{
 
 use crate::log4gba;
 
-use crate::static_sounds_lib;
-use crate::tune;
+use crate::egj2024::sound::static_sounds_lib;
+use crate::egj2024::sound::tune;
 
 static mut TUNE_CURRENT_TIME_STEP: u16 = 0;
 static mut SFX_CURRENT_TIME_STEP: u16 = 0;

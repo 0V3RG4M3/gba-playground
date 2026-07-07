@@ -8,10 +8,10 @@ use crate::egj2024::screen_gameover_scene::ScreenGameoverScene;
 use crate::egj2024::screen_youwin_scene::ScreenYouWinScene;
 use crate::egj2024::sprites;
 use crate::fixed::Fixed;
-use crate::gba_synth;
+use super::sound::simple_gba_synth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
-use crate::tune;
+use super::sound::tune;
 use gba;
 use gba::bios;
 use gba::fixed::i16fx8;
@@ -41,11 +41,11 @@ impl GameScene {
 
         let mut backflip_angle = 252;
 
-        gba_synth::init_synth();
+        simple_gba_synth::init_synth();
 
         loop {
             bios::VBlankIntrWait();
-            gba_synth::play_step();
+            simple_gba_synth::play_step();
 
             let key_input = mmio::KEYINPUT.read();
             let is_done = player.process(
@@ -63,7 +63,7 @@ impl GameScene {
                 } else {
                     if backflip_angle == 252 {
                         // play win music
-                        gba_synth::play_tune(
+                        simple_gba_synth::play_tune(
                             tune::TUNE_WIN_TRACK1,
                             tune::TUNE_WIN_TRACK2,
                             [(0, 0); tune::TUNE_STEP_COUNT as usize],

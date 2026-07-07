@@ -1,4 +1,5 @@
 mod cauldron;
+pub mod sound;
 pub mod game_scene;
 mod item;
 mod leader;
