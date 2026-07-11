@@ -12,7 +12,7 @@ use gba::mmio;
 use gba::video::obj::{ObjAttr, ObjAttr0, ObjAttr1, ObjAttr2, ObjAttrWriteExt, ObjDisplayStyle};
 use gba::video::{BackgroundControl, Color, DisplayControl, DisplayStatus, TextEntry};
 
-use gba_playground::gba_synth;
+use gba_playground::egj2024::sound::simple_gba_synth;
 use gba_playground::log4gba;
 
 #[panic_handler]
@@ -59,7 +59,7 @@ extern "C" fn main() -> ! {
 
     let (mut px, mut py): (i16, i16) = (32, 128);
 
-    gba_synth::init();
+    simple_gba_synth::init();
 
     let mut shift_5: u16 = 0; // x0
     let mut div_code_3: u16 = 0; // y0
@@ -84,7 +84,7 @@ extern "C" fn main() -> ! {
 
     loop {
         bios::VBlankIntrWait();
-        gba_synth::play_step();
+        simple_gba_synth::play_step();
 
         let mut obj_attr = ObjAttr::new();
         obj_attr.0 = ObjAttr0::new().with_y(py as u16 - 8).with_bpp8(true);
@@ -166,7 +166,7 @@ extern "C" fn main() -> ! {
             log4gba::debug(step_time_3);
             log4gba::debug("-----");
 
-            gba_synth::play_noise(
+            simple_gba_synth::play_noise(
                 shift_5,
                 div_code_3,
                 counter7,
