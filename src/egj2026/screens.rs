@@ -1,3 +1,4 @@
+// This file has been automatically generated
 #![allow(dead_code)]
 
 use gba::video::Video3Bitmap;

@@ -42,7 +42,7 @@ def generate_rust_palette(palette, palette_register):
     return lines
 
 
-def test_generate_rust_palette():
+def _test_generate_rust_palette():
     palette = [32 ** 0, 32 ** 1, 32 ** 2]
     palette_register = "TEST_REGISTER"
     expected = """    mmio::TEST_REGISTER.index(1).write(Color(0b0_00000_00000_00001));
@@ -131,7 +131,7 @@ def generate_indimgby4_as_rust_array(filename, index_img_by4, block_register, bl
     return lines_func, lines_const, block_register_index
 
 
-def test_generate_indimgby4_as_rust_array_1():
+def _test_generate_indimgby4_as_rust_array_1():
     ind_img_by4 = np.zeros((8, 16 // 4), dtype=np.uint32)
     ind = 10
     bw = 8
@@ -165,7 +165,7 @@ pub const SIZE_TEST: usize = 4;
     assert expected_ind == result_ind
 
 
-def test_generate_indimgby4_as_rust_array_2():
+def _test_generate_indimgby4_as_rust_array_2():
     ind_img_by4 = np.zeros((8, 16 // 4), dtype=np.uint32)
     ind = 20
     bw = 8
@@ -197,13 +197,14 @@ pub const SIZE_TEST2: usize = 2;
     assert expected_ind == result_ind
 
 
-def main(folder_path, palette_register, block_register, block_width, block_height):
+def convert_sprites(folder_path, palette_register, block_register, block_width, block_height):
 
     dst_rust_file, png_files = find_and_define_rs_file(folder_path)
 
     palette = create_palette(png_files)
 
     rust_lines = "// This file has been automatically generated\n"
+    rust_lines += "#![allow(dead_code)]\n"
     rust_lines += "use gba::mmio;\n"
     rust_lines += "use gba::video::Color;\n"
     rust_lines += "\n"
@@ -253,15 +254,19 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
 
     palette = create_palette(png_files)
 
-    rust_lines = "// This file has been automatically generated\n"
-    rust_lines += "use gba::mmio;\n"
-    rust_lines += "use gba::video::{Color, TextEntry};\n"
-    rust_lines += "\n"
-    rust_lines += "pub fn load(){\n"
+    header = "// This file has been automatically generated\n"
+    header += "use gba::mmio;\n"
+    header += "use gba::video::{Color, TextEntry};\n"
+    header += "\n"
 
-    rust_lines += generate_rust_palette(palette, palette_register)
+    # palette sub-function
+    palette_fn = "fn load_palette() {\n"
+    palette_fn += generate_rust_palette(palette, palette_register)
+    palette_fn += "}\n\n"
 
-    rust_lines_const = ""
+    # one sub-function per image
+    sub_fn_names = []
+    sub_fns = ""
 
     block_register_indices = [0, 0, 0]
     charblock_index = 0
@@ -276,7 +281,7 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
         name = os.path.split(filename)[-1]
         assert name.endswith(".png")
         name = name[:-4]  # remove extension
-        name = name.upper().replace("-", "_")  # format for const name in rust
+        name = name.lower().replace("-", "_")  # snake_case for fn name
 
         # fix Windows path
         filename = filename.replace('\\', '/')
@@ -291,18 +296,17 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
         assert h, w // 4 == index_img_by4.shape
 
         im_height_u8, im_width_u32 = index_img_by4.shape
-        im_height_u8, im_width_u32 = index_img_by4.shape
         im_width_u8 = 4 * im_width_u32  # pixels are grouped by 4
         block_width_u32 = block_width_u8 // 4
 
-        lines_func = "\n"
         line_count = im_height_u8 * im_width_u8 // (block_height_u8 * block_width_u8)
         line_length = block_height_u8 * block_width_u32
         comment_line = f"// {filename} ({im_height_u8}x{im_width_u8} pixels) -> ({line_count}x{line_length} u32)\n"
-        lines_func += f"    {comment_line}"
 
-        im_width_u8 = 4 * im_width_u32  # pixels are grouped by 4
-        block_width_u32 = block_width_u8 // 4
+        fn_name = f"load_{name}"
+        sub_fn_names.append(fn_name)
+        lines_func = f"fn {fn_name}() {{\n"
+        lines_func += f"    {comment_line}"
 
         blocks = set()
         for i0 in range(0, im_height_u8, 8):
@@ -318,6 +322,7 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
 
         print(len(blocks))
         blocks = list(blocks)
+        blocks.sort()
 
         for block in blocks:
             block_register_index = block_register_indices[charblock_index]
@@ -344,81 +349,23 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
                     i = screenblock_index + ((j // 2) // 32) + ((i // 8) // 32)
                     print(x2, y2, i)
                     lines_func += f"    mmio::TEXT_SCREENBLOCKS.get_frame({i}).unwrap().index({x2}, {y2}).write(TextEntry::new().with_tile({index}));\n"
-                    block_register_index += 1
 
-        rust_lines += lines_func
+        lines_func += "}\n\n"
+        sub_fns += lines_func
 
         charblock_index = (charblock_index + 1) % 3
         screenblock_index += sb_c_w * sb_c_h
 
-    for filename in png_files:
-        break
-        img = cv2.imread(filename, flags=cv2.IMREAD_UNCHANGED)
-        img15 = color15(img)
-        index_img = img15_to_ind(img15, palette)
-        h, w = index_img.shape
+    # public entry point calling all sub-functions
+    load_fn = "pub fn load() {\n"
+    load_fn += "    load_palette();\n"
+    for fn_name in sub_fn_names:
+        load_fn += f"    {fn_name}();\n"
+    load_fn += "}\n\n"
 
-        # concat 4x u8 pixels in 1x u32
-        index_img_0 = index_img[:, 3::4].astype(np.uint32)
-        index_img_1 = index_img[:, 2::4].astype(np.uint32)
-        index_img_2 = index_img[:, 1::4].astype(np.uint32)
-        index_img_3 = index_img[:, 0::4].astype(np.uint32)
-        index_img_by4 = (index_img_0 << (8 * 3)) + (index_img_1 << (8 * 2)) + (index_img_2 << 8) + index_img_3
-
-        assert h, w // 4 == index_img_by4.shape
-
-        name = os.path.split(filename)[-1]
-        assert name.endswith(".png")
-        name = name[:-4]  # remove extension
-        name = name.upper().replace("-", "_")  # format for const name in rust
-
-        # fix Windows path
-        filename = filename.replace('\\', '/')
-
-        im_height_u8, im_width_u32 = index_img_by4.shape
-        im_width_u8 = 4 * im_width_u32  # pixels are grouped by 4
-        block_width_u32 = block_width_u8 // 4
-
-        lines_func = "\n\n"
-        line_count = im_height_u8 * im_width_u8 // (block_height_u8 * block_width_u8)
-        line_length = block_height_u8 * block_width_u32
-        comment_line = f"// {filename} ({im_height_u8}x{im_width_u8} pixels) -> ({line_count}x{line_length} u32)\n"
-        lines_func += f"    {comment_line}"
-
-        lines_const = "\n"
-        lines_const += f"{comment_line}"
-        lines_const += f"pub const INDEX_{name}: usize = {block_register_index};\n"
-        lines_const += f"pub const SIZE_{name}: usize = {line_count};\n"
-
-        assert (block_register_index + line_count) < 1024, f"Registers can hold max 1024 elements, got {block_register_index + line_count}"
-
-        blocks = set()
-
-        for i0 in range(0, im_height_u8, 8):
-            for j in range(0, im_width_u32, block_width_u32):
-                for i1 in range(0, 8, block_height_u8):
-                    i = i0 + i1
-                    hex_values = []
-                    for y in range(block_height_u8):
-                        for x in range(block_width_u32):
-                            hex_values.append(f"0x{index_img_by4[i + y, j + x]:08x}")
-                    block = ', '.join(hex_values)
-                    blocks.add(block)
-
-                    lines_func += f"    mmio::{block_register}.index({block_register_index}).write([{', '.join(hex_values)}]);\n"
-                    block_register_index += 1
-
-        print(len(blocks))
-        blocks = list(blocks)
-
-        rust_lines += lines_func
-        rust_lines_const += lines_const
-    rust_lines += "}\n"
-
-    rust_lines += rust_lines_const
+    rust_lines = header + load_fn + palette_fn + sub_fns
 
     print("#", dst_rust_file)
-    print(rust_lines)
     with open(dst_rust_file, "w") as fio:
         fio.write(rust_lines)
 
@@ -426,24 +373,33 @@ def convert_backgrounds(folder_path, palette_register, block_register, block_wid
 
 
 def find_and_define_rs_file(folder_path):
+    # find png files in folder_path and define the destination rust file.
     foldername = os.path.split(folder_path)[-1]
     png_files = utils.find_all_by_extension(folder_path, ".png")
+
+    # Sort the files by name to ensure consistent order
+    png_files.sort()
+
+    # ignore files starting with "_"
+    png_files = [f for f in png_files if not os.path.split(f)[-1].startswith("_")]
     dst_rust_file = os.path.normpath(f"../src/{foldername}.rs")
     return dst_rust_file, png_files
 
 
 def main_test():
-    test_generate_rust_palette()
-    test_generate_indimgby4_as_rust_array_1()
-    test_generate_indimgby4_as_rust_array_2()
+    _test_generate_rust_palette()
+    _test_generate_indimgby4_as_rust_array_1()
+    _test_generate_indimgby4_as_rust_array_2()
 
 
 def convert_screens(folder_path):
     linesize = 8
     dst_rust_file, png_files = find_and_define_rs_file(folder_path)
 
-    rust_lines = "use gba::mmio;\n"
-    rust_lines += "use gba::video::Color;\n"
+    rust_lines = "// This file has been automatically generated\n"
+    rust_lines += "#![allow(dead_code)]\n"
+    rust_lines += "\n"
+    rust_lines += "use gba::video::Video3Bitmap;\n"
     rust_lines += "\n"
 
     for filename in png_files:
@@ -451,9 +407,7 @@ def convert_screens(folder_path):
         img15 = color15(img)
 
         name = os.path.split(filename)[-1].split('.')[0].split('_')[1]
-        rust_lines += "pub const SCREEN_%s : &[u16] = \n" % name.upper()
-        rust_lines += '\t'
-        rust_lines += '&[\n\t\t'
+        rust_lines += "pub const SCREEN_%s: Video3Bitmap = Video3Bitmap::new_from_u16([\n" % name.upper()
         for vindex, vpixel in enumerate(img15, 0):
             for index, pixel in enumerate(vpixel, 0):
                 if pixel == -1:
@@ -464,7 +418,7 @@ def convert_screens(folder_path):
                 if (index % linesize) == 0 and (index > 0):
                     rust_lines += '\n\t\t'
         rust_lines += '\n'
-        rust_lines += '\t];\n\n'
+        rust_lines += '\t]);\n\n'
     print("#", dst_rust_file)
     print(rust_lines)
     with open(dst_rust_file, "w") as fio:
@@ -472,22 +426,8 @@ def convert_screens(folder_path):
 
     utils.format_rust_file(dst_rust_file)
 
-
-if __name__ == '__main__':
-    main_test()
-
-    test = False
-
-    sprites_location = "../src/assets/graphics/sprites"
-    background_location = "../src/assets/graphics/backgrounds"
-    screen_location = "../src/assets/graphics/screens"
-
-    if test:
-        sprites_location = "../src/assets/graphics/test"
-        background_location = sprites_location
-        screen_location = background_location
-
-    main(
+def main(sprites_location, background_location, screen_location):
+    convert_sprites(
         folder_path=os.path.normpath(sprites_location),
         palette_register="OBJ_PALETTE",
         block_register="OBJ_TILES",
@@ -506,3 +446,13 @@ if __name__ == '__main__':
     convert_screens(
         folder_path=os.path.normpath(screen_location)
     )
+
+if __name__ == '__main__':
+    main_test()
+
+    main(
+        sprites_location="../src/assets/graphics/sprites",
+        background_location="../src/assets/graphics/backgrounds",
+        screen_location="../src/assets/graphics/screens"
+    )
+    
