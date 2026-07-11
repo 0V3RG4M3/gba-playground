@@ -16,7 +16,7 @@ use crate::egj2026::sprites;
 use crate::egj2026::tune0;
 use crate::egj2026::tune1;
 use crate::egj2026::tx_state::TxState;
-use crate::gba_synth2::GbaSynth2;
+use crate::gba_synth::GbaSynth;
 use crate::math;
 use crate::scene::{Scene, SceneRunner};
 
@@ -72,7 +72,7 @@ impl Scene for GameScene {
         let mut players = [player; 2];
         let mut parent = true;
 
-        let mut synth = GbaSynth2::new();
+        let mut synth = GbaSynth::new();
         let mut is_synth_initialized = false;
 
         loop {
@@ -153,17 +153,9 @@ impl Scene for GameScene {
             if !is_synth_initialized {
                 is_synth_initialized = true;
                 if parent {
-                    synth.init_synth(
-                        &tune0::TUNE_TRACK1,
-                        tune0::TUNE_SIZE,
-                        tune0::TUNE_LOOP_SIZE,
-                    );
+                    synth.init(&tune0::TUNE_TRACK1, tune0::TUNE_SIZE, tune0::TUNE_LOOP_SIZE);
                 } else {
-                    synth.init_synth(
-                        &tune1::TUNE_TRACK1,
-                        tune1::TUNE_SIZE,
-                        tune1::TUNE_LOOP_SIZE,
-                    );
+                    synth.init(&tune1::TUNE_TRACK1, tune1::TUNE_SIZE, tune1::TUNE_LOOP_SIZE);
                 }
             }
 

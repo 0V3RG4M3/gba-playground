@@ -16,7 +16,7 @@ use crate::egj2025::level_scene_runners;
 use crate::egj2025::reg_tune;
 use crate::egj2025::sprites;
 use crate::fixed::Fixed;
-use crate::gba_synth2::GbaSynth2;
+use crate::gba_synth::GbaSynth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
 
@@ -34,12 +34,8 @@ impl<L: Level> LevelScene<L> {
         camera.pos.z = Fixed::from_int(128);
         camera.set_pitch_angle(16);
 
-        let mut synth = GbaSynth2::new();
-        synth.init_synth(
-            &reg_tune::TUNE_TRACK1,
-            reg_tune::TUNE_SIZE,
-            reg_tune::TUNE_LOOP_SIZE,
-        );
+        let mut synth = GbaSynth::new();
+        synth.init(&reg_tune::TUNE_TRACK1, reg_tune::TUNE_SIZE, reg_tune::TUNE_LOOP_SIZE);
 
         loop {
             bios::VBlankIntrWait();

@@ -21,7 +21,7 @@ static mut CURRENT_TUNE_2: [(u8, u8); tune::TUNE_STEP_COUNT as usize] =
 static mut CURRENT_TUNE_DRUMS: [(u8, u8); tune::TUNE_STEP_COUNT as usize] =
     [(0, 0); tune::TUNE_STEP_COUNT as usize];
 
-pub fn init_synth() {
+pub fn init() {
     // turn sound on
     mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
 

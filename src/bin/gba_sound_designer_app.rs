@@ -59,7 +59,7 @@ extern "C" fn main() -> ! {
 
     let (mut px, mut py): (i16, i16) = (32, 128);
 
-    gba_synth::init_synth();
+    gba_synth::init();
 
     let mut shift_5: u16 = 0; // x0
     let mut div_code_3: u16 = 0; // y0

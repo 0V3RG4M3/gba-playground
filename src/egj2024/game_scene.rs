@@ -41,7 +41,7 @@ impl GameScene {
 
         let mut backflip_angle = 252;
 
-        simple_gba_synth::init_synth();
+        simple_gba_synth::init();
 
         loop {
             bios::VBlankIntrWait();

@@ -71,9 +71,7 @@ fn is_trigger_register(addr: u32) -> bool {
     TRIGGER_REGISTERS[0] == addr || TRIGGER_REGISTERS[1] == addr || TRIGGER_REGISTERS[2] == addr
 }
 
-// ── GbaSynth2 ─────────────────────────────────────────────────────────────────
-
-pub struct GbaSynth2 {
+pub struct GbaSynth {
     loop_delta_count: i8,
     current_time_step_tune_1: u16,
     current_index_tune_1: usize,
@@ -93,7 +91,7 @@ pub struct GbaSynth2 {
     sfx_steps_remaining: u16,
 }
 
-impl GbaSynth2 {
+impl GbaSynth {
     pub const fn new() -> Self {
         Self {
             loop_delta_count: 0,
@@ -116,7 +114,12 @@ impl GbaSynth2 {
         }
     }
 
-    pub fn init_synth(&mut self, tune: &'static [(u16, u8, u32, u32)], tune_size: u16, tune_loop_size: u16) {
+    pub fn init(
+        &mut self,
+        tune: &'static [(u16, u8, u32, u32)],
+        tune_size: u16,
+        tune_loop_size: u16,
+    ) {
         mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
         mmio::LEFT_RIGHT_VOLUME.write(
             LeftRightVolume::new()
@@ -142,7 +145,8 @@ impl GbaSynth2 {
     /// into `music_registers`.  Does not touch hardware directly — call
     /// `write_to_registers` afterwards to flush.
     pub fn play_step(&mut self) {
-        let tune = unsafe { core::slice::from_raw_parts(self.current_tune_1, self.current_tune_size) };
+        let tune =
+            unsafe { core::slice::from_raw_parts(self.current_tune_1, self.current_tune_size) };
         loop {
             let (next_time_step, size, addr, value) = tune[self.current_index_tune_1];
             let wait_on_loop_back = self.loop_delta_count != 0;
@@ -210,7 +214,12 @@ impl GbaSynth2 {
     /// Start playing a sound effect.  The SFX tune uses the same
     /// `(time_step, size, addr, value)` format as the music tune.
     /// Call `play_sound_effect` and `write_to_registers` every frame afterwards.
-    pub fn trigger_sfx(&mut self, tune: &'static [(u16, u8, u32, u32)], tune_size: u16, tune_loop_size: u16) {
+    pub fn trigger_sfx(
+        &mut self,
+        tune: &'static [(u16, u8, u32, u32)],
+        tune_size: u16,
+        tune_loop_size: u16,
+    ) {
         self.sfx_tune = tune.as_ptr();
         self.sfx_tune_size = tune_size as usize;
         self.sfx_loop_size = tune_loop_size;
@@ -270,5 +279,3 @@ pub fn write(size: u8, addr: u32, value: u32) {
         }
     }
 }
-
-
