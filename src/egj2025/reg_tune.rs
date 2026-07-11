@@ -1,9 +1,16 @@
 // This file has been automatically generated
+use crate::gba_synth::RegTune;
+
+pub const TUNE: RegTune = RegTune {
+    data: &TUNE_DATA,
+    data_size: TUNE_SIZE,
+    loop_size: TUNE_LOOP_SIZE,
+};
 
 pub const TUNE_LOOP_SIZE: u16 = 1439;
 pub const TUNE_SIZE: u16 = 685;
 #[unsafe(link_section = ".rodata")]
-pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = [
+pub static TUNE_DATA: [(u16, u8, u32, u32); TUNE_SIZE as usize] = [
     (7, 2, 67108962, 61763),
     (7, 2, 67108964, 34441),
     (17, 2, 67108962, 323),

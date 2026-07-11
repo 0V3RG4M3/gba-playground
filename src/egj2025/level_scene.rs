@@ -35,7 +35,7 @@ impl<L: Level> LevelScene<L> {
         camera.set_pitch_angle(16);
 
         let mut synth = GbaSynth::new();
-        synth.init(&reg_tune::TUNE_TRACK1, reg_tune::TUNE_SIZE, reg_tune::TUNE_LOOP_SIZE);
+        synth.init(&reg_tune::TUNE);
 
         loop {
             bios::VBlankIntrWait();

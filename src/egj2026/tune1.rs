@@ -1,4 +1,11 @@
 // This file has been automatically generated
+use crate::gba_synth::RegTune;
+
+pub const TUNE: RegTune = RegTune {
+    data: &TUNE_TRACK1,
+    data_size: TUNE_SIZE,
+    loop_size: TUNE_LOOP_SIZE,
+};
 
 pub const TUNE_LOOP_SIZE: u16 = 902;
 pub const TUNE_SIZE: u16 = 1510;

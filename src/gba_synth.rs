@@ -2,6 +2,12 @@ use gba::mmio;
 use gba::mmio::{Safe, VolAddress};
 use gba::sound::{LeftRightVolume, PsgMix, SoundEnable, SoundMix};
 
+pub struct RegTune {
+    pub data: &'static [(u16, u8, u32, u32)],
+    pub data_size: u16,
+    pub loop_size: u16,
+}
+
 // ── SoundRegisters ────────────────────────────────────────────────────────────
 // A dictionary keyed by register address, storing the most recent (size, value)
 // written to each address.  dirty_mask tracks which entries were written this
@@ -75,16 +81,12 @@ pub struct GbaSynth {
     loop_delta_count: i8,
     current_time_step_tune_1: u16,
     current_index_tune_1: usize,
-    current_tune_1: *const (u16, u8, u32, u32),
-    current_tune_size: usize,
-    current_tune_loop_size: u16,
+    current_tune: Option<&'static RegTune>,
     music_registers: SoundRegisters,
     sfx_registers: SoundRegisters,
     sfx_playing: bool,
     sfx_just_ended: bool,
-    sfx_tune: *const (u16, u8, u32, u32),
-    sfx_tune_size: usize,
-    sfx_loop_size: u16,
+    sfx_tune: Option<&'static RegTune>,
     sfx_index: usize,
     sfx_time_step: u16,
     sfx_loop_delta: i8,
@@ -97,16 +99,12 @@ impl GbaSynth {
             loop_delta_count: 0,
             current_time_step_tune_1: 0,
             current_index_tune_1: 0,
-            current_tune_1: core::ptr::null(),
-            current_tune_size: 0,
-            current_tune_loop_size: 0,
+            current_tune: None,
             music_registers: SoundRegisters::new(),
             sfx_registers: SoundRegisters::new(),
             sfx_playing: false,
             sfx_just_ended: false,
-            sfx_tune: core::ptr::null(),
-            sfx_tune_size: 0,
-            sfx_loop_size: 0,
+            sfx_tune: None,
             sfx_index: 0,
             sfx_time_step: 0,
             sfx_loop_delta: 0,
@@ -114,12 +112,7 @@ impl GbaSynth {
         }
     }
 
-    pub fn init(
-        &mut self,
-        tune: &'static [(u16, u8, u32, u32)],
-        tune_size: u16,
-        tune_loop_size: u16,
-    ) {
+    pub fn init(&mut self, tune: &'static RegTune) {
         mmio::SOUND_ENABLED.write(SoundEnable::new().with_enabled(true));
         mmio::LEFT_RIGHT_VOLUME.write(
             LeftRightVolume::new()
@@ -133,9 +126,7 @@ impl GbaSynth {
                 .with_noise_right(true),
         );
         mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_50));
-        self.current_tune_1 = tune.as_ptr();
-        self.current_tune_size = tune_size as usize;
-        self.current_tune_loop_size = tune_loop_size;
+        self.current_tune = Some(tune);
         self.current_index_tune_1 = 0;
         self.current_time_step_tune_1 = 0;
         self.loop_delta_count = 0;
@@ -145,25 +136,33 @@ impl GbaSynth {
     /// into `music_registers`.  Does not touch hardware directly — call
     /// `write_to_registers` afterwards to flush.
     pub fn play_step(&mut self) {
-        let tune =
-            unsafe { core::slice::from_raw_parts(self.current_tune_1, self.current_tune_size) };
+        let Some(tune_obj) = self.current_tune else { return; };
+        let tune = tune_obj.data;
+        let tune_size = tune_obj.data_size as usize;
+        let tune_loop_size = tune_obj.loop_size;
+        
         loop {
-            let (next_time_step, size, addr, value) = tune[self.current_index_tune_1];
+            let line = tune[self.current_index_tune_1];
+            let frame_id = line.0;
+            let byte_count = line.1;
+            let register_addr = line.2;
+            let value = line.3;
+
             let wait_on_loop_back = self.loop_delta_count != 0;
-            if (next_time_step > self.current_time_step_tune_1) || wait_on_loop_back {
+            if (frame_id > self.current_time_step_tune_1) || wait_on_loop_back {
                 break;
             }
 
-            self.music_registers.set(addr, size, value);
+            self.music_registers.set(register_addr, byte_count, value);
 
-            self.current_index_tune_1 = (self.current_index_tune_1 + 1) % self.current_tune_size;
+            self.current_index_tune_1 = (self.current_index_tune_1 + 1) % tune_size;
             if self.current_index_tune_1 == 0 {
                 self.loop_delta_count += 1;
             }
         }
 
         self.current_time_step_tune_1 =
-            (self.current_time_step_tune_1 + 1) % self.current_tune_loop_size;
+            (self.current_time_step_tune_1 + 1) % tune_loop_size;
         if self.current_time_step_tune_1 == 0 {
             self.loop_delta_count -= 1;
         }
@@ -214,19 +213,12 @@ impl GbaSynth {
     /// Start playing a sound effect.  The SFX tune uses the same
     /// `(time_step, size, addr, value)` format as the music tune.
     /// Call `play_sound_effect` and `write_to_registers` every frame afterwards.
-    pub fn trigger_sfx(
-        &mut self,
-        tune: &'static [(u16, u8, u32, u32)],
-        tune_size: u16,
-        tune_loop_size: u16,
-    ) {
-        self.sfx_tune = tune.as_ptr();
-        self.sfx_tune_size = tune_size as usize;
-        self.sfx_loop_size = tune_loop_size;
+    pub fn trigger_sfx(&mut self, tune: &'static RegTune) {
+        self.sfx_tune = Some(tune);
         self.sfx_index = 0;
         self.sfx_time_step = 0;
         self.sfx_loop_delta = 0;
-        self.sfx_steps_remaining = tune_loop_size;
+        self.sfx_steps_remaining = tune.loop_size;
         self.sfx_registers.reset();
         self.sfx_playing = true;
         self.sfx_just_ended = false;
@@ -240,23 +232,31 @@ impl GbaSynth {
             return;
         }
 
-        let tune = unsafe { core::slice::from_raw_parts(self.sfx_tune, self.sfx_tune_size) };
+        let Some(tune_obj) = self.sfx_tune else { return; };
+        let tune = tune_obj.data;
+        let tune_size = tune_obj.data_size as usize;
+        let tune_loop_size = tune_obj.loop_size;
+        
         loop {
-            let (next_time_step, size, addr, value) = tune[self.sfx_index];
+            let line = tune[self.sfx_index];
+            let frame_id = line.0;
+            let byte_count = line.1;
+            let register_addr = line.2;
+            let value = line.3;
             let wait_on_loop_back = self.sfx_loop_delta != 0;
-            if (next_time_step > self.sfx_time_step) || wait_on_loop_back {
+            if (frame_id > self.sfx_time_step) || wait_on_loop_back {
                 break;
             }
 
-            self.sfx_registers.set(addr, size, value);
+            self.sfx_registers.set(register_addr, byte_count, value);
 
-            self.sfx_index = (self.sfx_index + 1) % self.sfx_tune_size;
+            self.sfx_index = (self.sfx_index + 1) % tune_size;
             if self.sfx_index == 0 {
                 self.sfx_loop_delta += 1;
             }
         }
 
-        self.sfx_time_step = (self.sfx_time_step + 1) % self.sfx_loop_size;
+        self.sfx_time_step = (self.sfx_time_step + 1) % tune_loop_size;
         if self.sfx_time_step == 0 {
             self.sfx_loop_delta -= 1;
         }

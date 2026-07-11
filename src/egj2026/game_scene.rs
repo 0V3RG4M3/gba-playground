@@ -153,9 +153,9 @@ impl Scene for GameScene {
             if !is_synth_initialized {
                 is_synth_initialized = true;
                 if parent {
-                    synth.init(&tune0::TUNE_TRACK1, tune0::TUNE_SIZE, tune0::TUNE_LOOP_SIZE);
+                    synth.init(&tune0::TUNE);
                 } else {
-                    synth.init(&tune1::TUNE_TRACK1, tune1::TUNE_SIZE, tune1::TUNE_LOOP_SIZE);
+                    synth.init(&tune1::TUNE);
                 }
             }
 
@@ -180,11 +180,7 @@ impl Scene for GameScene {
                 if *py == 0 {
                     if key_input.up() {
                         *vy = 8;
-                        synth.trigger_sfx(
-                            &sfx_jump::TUNE_TRACK1,
-                            sfx_jump::TUNE_SIZE,
-                            sfx_jump::TUNE_LOOP_SIZE,
-                        );
+                        synth.trigger_sfx(&sfx_jump::SFX);
                     } else {
                         *vy = 0;
                     }
