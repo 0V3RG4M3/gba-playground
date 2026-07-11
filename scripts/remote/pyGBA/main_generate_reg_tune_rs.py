@@ -17,7 +17,6 @@ def extract_data(reg_tune_file: str):
 
     tune_reader = RegTuneLogReader(reg_tune_file, time_scale=None)
 
-
     for data in tune_reader.read():
         print(data)
 
@@ -101,12 +100,18 @@ def parse_file(reg_tune_file: Path, bpm_gain: float = 1) -> tuple[list[tuple[int
 
 def write_reg_tune_rs_file(filename, regs, frame_count):
     txt = f"""// This file has been automatically generated
-    
+use crate::gba_synth::RegTune;
+
+pub const TUNE: RegTune = RegTune {{
+    data: &TUNE_DATA,
+    data_size: TUNE_DATA_SIZE,
+    loop_size: TUNE_LOOP_SIZE,
+}};    
 
 pub const TUNE_LOOP_SIZE: u16 = {frame_count};
-pub const TUNE_SIZE: u16 = {len(regs)};
+pub const TUNE_DATA_SIZE: u16 = {len(regs)};
 #[unsafe(link_section = ".rodata")]
-pub static TUNE_TRACK1: [(u16, u8, u32, u32); TUNE_SIZE as usize] = {regs};
+pub static TUNE_DATA: [(u16, u8, u32, u32); TUNE_DATA_SIZE as usize] = {regs};
 """
     print(txt)
     with open(filename, "w") as fio:
@@ -124,9 +129,11 @@ def main_tune():
     dst_ext = ".rs"
 
     reg_tune_file_subpaths = [
+        Path("src/egj2025/reg_tune"),
+        # Path("src/egj2025/reg_tune_noisebeat"),
         Path("src/egj2026/tune0"),
         Path("src/egj2026/tune1"),
-        # Path("src/egj2026/sfx_jump"),
+        Path("src/egj2026/sfx_jump"),
     ]
     for subpath in reg_tune_file_subpaths:
         src_file = (reg_tune_src_folder / subpath).with_suffix(src_ext)

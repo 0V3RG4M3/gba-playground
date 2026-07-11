@@ -136,11 +136,13 @@ impl GbaSynth {
     /// into `music_registers`.  Does not touch hardware directly — call
     /// `write_to_registers` afterwards to flush.
     pub fn play_step(&mut self) {
-        let Some(tune_obj) = self.current_tune else { return; };
+        let Some(tune_obj) = self.current_tune else {
+            return;
+        };
         let tune = tune_obj.data;
         let tune_size = tune_obj.data_size as usize;
         let tune_loop_size = tune_obj.loop_size;
-        
+
         loop {
             let line = tune[self.current_index_tune_1];
             let frame_id = line.0;
@@ -161,8 +163,7 @@ impl GbaSynth {
             }
         }
 
-        self.current_time_step_tune_1 =
-            (self.current_time_step_tune_1 + 1) % tune_loop_size;
+        self.current_time_step_tune_1 = (self.current_time_step_tune_1 + 1) % tune_loop_size;
         if self.current_time_step_tune_1 == 0 {
             self.loop_delta_count -= 1;
         }
@@ -232,11 +233,13 @@ impl GbaSynth {
             return;
         }
 
-        let Some(tune_obj) = self.sfx_tune else { return; };
+        let Some(tune_obj) = self.sfx_tune else {
+            return;
+        };
         let tune = tune_obj.data;
         let tune_size = tune_obj.data_size as usize;
         let tune_loop_size = tune_obj.loop_size;
-        
+
         loop {
             let line = tune[self.sfx_index];
             let frame_id = line.0;

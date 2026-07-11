@@ -180,7 +180,7 @@ impl Scene for GameScene {
                 if *py == 0 {
                     if key_input.up() {
                         *vy = 8;
-                        synth.trigger_sfx(&sfx_jump::SFX);
+                        synth.trigger_sfx(&sfx_jump::TUNE);
                     } else {
                         *vy = 0;
                     }
