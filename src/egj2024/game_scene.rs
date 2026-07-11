@@ -1,3 +1,5 @@
+use super::sound::simple_gba_synth;
+use super::sound::tune;
 use crate::egj2024::cauldron::Cauldron;
 use crate::egj2024::item::ItemState;
 use crate::egj2024::leader::Leader;
@@ -8,10 +10,8 @@ use crate::egj2024::screen_gameover_scene::ScreenGameoverScene;
 use crate::egj2024::screen_youwin_scene::ScreenYouWinScene;
 use crate::egj2024::sprites;
 use crate::fixed::Fixed;
-use super::sound::simple_gba_synth;
 use crate::mode7::{self, Camera, Sprite};
 use crate::scene::{Scene, SceneRunner};
-use super::sound::tune;
 use gba;
 use gba::bios;
 use gba::fixed::i16fx8;

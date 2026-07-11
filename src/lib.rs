@@ -9,9 +9,6 @@ pub mod egj2026;
 #[cfg(not(test))]
 pub mod fixed;
 #[cfg(not(test))]
-#[path = "egj2024/sound/simple_gba_synth.rs"]
-pub mod gba_synth;
-#[cfg(not(test))]
 pub mod gba_synth2;
 #[cfg(not(test))]
 pub mod log4gba;
