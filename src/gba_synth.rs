@@ -11,7 +11,7 @@ pub struct RegTune {
 // ── SoundRegisters ────────────────────────────────────────────────────────────
 // A dictionary keyed by register address, storing the most recent (size, value)
 // written to each address.  dirty_mask tracks which entries were written this
-// frame so that write_to_registers only flushes new writes to hardware — this
+// frame so that play_step only flushes new writes to hardware — this
 // prevents re-triggering channels on every frame.
 
 pub struct SoundRegisters {
@@ -134,8 +134,8 @@ impl GbaSynth {
 
     /// Advance the music sequencer by one frame and buffer any register writes
     /// into `music_registers`.  Does not touch hardware directly — call
-    /// `write_to_registers` afterwards to flush.
-    pub fn play_step(&mut self) {
+    /// `play_step` afterwards to flush.
+    fn next_tune_step(&mut self) {
         let Some(tune_obj) = self.current_tune else {
             return;
         };
@@ -178,8 +178,11 @@ impl GbaSynth {
     /// - SFX playing → write SFX dirty entries; discard music dirty entries.
     /// - Otherwise → write music dirty entries.
     ///
-    /// Call once per frame, after `play_step` and `play_sound_effect`.
-    pub fn write_to_registers(&mut self) {
+    /// Call once per frame, after `next_tune_step` and `next_sfx_step`.
+    pub fn play_step(&mut self) {
+        self.next_sfx_step();
+        self.next_tune_step();
+
         if self.sfx_just_ended {
             for i in 0..self.sfx_registers.count {
                 let (addr, _, _) = self.sfx_registers.entries[i];
@@ -213,7 +216,7 @@ impl GbaSynth {
 
     /// Start playing a sound effect.  The SFX tune uses the same
     /// `(time_step, size, addr, value)` format as the music tune.
-    /// Call `play_sound_effect` and `write_to_registers` every frame afterwards.
+    /// Call `next_sfx_step` and `play_step` every frame afterwards.
     pub fn trigger_sfx(&mut self, tune: &'static RegTune) {
         self.sfx_tune = Some(tune);
         self.sfx_index = 0;
@@ -227,8 +230,8 @@ impl GbaSynth {
 
     /// Advance the SFX sequencer by one frame and buffer any register writes into
     /// `sfx_registers`.  Sets `sfx_just_ended` when the SFX loop completes so
-    /// that the next `write_to_registers` call performs the music restore.
-    pub fn play_sound_effect(&mut self) {
+    /// that the next `play_step` call performs the music restore.
+    fn next_sfx_step(&mut self) {
         if !self.sfx_playing {
             return;
         }

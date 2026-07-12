@@ -40,7 +40,6 @@ impl<L: Level> LevelScene<L> {
         loop {
             bios::VBlankIntrWait();
             synth.play_step();
-            synth.write_to_registers();
 
             let mut sprites = [Sprite::new(); 32];
             for sprite in &mut sprites {

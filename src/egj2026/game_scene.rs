@@ -210,8 +210,6 @@ impl Scene for GameScene {
             }
 
             synth.play_step();
-            synth.play_sound_effect();
-            synth.write_to_registers();
         }
     }
 }
