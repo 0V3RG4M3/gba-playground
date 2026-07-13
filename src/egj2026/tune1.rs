@@ -5,19 +5,16 @@ pub const TUNE: RegTune =
     RegTune { data: &TUNE_DATA, data_size: TUNE_DATA_SIZE, loop_size: TUNE_LOOP_SIZE };
 
 pub const TUNE_LOOP_SIZE: u16 = 902;
-pub const TUNE_DATA_SIZE: u16 = 1510;
+pub const TUNE_DATA_SIZE: u16 = 1507;
 #[unsafe(link_section = ".rodata")]
 pub static TUNE_DATA: [(u16, u8, u32, u32); TUNE_DATA_SIZE as usize] = [
     (0, 2, 67108984, 61),
     (0, 2, 67108988, 32802),
     (0, 2, 67108972, 33814),
-    (0, 1, 67108996, 143),
     (0, 2, 67108962, 658),
     (0, 2, 67108964, 34566),
     (0, 2, 67108984, 20797),
     (0, 2, 67108968, 172),
-    (0, 2, 67108994, 65294),
-    (0, 2, 67108992, 65399),
     (0, 1, 67108960, 0),
     (3, 2, 67108984, 20797),
     (3, 2, 67108988, 32802),
