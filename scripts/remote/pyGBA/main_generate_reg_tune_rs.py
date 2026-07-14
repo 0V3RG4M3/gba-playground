@@ -114,7 +114,9 @@ pub const TUNE_DATA_SIZE: u16 = {len(regs)};
 pub static TUNE_DATA: [(u16, u8, u32, u32); TUNE_DATA_SIZE as usize] = {regs};
 """
     print(txt)
-    with open(filename, "w") as fio:
+    path = Path(filename)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as fio:
         fio.write(txt)
 
 
@@ -130,7 +132,7 @@ def main_tune():
 
     reg_tune_file_subpaths = [
         Path("src/egj2025/reg_tune"),
-        # Path("src/egj2025/reg_tune_noisebeat"),
+        Path("src/discography/noisebeat"),
         Path("src/egj2026/tune0"),
         Path("src/egj2026/tune1"),
         Path("src/egj2026/sfx_jump"),
