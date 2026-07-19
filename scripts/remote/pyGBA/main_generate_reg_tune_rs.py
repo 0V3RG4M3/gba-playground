@@ -132,7 +132,7 @@ def main_tune():
 
     reg_tune_file_subpaths = [
         Path("src/egj2025/reg_tune"),
-        Path("src/discography/noisebeat"),
+        Path("src/jukebox/noisebeat"),
         Path("src/egj2026/tune0"),
         Path("src/egj2026/tune1"),
         Path("src/egj2026/sfx_jump"),

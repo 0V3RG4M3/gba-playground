@@ -1,6 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 #[cfg(not(test))]
-pub mod discography;
+pub mod jukebox;
 #[cfg(not(test))]
 pub mod egj2024;
 #[cfg(not(test))]
