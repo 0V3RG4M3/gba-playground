@@ -8,9 +8,7 @@ use crate::egj2025::item::{Item, ItemKind};
 use crate::egj2025::level::Level;
 use crate::egj2025::player;
 use crate::fixed::Fixed;
-use crate::gba_synth;
 use crate::mode7::{self, Camera, Sprite};
-use crate::sfx;
 
 pub struct KeyLevel {
     items: [Item; 2],
@@ -54,7 +52,6 @@ impl Level for KeyLevel {
         match self.item_index {
             Some(item_index) => {
                 if key_input.a() && !self.key_was_pressed.a() {
-                    gba_synth::play_sfx(sfx::ITEM_DROPPED);
                     let item = &mut self.items[item_index];
                     let pos = &mut item.sprite.pos;
                     pos.x = camera.pos.x + camera.yaw_sin() * 32;
@@ -69,11 +66,6 @@ impl Level for KeyLevel {
             }
             None => {
                 if key_input.a() && !self.key_was_pressed.a() {
-                    if other_item_index.is_some() {
-                        gba_synth::play_sfx(sfx::ITEM_COLLECTED);
-                    } else {
-                        gba_synth::play_sfx(sfx::CANT_TAKE);
-                    }
                     self.item_index = other_item_index;
                 }
             }

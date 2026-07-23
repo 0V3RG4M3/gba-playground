@@ -8,5 +8,6 @@ mod player;
 pub mod screen_gameover_scene;
 pub mod screen_splash_scene;
 pub mod screen_youwin_scene;
-mod screens;
+pub mod screens;
+pub mod sound;
 mod sprites;
