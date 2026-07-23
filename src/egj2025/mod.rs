@@ -10,6 +10,6 @@ mod level_scene_runners;
 mod player;
 mod rabbit_level;
 pub mod reg_tune;
-mod screens;
+pub mod screens;
 pub mod splash_scene;
 mod sprites;

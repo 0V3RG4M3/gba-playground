@@ -1,7 +1,5 @@
 #![cfg_attr(not(test), no_std)]
 #[cfg(not(test))]
-pub mod jukebox;
-#[cfg(not(test))]
 pub mod egj2024;
 #[cfg(not(test))]
 pub mod egj2025;
@@ -11,6 +9,8 @@ pub mod egj2026;
 pub mod fixed;
 #[cfg(not(test))]
 pub mod gba_synth;
+#[cfg(not(test))]
+pub mod jukebox;
 #[cfg(not(test))]
 pub mod log4gba;
 #[cfg(not(test))]

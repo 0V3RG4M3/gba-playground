@@ -4,7 +4,7 @@ mod game_scene;
 mod link;
 mod ready_scene;
 mod rx_state;
-mod screens;
+pub mod screens;
 pub mod sfx_jump;
 mod sprites;
 pub mod tune0;

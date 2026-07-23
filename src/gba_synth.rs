@@ -125,7 +125,7 @@ impl GbaSynth {
                 .with_tone2_right(true)
                 .with_noise_right(true),
         );
-        mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_50));
+        mmio::SOUND_MIX.write(SoundMix::new().with_psg(PsgMix::_100));
         self.current_tune = Some(tune);
         self.current_index_tune_1 = 0;
         self.current_time_step_tune_1 = 0;
