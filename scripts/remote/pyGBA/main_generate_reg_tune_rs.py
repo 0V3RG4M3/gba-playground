@@ -84,6 +84,8 @@ def parse_file(reg_tune_file: Path, bpm_gain: float = 1) -> tuple[list[tuple[int
     b"'5698 STOP\x00\x00\x00,\x00\x00\x00'"
 
     """
+    if bpm_gain == 3:
+        print(f"Applying BPM gain of {bpm_gain} to {reg_tune_file}")
     result: list[tuple[int, int, int, int]]
     loop_size: int  # important to know when the loop must start over
 
@@ -91,6 +93,10 @@ def parse_file(reg_tune_file: Path, bpm_gain: float = 1) -> tuple[list[tuple[int
 
     # Sort by frame (just in case)
     result.sort(key=lambda x: x[0])
+
+    # devide frame_id by bpm_gain to adjust for different BPMs
+    result = [(int(frame_id / bpm_gain), size, addr, value) for frame_id, size, addr, value in result]
+    loop_size = int(loop_size / bpm_gain)
 
     if result[-1][0] >= loop_size:
         loop_size = result[-1][0] + 1
@@ -130,16 +136,21 @@ def main_tune():
     reg_tune_dst_folder = here / '../../../'
     dst_ext = ".rs"
 
-    reg_tune_file_subpaths = [
-        Path("src/egj2025/reg_tune"),
-        Path("src/jukebox/noisebeat"),
-        Path("src/egj2026/tune0"),
-        Path("src/egj2026/tune1"),
-        Path("src/egj2026/sfx_jump"),
+    reg_tune_file_subpaths_and_gain = [
+        # (Path("src/egj2025/reg_tune"), 1),
+        #
+        # (Path("src/egj2026/tune0"), 1),
+        # (Path("src/egj2026/tune1"), 1),
+        # (Path("src/egj2026/sfx_jump"), 1),
+        #
+        # (Path("src/jukebox/noisebeat"), 1),
+        # (Path("src/jukebox/swisscore_1"), 1),
+        # (Path("src/jukebox/swisscore_1"), 1),
+        (Path("src/jukebox/swisscore"), 3),
     ]
-    for subpath in reg_tune_file_subpaths:
+    for subpath, bpm_gain in reg_tune_file_subpaths_and_gain:
         src_file = (reg_tune_src_folder / subpath).with_suffix(src_ext)
-        tune, frame_count = parse_file(src_file, bpm_gain=1)
+        tune, frame_count = parse_file(src_file, bpm_gain=bpm_gain)
 
         dst_rsfile = (reg_tune_dst_folder / subpath).with_suffix(dst_ext)
         write_reg_tune_rs_file(dst_rsfile, tune, frame_count)

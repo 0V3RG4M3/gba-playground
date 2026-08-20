@@ -453,6 +453,6 @@ if __name__ == '__main__':
     main(
         sprites_location="../src/assets/graphics/sprites",
         background_location="../src/assets/graphics/backgrounds",
-        screen_location="../src/assets/graphics/screens"
+        screen_location="../src/assets/jukebox/screens"
     )
     

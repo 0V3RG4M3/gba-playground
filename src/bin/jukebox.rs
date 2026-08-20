@@ -10,14 +10,14 @@ use gba::mgba::{MgbaBufferedLogger, MgbaMessageLevel};
 use gba::prelude::{DisplayControl, DisplayStatus, VideoMode};
 use gba::{bios, mmio, video};
 
-use gba_playground::egj2024::screens::SCREEN_GAMEOVER as egj2024_screen;
 use gba_playground::egj2025::reg_tune as egj2025_tune;
 use gba_playground::egj2025::screens::SCREEN_INTRO as egj2025_screen;
 use gba_playground::egj2026::screens::SCREEN_TITLE as egj2026_screen;
 use gba_playground::egj2026::sfx_jump;
 use gba_playground::egj2026::tune1 as egj2026_tune;
 use gba_playground::gba_synth::GbaSynth;
-use gba_playground::jukebox::noisebeat;
+use gba_playground::jukebox::{noisebeat, swisscore};
+use gba_playground::jukebox::screens::{SCREEN_NOISEBEAT as noisebeat_screen,SCREEN_SWISSCORE as swisscore_screen};
 use gba_playground::log4gba;
 
 #[panic_handler]
@@ -50,11 +50,11 @@ pub fn main() -> ! {
     let mut is_playing = true;
 
     // Create list of tunes
-    let tunes = [&egj2025_tune::TUNE, &egj2026_tune::TUNE, &noisebeat::TUNE];
+    let tunes = [&egj2025_tune::TUNE, &egj2026_tune::TUNE, &noisebeat::TUNE, &swisscore::TUNE];
     let mut tune_ind = 0;
 
     // Create list of tune cover images
-    let tune_covers = [&egj2025_screen, &egj2026_screen, &egj2024_screen];
+    let tune_covers = [&egj2025_screen, &egj2026_screen, &noisebeat_screen, &swisscore_screen];
 
     // Create list of sound effects
     let sfxs = [&sfx_jump::TUNE];

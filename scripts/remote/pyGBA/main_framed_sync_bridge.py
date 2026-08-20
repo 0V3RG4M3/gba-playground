@@ -171,5 +171,6 @@ def main_logfile_to_mgba(src_logfile:str):
 
 
 if __name__ == "__main__":
-    main_max_to_mgba(Path("reg_tunes/tmp.bin.txt"))
+    # main_max_to_mgba(Path("reg_tunes/tmp.bin.txt"))
+    main_max_to_mgba(Path("reg_tunes/src/jukebox/tmp.bin.txt"))
     # main_logfile_to_mgba("reg_tunes/tmp.bin.txt")
